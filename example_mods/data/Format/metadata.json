@@ -1,0 +1,19 @@
+{
+  "pause": {
+    "left_side": [{ "id": "DAVE" }],
+    "right_side": [{ "id": "BF" }]
+  },
+  "credits": {
+    "music": { "SONG": ["mossysox", "shiftyyyy2"], "SFX": "m1les0" },
+    "art": {
+      "BACKGROUND": "exorcistgold",
+      "SPRITES": ["pointyyesm", "statictigers"],
+      "ANIMATIONS": ["sporbb", "thetwigjig", "statictigers"]
+    },
+    "code": {
+      "EVENTS": "mayo78",
+      "CHART": "pointyyesm",
+      "MODCHART": "mayo78"
+    }
+  }
+}

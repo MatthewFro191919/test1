@@ -1,0 +1,52 @@
+var pauseZoom = false;
+var doBeatHit = false;
+function onCreatePost() {
+	game.camHUD.alpha = game.camStrums.alpha = 0;
+}
+function beatHit() {
+	if (!pauseZoom) {
+		if (curBeat >= 20 && curBeat < 52)
+			smallZoom();
+		else if (curBeat >= 284 || curBeat > 20 && curBeat % 2 == 0)
+			bludZoom();
+	}
+}
+function bludZoom() {
+	addZoom(.015, 0.03);
+}
+function smallZoom() {
+	addZoom(.01, .0015);
+}
+
+function doStep(step) {
+	//trace(step);
+	switch step {
+		case 0:
+			tweenZoom(.7, beatTime(20), FlxEase.cubeIn);
+			game.tween(game.camHUD, {alpha: 1}, beatTime(20), {ease: FlxEase.cubeIn});
+			game.tween(game.camStrums, {alpha: 1}, beatTime(20), {ease: FlxEase.cubeIn});
+		case 336:
+			tweenToChar(DAD, stepTime(2), FlxEase.backOut);
+			tweenZoom(.8, stepTime(2), FlxEase.backOut);
+		case 396:
+			tweenZoom(.6, beatTime(1), FlxEase.cubeOut);
+		case 400:
+			duet(beatTime(1), FlxEase.cubeInOut);
+		case 432, 560, 592, 874, 1232:
+			game.isCameraOnForcedPos = false;
+			tweenToChar((step == 1232) ? BF : DAD, beatTime(1), FlxEase.cubeOut);
+			tweenZoom(step < 874 ? .8 : .7, beatTime(1), FlxEase.cubeOut);
+		case 457, 576, 848, 1200:
+			tweenZoom(.6, beatTime(1), FlxEase.cubeOut);
+			duet(beatTime(1), FlxEase.cubeOut);
+			pauseZoom = step == 457;
+		case 464:
+			pauseZoom = false;
+		case 588:
+			tweenZoom(.7, beatTime(1), FlxEase.expoOut);
+		case 854:
+			game.vocals.volume = 1;
+		case 1264:
+			pauseZoom = true;
+	}
+}

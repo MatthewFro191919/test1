@@ -1,0 +1,346 @@
+{
+  "data": {
+    "ponder": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        114,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "panicked": {
+      "blinkRates": [
+        2,
+        4
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        117,
+        391
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "accusing": {
+      "blinkRates": [
+        1,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        115,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "stressed": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        110,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "realizing": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        114,
+        394
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "neutrangry": {
+      "blinkRates": [
+        1,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        113,
+        394
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "phonedefiant": {
+      "blinkRates": [
+        0.7,
+        4
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        114,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "comforting": {
+      "blinkRates": [
+        3,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        121,
+        399
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "neutral": {
+      "blinkRates": [
+        1,
+        4
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        114,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "phonestartled": {
+      "blinkRates": [
+        0.9,
+        3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        113,
+        400
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "freakout": {
+      "blinkRates": [
+        0.7,
+        4
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        109,
+        398
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "disraught": {
+      "blinkRates": [
+        1.3,
+        2
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        120,
+        396
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "plead": {
+      "blinkRates": [
+        2.5,
+        4
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        115,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "tired": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        119,
+        398
+      ],
+      "sound": {
+        "sounds": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "pitch": [
+          0,
+          0
+        ],
+        "prefix": "bambi/"
+      },
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "bambiattack": {
+      "blinkRates": [
+        0.7,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        130,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "mischief": {
+      "blinkRates": [
+        0.7,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        120,
+        398
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "seethe": {
+      "blinkRates": [
+        0.7,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        115,
+        395
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "threatening": {
+      "blinkRates": [
+        0.7,
+        5
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        130,
+        397
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    }
+  },
+  "defaultPos": "right",
+  "fps": 24,
+  "historyColor": "#0B7136",
+  "historyTextColor": "#000000",
+  "icon": "bambi",
+  "neutral": "neutral",
+  "origin": [
+    -5,
+    20
+  ],
+  "scale": 1,
+  "sound": {
+    "sounds": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "pitch": [
+      -0.05,
+      0.005
+    ],
+    "prefix": "bambi/"
+  }
+}

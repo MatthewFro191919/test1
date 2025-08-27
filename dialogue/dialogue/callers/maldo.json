@@ -1,0 +1,129 @@
+{
+  "music": "teleprompt",
+  "dialogue": [
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phoneneutral",
+      "text": "Hi, so--",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "maldo",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "<event event=\"play_sound\" loop=\"true\" path=\"construction\" id=\"construction\" vol=\"1\">WHAT? DAVE? IS THAT YOU?",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgmaldo",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 6,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesad",
+      "text": "Huh?? What--",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "maldo",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "YOU'RE GOING TO HAVE TO SPEAK UP, FRIEND! IT WAS BAD TIMING TO CALL IN THE MIDDLE OF CONSTRUCTION! I THOUGHT YOU KNEW MY SCHEDULE, HAHA!\r\n",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesad",
+      "text": "Um, I'm not-!",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "maldo",
+      "position": "left",
+      "emotion": "leave",
+      "text": "OKAY! IT WAS GREAT TALKING TO YOU! GOODBYE, FRIEND!",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "none",
+      "position": "left",
+      "emotion": "leave",
+      "text": "<event event=\"remove_character\" char=\"maldo\"><event event=\"play_sound\" vol=\"0.8\" path=\"phonebeep\"><event event=\"stop_sound\" id=\"construction\">/BEEP/",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stages/house/living_room",
+  "font": "comic"
+}

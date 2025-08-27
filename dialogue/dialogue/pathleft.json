@@ -1,0 +1,46 @@
+{
+  "music": "Hey Dave",
+  "dialogue": [
+    {
+      "character": "bart",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "you chose: left",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "allen",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "im allen",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bart",
+      "position": "middle",
+      "emotion": "neutral",
+      "text": "and now back to normal dialogue",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stageback",
+  "font": "comic"
+}

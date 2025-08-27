@@ -1,0 +1,116 @@
+{
+  "music": "teleprompt",
+  "dialogue": [
+    {
+      "character": "baldi",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "Wow, Daaaave? I haven't heard from you in aaaages! ",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgbaldi",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 4,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonehappy",
+      "text": "Oh I'm not Dave, I'm--",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "baldi",
+      "position": "left",
+      "emotion": "phonehappy",
+      "text": "Why are you calling me, then? See you laaater!",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesad",
+      "text": "Huh? No, wait--!",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "none",
+      "position": "right",
+      "emotion": "phonesad",
+      "text": "<event event=\"remove_character\" char=\"baldi\"><event event=\"play_sound\" vol=\"0.8\" path=\"phonebeep\">/BEEP/",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phoneneutral",
+      "text": "...ugh. ",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stages/house/living_room",
+  "font": "comic"
+}

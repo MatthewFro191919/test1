@@ -1,0 +1,24 @@
+{
+  "data": {  },
+  "defaultPos": "left",
+  "fps": 24,
+  "historyColor": "#3861ED",
+  "historyTextColor": "#000000",
+  "icon": "caller",
+  "neutral": "neutral",
+  "origin": [
+    201.75,
+    590.5
+  ],
+  "scale": 0.85,
+  "sound": {
+    "sounds": [
+      "default"
+    ],
+    "pitch": [
+      0,
+      0
+    ],
+    "prefix": ""
+  }
+}

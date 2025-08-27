@@ -1,0 +1,160 @@
+{
+  "music": "teleprompt",
+  "dialogue": [
+    {
+      "character": "samson",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "Awwwh, that's terrible dudette! If ya ever find Dave, tell him the schoolhouse peeps miss him and, <emote value=\"smile\">hey! maybe you should check in with my pal, Sleep.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgsamson",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 2,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "samson",
+      "position": "left",
+      "emotion": "smile",
+      "text": "He's a super smart robot, he could like... calculate a lead.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesuprised",
+      "text": "<event event=\"remove_character\" char=\"samson\">Oh! Good idea... let me...",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "none",
+      "position": "right",
+      "emotion": "phonesuprised",
+      "text": "<event event=\"play_sound\" vol=\"0.8\" path=\"phonebeep\">/BEEP/",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "gottasleep",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "/THIS IS AN AUTOMATED VOICE MESSAGE: IF YOU ARE TRYING TO CALL ME DO NOT BOTHER. I AM A BROOM AND DO NOT HAVE HANDS TO ANSWER A PHONE WITH./",
+      "font": null,
+      "boxEmotion": "intense",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgsleep",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 2,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "gottasleep",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "/ALSO IF YOUR NAME IS SAMSON: PLEASE CONCUSS YOURSELF WITH A ROCK.<event event=\"emote_character\" emote=\"phoneuh\" char=\"girlfriend\"> AND NEVER CALL THIS NUMBER AGAIN./",
+      "font": null,
+      "boxEmotion": "intense",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "none",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "<event event=\"remove_character\" char=\"gottasleep\">/<event event=\"play_sound\" vol=\"0.8\" path=\"phonebeep\">BEEP/",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stages/house/living_room",
+  "font": "comic"
+}

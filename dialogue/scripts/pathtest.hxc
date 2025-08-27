@@ -1,0 +1,33 @@
+import deepend.dialogue.Dialogue;
+import deepend.ui.editors.Button;
+
+var left:Button;
+var right:Button;
+
+function onCreatePost() {
+	box.prepareDialogue('left', Dialogue.get("pathleft").dialogue);
+	box.prepareDialogue('right', Dialogue.get("pathright").dialogue);
+}
+
+function onTextFinish(pos) {
+	switch pos {
+		case 3 if (!inEditor):
+			box.canInteract = false;
+			left = new Button(0, 0, 'left :)', 32, _ -> choose('left'));
+			left.screenCenter();
+			left.x -= 100;
+			box.add(left);
+
+			right = new Button(0, 0, 'right :()', 32, _ -> choose('right'));
+			right.screenCenter();
+			right.x += 100;
+			box.add(right);
+	}
+}
+
+function choose(id) {
+	box.remove(left);
+	box.remove(right);
+	box.canInteract = true;
+	box.insertDialogue(4, id);
+}

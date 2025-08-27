@@ -1,0 +1,16 @@
+{
+  "angle": 6.3,
+  "credits": "Voice Actor",
+  "customStateName": "deepend.states.substates.credits.RetroGamerCredits",
+  "iconName": "retrogamer",
+  "links": [
+    {
+      "link": "https://x.com/321RetroGamer",
+      "type": "x"
+    }
+  ],
+  "note": "I voice the funny guy on the Game Over screen lmfao",
+  "person": "321RetroGamer",
+  "x": 441,
+  "y": 1445
+}

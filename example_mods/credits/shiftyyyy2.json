@@ -1,0 +1,20 @@
+{
+  "angle": 5.223,
+  "credits": "Composer",
+  "customStateName": "deepend.states.substates.credits.ShiftyCredits",
+  "iconName": "shifty",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UC8NHfjpy6tNWgnM7889S1Ew",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/Shiftyyyy2",
+      "type": "twitter"
+    }
+  ],
+  "note": "hello i made periodic! I have been on this mod since pretty much the beginning really (i mean kinda of), it has been such a experience and i really love it:)",
+  "person": "Shiftyyyy2",
+  "x": -105,
+  "y": 205
+}

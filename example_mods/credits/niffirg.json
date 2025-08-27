@@ -1,0 +1,22 @@
+{
+  "angle": -3.7435,
+  "credits": "Composer",
+  "iconName": "niffirg",
+  "links": [
+    {
+      "link": "https://youtube.com/@niffirg",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/n1ffirg",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/n1ffirg.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "person": "niffirg",
+  "x": -436,
+  "y": 183
+}

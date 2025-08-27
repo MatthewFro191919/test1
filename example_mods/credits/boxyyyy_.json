@@ -1,0 +1,24 @@
+{
+  "angle": 0,
+  "credits": "Programmer",
+  "customStateName": "deepend.states.substates.credits.BoxyCredits",
+  "iconName": "boxy",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@boxyyy_",
+      "type": "yt"
+    },
+    {
+      "link": "https://x.com/Boxyyyy_",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/boxyy.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "Hi guys! I hope you all enjoyed the update :) my contributions for this update were minimal to say the least, but you'll be able to spot them very easily! PRESS THE ORANGE CURSOR FLYING AROUND",
+  "person": "Boxyyyy_",
+  "x": 1163.66,
+  "y": -370.10101
+}

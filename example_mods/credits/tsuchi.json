@@ -1,0 +1,24 @@
+{
+  "angle": -15.9684,
+  "credits": "Composer, Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.TsuchiCredits",
+  "iconName": "tsuchi",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@Tsuchi",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/tsuchiphox",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/tsuchiphox.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "i am the wicked mastermind behind shadesquest play my sludge play it play it ok\nlost piece of mind",
+  "person": "Tsuchi",
+  "x": 1500,
+  "y": 90
+}

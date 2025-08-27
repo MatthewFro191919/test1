@@ -1,0 +1,19 @@
+{
+  "angle": -8.1849,
+  "credits": "Programmer",
+  "customStateName": "deepend.states.substates.credits.KnightCredits",
+  "iconName": "kn1ghtnight",
+  "links": [
+    {
+      "link": "https://x.com/Kn1ghtNightAlt",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/kn1ghtnight.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "person": "kn1ghtnight",
+  "x": 403.25,
+  "y": -223
+}

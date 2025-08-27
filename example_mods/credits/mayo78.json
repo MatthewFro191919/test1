@@ -1,0 +1,40 @@
+{
+  "angle": 4.13,
+  "credits": "Programmer, Animator",
+  "customStateName": "deepend.states.substates.credits.MayoCredits",
+  "iconName": "mayo78",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@may078",
+      "type": "youtube"
+    },
+    {
+      "link": "https://www.youtube.com/@mayooddtosee",
+      "type": "youtube"
+    },
+    {
+      "link": "https://www.youtube.com/@mayoiscooltosee",
+      "type": "youtube"
+    },
+    {
+      "link": "https://www.youtube.com/@gapple2.3",
+      "type": "youtube"
+    },
+    {
+      "link": "https://www.youtube.com/@mayobutlikethefourthchannel",
+      "type": "youtube"
+    },
+    {
+      "link": "https://bsky.app/profile/mayo78.com",
+      "type": "bsky"
+    },
+    {
+      "link": "https://www.mayo78.com",
+      "type": "mayo78"
+    }
+  ],
+  "note": "lol im a cool thats awesome, hi! Click all the buttons for fun",
+  "person": "Mayo78",
+  "x": 129.15,
+  "y": 66.55
+}

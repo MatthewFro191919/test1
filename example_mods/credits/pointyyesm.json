@@ -1,0 +1,20 @@
+{
+  "angle": 4.9196,
+  "credits": "Director, Artist, Animator, Charter, Spanish Translation",
+  "customStateName": "deepend.states.substates.credits.PointyCredits",
+  "iconName": "pointy",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@PointyyESM",
+      "type": "yt"
+    },
+    {
+      "link": "https://bsky.app/profile/qointy.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "ERIN IS THE NAME PLAY MY GAME I AM ERIN AND I HAVE A MOD I AM ERIN AND I AM GOD\nBTW leakers be aware of my little friend.. MUHAHAHA ..  Gnarly is watching",
+  "person": "PointyyESM",
+  "x": 644,
+  "y": -665
+}

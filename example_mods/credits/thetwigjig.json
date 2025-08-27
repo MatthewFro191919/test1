@@ -1,0 +1,20 @@
+{
+  "angle": -4.2166,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.TwigCredits",
+  "iconName": "twigh0use",
+  "links": [
+    {
+      "link": "https://twitter.com/twigh0use",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/thetwigjig.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "Hi! I'm writing this as development is wrapping up for the demo... the last one I wrote was over a year ago for 0.5 -- a perfect segway to say that the wait must've been Freaking Worth It for you guys!!! Everyone put so much love into this mod and it's amazing to see it out publically after so long..... I hope you enjoyed what we had to offer for now and also stay tuned for our future plans C - :",
+  "person": "thetwigjig",
+  "x": 825,
+  "y": 1360
+}

@@ -1,0 +1,20 @@
+{
+  "angle": 3.9907,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.HAZCredits",
+  "iconName": "haz",
+  "links": [
+    {
+      "link": "https://twitter.com/killerherzen",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/pharmakokinetiks.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "Hello ^_~ After long last the mod is here! I had an amazing time on this project with everybody else — which also brings me to mention how all the team members were wonderful to work with. Here’s to the Year of the Dave & Bambi",
+  "person": "Nulla",
+  "x": 772.77,
+  "y": -123
+}

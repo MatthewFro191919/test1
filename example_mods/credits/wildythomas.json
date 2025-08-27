@@ -1,0 +1,15 @@
+{
+  "angle": 1.7686,
+  "credits": "Composer",
+  "iconName": "wildy",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@wildy1233",
+      "type": "yt"
+    }
+  ],
+  "person": "wildythomas",
+  "x": 814,
+  "y": 1168,
+  "iconData": { "anim": { "prefix": "wildy" } }
+}

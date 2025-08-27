@@ -1,0 +1,22 @@
+{
+  "angle": -6.5108,
+  "credits": "Composer, Programmer",
+  "iconName": "t5",
+  "links": [
+    {
+      "link": "https://x.com/RealT5mpler",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/t5mpler.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://www.youtube.com/@T5mpler",
+      "type": "yt"
+    }
+  ],
+  "person": "T5mpler",
+  "x": -197,
+  "y": 1204
+}

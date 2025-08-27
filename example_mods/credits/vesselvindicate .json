@@ -1,0 +1,24 @@
+{
+  "angle": 0,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.VVindicateCredits",
+  "iconName": "vesselvindicate",
+  "links": [
+    {
+      "link": "https://bsky.app/profile/vesselvindicate.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://vesselvindicate.neocities.org/",
+      "type": "misc"
+    },
+    {
+      "link": "https://vesselvindicate.tumblr.com/",
+      "type": "misc"
+    }
+  ],
+  "note": "i wrote tango shirt phrases",
+  "person": "vesselvindicate",
+  "x": -668,
+  "y": 1602
+}

@@ -1,0 +1,28 @@
+{
+  "angle": 8.9704,
+  "credits": "Composer, Character Designer",
+  "customStateName": "deepend.states.substates.credits.MossyMoxCredits",
+  "iconName": "mossysox",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UCScbMQdyUuPmMhEIM5a98Ug",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/mossysox",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/mossysox.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://x.com/DnBBlunderzone",
+      "type": "countryside"
+    }
+  ],
+  "note": "Hellloooooooooooo i make the countr yside and the songs\ni never thought i would get on this modification but Here we are... Thank yuos",
+  "person": "mossysox",
+  "x": -829,
+  "y": 204
+}

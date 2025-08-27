@@ -1,0 +1,20 @@
+{
+  "angle": 4.6991,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.LaderCredits",
+  "iconName": "lader",
+  "links": [
+    {
+      "link": "https://youtube.com/@b_lader_basics?si=JrKlKMu_K6FvdFgD",
+      "type": "yt"
+    },
+    {
+      "link": "https://x.com/lader_basic",
+      "type": "x"
+    }
+  ],
+  "note": "FreddyF5 is a bum/pos",
+  "person": "LADER",
+  "x": 1130,
+  "y": -606
+}

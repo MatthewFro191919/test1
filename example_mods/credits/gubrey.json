@@ -1,0 +1,15 @@
+{
+  "angle": -7.0518,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.GubreyCredits",
+  "iconName": "gubrey",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@gubrey5705",
+      "type": "yt"
+    }
+  ],
+  "person": "gubrey",
+  "x": 811.1,
+  "y": 61.9
+}

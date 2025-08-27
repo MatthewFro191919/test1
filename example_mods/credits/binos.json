@@ -1,0 +1,24 @@
+{
+  "angle": -16.4641,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.BinosCredits",
+  "iconName": "binos",
+  "links": [
+    {
+      "link": "https://twitter.com/el_binos",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/binoslol.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://www.youtube.com/channel/UCmHQekD7_F7YcNcbVyrTSPA",
+      "type": "yt"
+    }
+  ],
+  "note": "Hello guys its me, i had to much fun working on this, It's like a dream come true and I met some amazing people, Hope to see more in the future!! note: toppy dame un taco le pa",
+  "person": "binos",
+  "x": 253,
+  "y": -576
+}

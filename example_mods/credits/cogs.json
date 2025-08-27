@@ -1,0 +1,16 @@
+{
+  "angle": 2.48,
+  "credits": "Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.CogsCredits",
+  "iconName": "cogs",
+  "links": [
+    {
+      "link": "https://bsky.app/profile/cogsngears.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "I'm extremely grateful to be able to work on this mod. DDE itself has sparked so much joy for me in the last 2 years and its an honor to be able to contribute to it. Huge thanks to my friends for supporting me all this time, you know who you are.",
+  "person": "COGS",
+  "x": 1019.27,
+  "y": -221.005
+}

@@ -1,0 +1,15 @@
+{
+  "angle": 8.444,
+  "credits": "French Translation, Russian Translation",
+  "iconName": "slinkoutlawed",
+  "person": "SlinkOutlawed",
+  "x": 2244,
+  "y": 30,
+  "note": "https://www.youtube.com/watch?v=Y4iLEpwKQiU",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UC7eRDa0rkYnfMP--AztkPUA",
+      "type": "yt"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "angle": -11.17,
+  "credits": "Creator of Gobbo",
+  "customStateName": "deepend.states.substates.credits.MaidenOfOneCredits",
+  "iconName": "maidenofone",
+  "links": [
+    {
+      "link": "https://bsky.app/profile/maidenofone.newgrounds.com",
+      "type": "bsky"
+    },
+    {
+      "link": "https://maidenofone.newgrounds.com/",
+      "type": "misc"
+    }
+  ],
+  "note": "i made gobbo-- WHAT THE POCKETCHU!!!",
+  "person": "MaidenOfOne",
+  "x": 1999,
+  "y": 1054
+}

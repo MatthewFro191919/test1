@@ -1,0 +1,23 @@
+{
+  "angle": -5.2691,
+  "credits": "Artist",
+  "iconName": "BarGames",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UC8uWXChGuhURNfuKOKqWahA",
+      "type": "youtube"
+    },
+    {
+      "link": "https://twitter.com/BarGames_",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/bargames.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "person": "BarGames",
+  "note": "Dimensional deep end",
+  "x": 444.11,
+  "y": -455
+}

@@ -1,0 +1,24 @@
+{
+  "angle": 1.2577,
+  "credits": "Artist, Animator, Composer",
+  "customStateName": "deepend.states.substates.credits.OryniCredits",
+  "iconName": "oryni",
+  "links": [
+    {
+      "link": "https://x.com/oryni_",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/oryni.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://www.youtube.com/@oryni_",
+      "type": "youtube"
+    }
+  ],
+  "note": "im",
+  "person": "Oryni",
+  "x": -200.5,
+  "y": 4.45
+}

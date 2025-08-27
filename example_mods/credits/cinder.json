@@ -1,0 +1,26 @@
+{
+  "angle": -16.0273,
+  "credits": "Composer",
+  "iconName": "cinder",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UCkYzmMF9i3jWo6Jr_kjVYUg/featured",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/dat_dosg",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/datdosg.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://gamebanana.com/studios/36742",
+      "type": "gerblers"
+    }
+  ],
+  "person": "cinder",
+  "x": -542,
+  "y": 408
+}

@@ -1,0 +1,15 @@
+{
+  "angle": 4.4444,
+  "credits": "Artist",
+  "customStateName": "deepend.states.substates.credits.DanCredits",
+  "iconName": "dan",
+  "links": [
+    {
+      "link": "https://x.com/DAMNDAN1EL_",
+      "type": "x"
+    }
+  ],
+  "person": "DAMNDAN1EL_",
+  "x": -1000,
+  "y": 1357
+}

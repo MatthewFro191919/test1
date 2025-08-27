@@ -1,0 +1,18 @@
+{
+  "angle": 3.14,
+  "credits": "Artist",
+  "iconName": "gold",
+  "links": [
+    {
+      "link": "https://x.com/ExorcistGold",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/exorcistgold.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "person": "ExorcistGold",
+  "x": 17,
+  "y": 1381
+}

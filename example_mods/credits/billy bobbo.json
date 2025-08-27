@@ -1,0 +1,16 @@
+{
+  "angle": -7.5,
+  "credits": "Owner, Director",
+  "customStateName": "deepend.states.substates.credits.BobboCredits",
+  "iconName": "bobbo",
+  "links": [
+    {
+      "link": "https://twitter.com/BillyBobboLOL",
+      "type": "twitter"
+    }
+  ],
+  "note": "Fun fact: I literally made everything in this mod DO NOT FACT CHECK",
+  "person": "Billy Bobbo",
+  "x": -1256,
+  "y": -336
+}

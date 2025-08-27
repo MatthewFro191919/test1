@@ -1,0 +1,24 @@
+{
+  "angle": 3.9907,
+  "credits": "Director, Artist, Animator",
+  "customStateName": "deepend.states.substates.credits.StaticCredits",
+  "iconName": "statictigers",
+  "links": [
+    {
+      "link": "https://www.youtube.com/channel/UCMVchEaAZpvT4CX826TZKrQ",
+      "type": "yt"
+    },
+    {
+      "link": "https://twitter.com/statictigers",
+      "type": "twitter"
+    },
+    {
+      "link": "https://bsky.app/profile/statictigers.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "HELLO...! I REALLY HOPE YOU LIKED THE MOD! This is only just the beginning. I remember first joining the team around 2 years ago as a really big fan of the mod, and now im here helping it unfold as a director. Through all the hardships and rough patches ive seen, the delays, the pitfalls... we never gave up. This team is probably the strongest group of people ive ever known. None of this would have been possible without the unbridled creativity and passion from this community. Thank you, everyone!!! And please stay tuned for how the story continues. :]\nP.S. Look at my thing! Thank you",
+  "person": "statictigers",
+  "x": -503.4,
+  "y": -575.75
+}

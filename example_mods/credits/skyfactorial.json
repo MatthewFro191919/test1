@@ -1,0 +1,22 @@
+{
+  "angle": -16.7195,
+  "credits": "Creator of Golden Apple, made this possible",
+  "iconName": "skyfactorial",
+  "links": [
+    {
+      "link": "https://x.com/SkyFactorial",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/skyfactorial.bsky.social",
+      "type": "bsky"
+    },
+    {
+      "link": "https://www.youtube.com/@SkyFactorial",
+      "type": "yt"
+    }
+  ],
+  "person": "SkyFactorial",
+  "x": 1947,
+  "y": 1308
+}

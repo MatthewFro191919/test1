@@ -1,0 +1,25 @@
+{
+  "angle": 1.1245,
+  "credits": "Composer",
+  "customStateName": "deepend.states.substates.credits.MilkCredits",
+  "iconName": "milj",
+  "links": [
+    {
+      "link": "https://www.youtube.com/@fake-milk",
+      "type": "yt"
+    },
+    {
+      "link": "https://x.com/_FakeMilk",
+      "type": "x"
+    },
+    {
+      "link": "https://bsky.app/profile/fakemilk.bsky.social",
+      "type": "bsky"
+    }
+  ],
+  "note": "",
+  "person": "fakemilk",
+  "x": 437.85,
+  "y": 10,
+  "iconData": { "anim": { "prefix": "fuck" } }
+}

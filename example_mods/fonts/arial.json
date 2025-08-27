@@ -1,0 +1,10 @@
+{
+	"family": {
+		"normal": "arial",
+		"bold": "arialbd",
+		"bolditalic": "arialbi",
+		"italic": "ariali",
+		"black": "ariblk"
+	},
+	"name": "Arial"
+}

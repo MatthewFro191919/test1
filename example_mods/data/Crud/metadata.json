@@ -1,0 +1,37 @@
+{
+  "pause": {
+    "left_side": [
+      {
+        "id": "GARY",
+        "ranges": [{ "end": 1600 }, { "start": 3167 }]
+      },
+      {
+        "id": "JEFF",
+        "ranges": [{ "start": 1600 }]
+      }
+    ],
+    "right_side": [
+      {
+        "id": "BF",
+        "ranges": [{ "end": 1407 }, { "start": 3167 }]
+      },
+      {
+        "id": "DAVE",
+        "ranges": [{ "start": 1600 }]
+      }
+    ]
+  },
+  "credits": {
+    "music": "cinder",
+    "art": {
+      "BACKGROUND": ["riko", "esti", "gubrey", "binos"],
+      "SPRITES": ["pointyyesm", "statictigers"],
+      "ANIMATIONS": ["pointyyesm", "statictigers", "oryni"]
+    },
+    "code": {
+      "EVENTS": "mayo78",
+      "CHART": "pointyyesm",
+      "MODCHART": "mayo78"
+    }
+  }
+}

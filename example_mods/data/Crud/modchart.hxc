@@ -1,0 +1,31 @@
+import deepend.modchart.modifiers.CrudPath;
+import deepend.system.utils.Vector3;
+
+function loadModchart()
+{
+	final crud = CrudPath.instance;
+	final d = crud.startDistance = 600;
+	crud.path = [
+		{pos: Vector3.get(0, d, 0), t: 0},
+		{pos: Vector3.get(0, d * .5, 0), t: .25},
+		{pos: Vector3.get(0, d * .5, 0), t: .5},
+		{pos: Vector3.get(), t: 1},
+	];
+
+	
+	//for (p in 0...1) {
+	//	for (i in 0...4) {
+	//		final blunter = centerOffset(i, 100);
+	//		trace(blunter);
+	//		crud.paths[p][i] = [
+	//			{pos: Vector3.get(), t: 0},
+	//			{pos: Vector3.get(-100), t: .5},
+	//			{pos: Vector3.get(), t: 1},
+	//		];
+	//	}
+	//}
+}
+final offsetMult = [-1.5, -.5, .5, 1.5];
+function centerOffset(i:Int, offset:Float) {
+	return offsetMult[i] * offset;
+}

@@ -1,0 +1,69 @@
+// why there are two player 4 scripts in two differen songs: im too lazy to make the crud script global
+var CHAR_NAME = 'pico-weekend';
+var char:Character;
+var wasLast = false;
+var duelLast = false;
+var coolPico = false;
+
+function loadCharacters() {
+	return [{id: CHAR_NAME, type: GF}];
+}
+
+function onCreatePost() {
+	game.addCharacterToList(CHAR_NAME, GF);
+	char = game.gfMap.get(CHAR_NAME);
+	game.gfGroup.remove(char);
+	char.setPosition(1100, -450);
+	char.alpha = 1;
+	setVar("picoChar", char);
+	char.visible = false;
+	game.add(char);
+}
+
+// if character is there from start also do countdown dance check
+function onBeatHit() {
+	char.danceCheck(game.curBeat);
+}
+
+function onSing(data, _) {
+	if (!data.ignoreNote) {
+		wasLast = duelLast = false;
+		switch data.note.noteType {
+			case 'OP2 Sing':
+				if (coolPico)
+					data.alt = true;
+				char.singFromData(data);
+				wasLast = true;
+				return true;
+			case 'BF + GF Sing':
+				game.boyfriend.singFromData(data);
+				game.gf.singFromData(data);
+				duelLast = true;
+				return true;
+			case 'OP + OP2 Sing':
+				game.dad.singFromData(data);
+				if (coolPico)
+					data.alt = true;
+				char.singFromData(data);
+				wasLast = duelLast = true;
+				return true;
+		}
+	} else if (data.miss) {
+		if (wasLast && duelLast) {
+			char.singFromData(data);
+		} else if (duelLast) {
+			game.boyfriend.singFromData(data);
+			game.gf.singFromData(data);
+			return true;
+		} else if (wasLast) {
+			char.singFromData(data);
+			return true;
+		}
+	}
+	return false;
+}
+
+function toggleCoolPico() {
+	trace('toggle da pico');
+	coolPico = !coolPico;
+}

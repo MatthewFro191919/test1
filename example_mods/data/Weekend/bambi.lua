@@ -1,0 +1,11 @@
+--function onCreatePost()
+--    makeAnimatedLuaSprite('bambi', 'delete this later', -50, -150)
+--    addAnimationByPrefix('bambi', 'shutup', 'shutup', 24, false)
+--    setProperty('bambi.alpha', 0.00001)
+--    addLuaSprite('bambi', true)
+--end
+
+--function bambiAnim()
+--    setProperty('bambi.alpha', 1)
+--    playAnim("bambi", "shutup")
+--end

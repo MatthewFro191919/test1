@@ -1,0 +1,26 @@
+{
+  "pause": {
+    "left_side": [
+      { "id": "TRISTAN", "ranges": [{ "end": 1423 }, { "start": 2720 }] },
+      { "id": "SPIKE", "ranges": [{ "start": 1423 }] }
+    ],
+    "right_side": [
+      { "id": "GF" },
+      { "id": "TRISTAN", "ranges": [{ "start": 1423, "end": 2720 }] },
+      { "id": "PICO", "ranges": [{ "start": 2720 }] }
+    ]
+  },
+  "credits": {
+    "music": "niffirg",
+    "art": {
+      "BACKGROUND": ["exorcistgold", "fristo"],
+      "SPRITES": ["lader", "binos", "thetwigjig", "statictigers", "pointyyesm"],
+      "ANIMATIONS": ["thetwigjig", "cogs", "riachu"]
+    },
+    "code": {
+      "EVENTS": "mayo78",
+      "CHART": "pointyyesm",
+      "MODCHART": "mayo78"
+    }
+  }
+}

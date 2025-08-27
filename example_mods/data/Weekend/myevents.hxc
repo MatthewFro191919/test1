@@ -1,0 +1,244 @@
+import flixel.math.FlxBasePoint;
+import deepend.system.utils.TweenUtil;
+import flixel.math.FlxMath;
+
+
+var p = FlxBasePoint.get();
+var p2 = FlxBasePoint.get();
+var pauseZoom = false;
+var doBeatHit = false;
+var shaders = [];
+
+var dnbCam:DeependCamera;
+var dnbShow:Float;
+var sporbbLine:FlxSprite;
+
+function onCreatePost() {
+	game.camHUD.alpha = game.camStrums.alpha = 0;
+	game.camLock = true;
+	game.moveCam(BF, p.set(50));
+
+	trace('ok cool');
+	final bg = game.modchartSprites.get("room");
+	bg.shader = makePeriodicShader([75, 50, 255]);
+
+	for (i in [game.boyfriend, game.dad, getVar("picoChar")])
+		i.shader = makePeriodicShader(i.healthColorArray);
+	for (gf in game.gfMap)
+		gf.shader = makePeriodicShader(gf.healthColorArray);
+	sporbbLine = getVar("sporbbLine");
+	sporbbLine.shader = makePeriodicShader([255, 255, 255]);
+	
+	dnbCam = new DeependCamera("DNB Cam");
+	CoolUtil.insertCamera(dnbCam, game.camBetween, true);
+	setDnbShow(.0);
+
+	for (event in game.eventNotes)
+	{
+		switch event.event {
+			case "Play Animation", "Change Alt Set":
+				if (switch event.event {
+					case "Play Animation": event.value1 == "mukoenter";
+					case "Change Alt Set": event.value2 == "-beg";
+				}) {
+					event.strumTime -= (24/24) * 1000;
+				}
+		}
+	}
+	game.sortSongEvents();
+}
+
+function setDnbShow(v:Float) {
+	dnbShow = v;
+	final ret = tryFunc(_updateDnbShow);
+	if (ret != null) {
+		trace(ret, dnbCam);
+	}
+}
+
+function _updateDnbShow() {
+	dnbCam.width = Math.max(1, Math.floor(FlxG.width * .5 * dnbShow));
+	sporbbLine.visible = dnbCam.visible = dnbCam.width > 1;
+	sporbbLine.x = dnbCam.width - (sporbbLine.width * .5);
+	FlxG.watch.addQuick("dnbShow", dnbShow);
+}
+
+function makePeriodicShader(colors) {
+	final shader = game.createRuntimeShader("PeriodicShader");
+	if (ClientPrefs.shaders) {
+		final col = [for (i in colors) i / 255].concat([1.0]);
+		shader.data.outlineColor.value = col;
+		shader.data.overlay.value = [0.0];
+		shaders.push(shader);
+		return shader;
+	}
+}
+
+function getScriptOrder() {
+	return 999;
+}
+
+function bludZoom() {
+	addZoom(.015, .03, .03);
+}
+function smallZoom() {
+	addZoom(.01, .0015);
+}
+
+var camTween:FlxTween;
+function onBeatHit() {
+	if (curBeat >= 776 && curBeat < 840) {
+		bludZoom();
+		game.camGame.worldAngle = curBeat % 2 == 0 ? 3 : -3;
+		if (camTween != null)
+			camTween.cancel();
+		camTween = game.tween(game.camGame, {worldAngle: 0}, beatTime(1), {ease: FlxEase.expoOut});
+	}
+}
+
+var lop = 0;
+function doStep(step) {
+	//trace(step);
+	switch step {
+		case 136:
+			game.camZoom = game.defaultCamZoom = 1.0;
+			tweenZoom(.8, stepTime(256 - 136));
+
+			game.gf.danceEveryNumBeats = 2;
+
+			game.camLock = true;
+			game.camGame.camFollow.pos.y -= 200;
+            game.tween(game.camGame.camFollow.pos, {y: game.camGame.camFollow.y}, beatTime(16), {ease: FlxEase.cubeOut});
+
+			game.camGame.fade(FlxColor.BLACK, beatTime(8), true);
+			game.vignette.alpha = 1;
+			game.tween(game.vignette, {alpha: 0.25}, beatTime(32));
+		case 256:
+			game.tween(game.camHUD, {alpha: 1}, beatTime(1), {ease: FlxEase.cubeIn});
+			game.tween(game.camStrums, {alpha: 1}, beatTime(1), {ease: FlxEase.cubeIn});
+		case 264:
+			game.tween(game.vignette, {alpha: 0.0}, beatTime(1), {ease: FlxEase.cubeOut});
+		case 1024:
+			game.tweenManager.num(0, 1, stepTime(2), null, setOverlay);
+			tweenZoom(.9, stepTime(2), FlxEase.cubeIn);
+		case 1032:
+			tweenZoom(.8, stepTime(2), FlxEase.cubeOut);
+			game.tweenManager.num(1, 0, stepTime(2), null, setOverlay);
+		case 1424:
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeOut);
+			tweenZoom(1.0, beatTime(4), FlxEase.sineInOut);
+		case 1440:
+			game.gf.danceEveryNumBeats = 1;
+			tweenZoom(.8, beatTime(1.0), FlxEase.cubeOut);
+		case 1567:
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeOut, null, p.set(300, -100));
+		case 1695:
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeOut, null, p.set(150, -50));
+		case 1952:
+			tweenToChar(DAD, beatTime(2), FlxEase.circOut, null, p.set(0, 75));
+			tweenZoom(1.0, beatTime(2), FlxEase.circOut);
+		case 2015, 2080:
+			tweenToChar(DAD, beatTime(2), FlxEase.cubeOut, null, p.set(150, -50));
+			tweenZoom(.85, beatTime(2), FlxEase.circOut);
+		case 2050:
+			tweenToChar(DAD, stepTime(2), FlxEase.circOut, null, p.set(0, 75));
+			tweenZoom(1.0, stepTime(2), FlxEase.circOut);
+		case 2192:
+			tweenToChar(BF, beatTime(1), FlxEase.circOut, null, p.set(50));
+			tweenZoom(.7, beatTime(1), FlxEase.circOut);
+		case 2208:
+			tweenZoom(.8, beatTime(1), FlxEase.cubeOut);
+		case 2262, 2390:
+			tweenZoom(.85, stepTime(2), FlxEase.circIn);
+		case 2266, 2394:
+			tweenZoom(.9, stepTime(2), FlxEase.circIn);
+		case 2270, 2398:
+			tweenZoom(.7, stepTime(5), FlxEase.circOut);
+		case 2336:
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeOut);
+			tweenZoom(.8, stepTime(4), FlxEase.cubeOut);
+		case 2464:
+			tweenZoom(.6, stepTime(4), FlxEase.cubeOut);
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeOut, null, p.set(300, -100));
+		case 2600:
+			tweenToChar(BF, stepTime(4), FlxEase.cubeOut, null, p.set(600));
+			tweenZoom(.9, stepTime(4), FlxEase.cubeOut);
+		case 2712:
+			tweenZoom(.8, stepTime(2), FlxEase.cubeOut);
+			tweenToChar(BF, beatTime(1), FlxEase.circOut, null, p.set(600, -100));
+		case 2720:
+			tweenZoom(1.3, stepTime(2), FlxEase.cubeOut);
+			tweenToChar(BF, beatTime(1), FlxEase.circOut, null, p.set(550, -100));
+		case 2816, 2824, 2832, 2836:
+			tweenZoom(game.defaultCamZoom + .05, stepTime(3), FlxEase.circOut);
+			game.tween(game.camGame, {worldAngle: lop % 2 == 0 ? -5 : 5}, stepTime(3), {ease: FlxEase.circOut});
+			lop++;
+		case 2840:
+			tweenZoom(1.1, beatTime(1), FlxEase.circOut);
+			game.tween(game.camGame, {worldAngle: 0}, beatTime(1), {ease: FlxEase.circIn});
+		case 2844:
+			tweenZoom(1.4, beatTime(1), FlxEase.circIn);
+		case 2848:
+			tweenZoom(1.3, beatTime(1), FlxEase.circOut);
+			game.disableAllCamMovement = true;
+			setVar("splitMode", true);
+			game.tweenManager.num(0, 1, stepTime(4), null, setOverlay);
+			game.tweenManager.num(0, 1, stepTime(4), {ease: FlxEase.circOut}, setDnbShow);
+			game.getCharCameraPosition(DAD, p2.set(0, 75), p);
+			dnbCam.scroll.set(p.x - FlxG.width * .5 * .5, p.y - FlxG.height * .5);
+			tweenToChar(BF, beatTime(1), FlxEase.circOut, null, p.set(250, -100));
+		case 2976:
+			game.getCharCameraPosition(BF, null, p);
+			game.tween(dnbCam.scroll, {x: p.x - FlxG.width * .5 * .5, y: p.y - FlxG.height * .5}, beatTime(1.5), {ease: FlxEase.cubeOut});
+		case 3096:
+			final ease = TweenUtil.stepped(4);
+			game.getCharCameraPosition(BF, p2.set(100), p);
+			game.tween(dnbCam.scroll, {x: p.x - FlxG.width * .5, y: p.y - FlxG.height * .5}, beatTime(2), {ease: ease});
+			game.tween(sporbbLine.scale, {x: FlxMath.EPSILON}, beatTime(2), {ease: ease, onComplete: _ -> {
+				sporbbLine.scale.x = 1;
+				sporbbLine.visible = false;
+				setVar("splitMode", false);
+			}});
+			tweenToChar(BF, beatTime(2), ease, null, p.set(100));
+			tweenZoom(1.0, beatTime(2), ease);
+			game.tweenManager.num(1, 0, beatTime(2), {ease: ease}, setOverlay);
+		case 3104:
+			dnbCam.visible = false;
+			tweenZoom(.8, beatTime(1), FlxEase.cubeOut);
+		case 3488:
+			tweenToChar(DAD, beatTime(2), FlxEase.cubeOut, null, p.set(500, -50));
+			game.dad.skipDance = game.boyfriend.skipDance = game.gf.skipDance = true;
+			game.tween(game.camHUD, {alpha: 0}, beatTime(1), {ease: FlxEase.cubeIn});
+			game.tween(game.camStrums, {alpha: 0}, beatTime(1), {ease: FlxEase.cubeIn});
+	}
+}
+
+function onEvent(e, v1, v2) {
+	switch e {
+		case "Change Character":
+			switch v2 {
+				case "tristan-sit-spike":
+					game.gf.skipDance = true;
+			}
+	}
+}
+
+function spikeIntro() {
+	game.gf.skipDance = false;
+}
+
+function setOverlay(v) {
+	for (shader in shaders) 
+		shader.data.overlay.value[0] = v;
+}
+
+function onUpdate(elapsed:Float) {
+	dnbCam.zoom = game.camZoom / game.defaultCamZoom;
+}
+
+function onDestroy() {
+	p.put();
+	p = null;
+	p2.put();
+	p2 = null;
+}

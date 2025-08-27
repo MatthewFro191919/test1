@@ -1,0 +1,45 @@
+import deepend.game.DeependCamera;
+import deepend.game.DeependAnimate;
+
+var introBG:FlxSprite;
+var intro:DeependAnimate;
+var introCam:DeependCamera;
+
+function loadImages() {
+	trace('im intro laoding images');
+	return ['stages/house/intro/spritemap1'];
+}
+
+function onSongStart() {
+	intro.anim.play("intro");
+}
+
+function getFlaX(x:Float) {}
+
+function onCountdownStarted() {
+	Conductor.instance.songPosition = (-Conductor.instance.crochet * 3) - 200 - ClientPrefs.noteOffset;
+}
+
+function onCreate() {
+	introCam = new DeependCamera('Intro Camera');
+	game.deependCams.push(introCam);
+	CoolUtil.insertCamera(introCam, game.camHUD, false);
+
+	introBG = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+	introBG.scrollFactor.set();
+	introBG.cameras = [introCam];
+	game.add(introBG);
+
+	intro = new DeependAnimate(122.2, 15.45, Paths.atlas('stages/house/intro'));
+	intro.addSymbolForce("intro", "intro", 24, false);
+	intro.active = intro.visible = true;
+	intro.cameras = [introCam];
+	game.add(intro);
+}
+
+function doStep(step) {
+	switch step {
+		case 136:
+			introCam.visible = false;
+	}
+}

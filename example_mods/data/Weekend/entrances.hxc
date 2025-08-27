@@ -1,0 +1,315 @@
+import deepend.game.DeependCamera;
+import deepend.game.DeependAnimate;
+import openfl.geom.Rectangle;
+import flixel.math.FlxMath;
+import flixel.math.FlxBasePoint;
+
+var p = FlxBasePoint.get();
+var doorCam:DeependCamera;
+var doorBack:FlxSprite;
+var doorFore:FlxSprite;
+var doorCover:FlxSprite;
+var doorStatic:FlxSprite;
+
+var muko:DeependAnimate;
+var pico:DeependAnimate;
+var picoDoor:FlxSprite;
+var henchman:FlxSprite;
+
+var Mukos:FlxSprite;
+
+var picoRun:DeependAnimate;
+
+var bambi:DeependAnimate;
+var bambiDoor:FlxSprite;
+
+var stageScale = .581818;
+var doorZoom = .599 / stageScale;
+
+var camLine:FlxSprite;
+var camLineAnim:FlxAnimation;
+
+// for some reason, some weird reason, in this one song for this one time i can use the symbols positions directly for spritesheet sprites without turning them into a bitmap first
+
+function getFlaX(x:Float) {
+	return doorFore.width - (1280 - x);
+}
+
+function loadImages() {
+	trace('im entrances loading the images');
+	var images = [for (i in ['door_back', 'door_fore', 'Mukos' 'picodoor', 'henchman', 'sidecover', 'staticdoor', 'bambidoor']) 'stages/house/$i'];
+	// atlas images
+	for (i in ['mukoenter', 'picoenter', 'picorun', 'bambienter'])
+		images.push('stages/house/$i/spritemap1');
+	return images;
+}
+
+function onCreate()
+{
+	trace('yes bruh im awesome');
+	doorCam = new DeependCamera('Door Camera');
+	CoolUtil.insertCamera(doorCam, game.camBetween, false);
+	doorCam.x = FlxG.width;
+	doorCam.width *= .5;
+	doorCam.zoom = doorZoom;
+
+	doorBack = new FlxSprite(0, 0, Paths.image('stages/house/door_back'));
+	doorBack.cameras = [doorCam];
+	doorBack.scale.set(stageScale, stageScale);
+	doorBack.updateHitbox();
+
+	doorFore = new FlxSprite(0, 0, Paths.image('stages/house/door_fore'));
+	doorFore.cameras = [doorCam];
+	doorFore.scale.set(stageScale, stageScale);
+	doorFore.updateHitbox();
+
+	muko = new DeependAnimate(getFlaX(785.45), -63.1, Paths.atlas('stages/house/mukoenter'));
+	muko.addSymbolForce("muko", "muko", 24, false); // dangerous function cause it assumes that whatever anim you are inputting 100% exists without checking
+	muko.anim.onComplete.add(mukoAnimComplete);
+	muko.active = muko.visible = false;
+	muko.cameras = [doorCam];
+
+	henchman = new FlxSprite(getFlaX(618.1), 100.85);
+	henchman.frames = Paths.getFrames('stages/house/henchman');
+	henchman.animation.addByPrefix('henchman', 'henchman', 24, false);
+	henchman.active = henchman.visible = false;
+	henchman.cameras = [doorCam];
+	henchman.animation.onFinish.addOnce(_ -> henchman.visible = henchman.active = false);
+
+	mukos = new FlxSprite(2000, -350);
+	mukos.scrollFactor.set(1.5, 1);
+	mukos.frames = Paths.getFrames('stages/house/Mukos');
+	mukos.animation.addByPrefix('walk instance 1', 'walk instance 1', 24, true);
+	mukos.scale.set(1.5, 1.5);
+	mukos.active = mukos.visible = false;
+
+	pico = new DeependAnimate(getFlaX(645.7), 349.3, Paths.atlas('stages/house/picoenter'));
+	pico.addSymbolForce("PICOENTER", "PICOENTER", 24, false); // dangerous function cause it assumes that whatever anim you are inputting 100% exists without checking
+	pico.anim.onComplete.add(picoAnimComplete);
+	pico.active = pico.visible = false;
+	pico.cameras = [doorCam];
+
+	picoDoor = new FlxSprite(getFlaX(702.2), -91.25);
+	picoDoor.frames = Paths.getSparrowAtlas('stages/house/picodoor');
+	picoDoor.animation.addByPrefix('door', 'door', 24, false);
+	picoDoor.cameras = [doorCam];
+	picoDoor.active = picoDoor.visible = false;
+
+
+	bambi = new DeependAnimate(getFlaX(1247.25 * stageScale), 462.15 * stageScale, Paths.atlas('stages/house/bambienter'));
+	bambi.origin.set();
+	bambi.scale.set(stageScale, stageScale);
+	bambi.addSymbolForce("bambi", "bambi", 24, false);
+	bambi.active = bambi.visible = false;
+	bambi.cameras = [doorCam];
+
+	bambiDoor = new FlxSprite(334.72677, -112.75 * stageScale);
+	bambiDoor.frames = Paths.getSparrowAtlas('stages/house/bambidoor');
+	bambiDoor.animation.addByPrefix('door', 'door', 24, false);
+	bambiDoor.scale.set(stageScale, stageScale);
+	bambiDoor.updateHitbox();
+	//bambiDoor.origin.set();
+	bambiDoor.cameras = [doorCam];
+	bambiDoor.active = bambiDoor.visible = false;
+
+	doorCover = new FlxSprite(0, 0, Paths.image('stages/house/sidecover'));
+	doorCover.x = doorFore.x + doorFore.width - doorCover.width;
+	//doorCover.color = FlxColor.BLACK;
+	doorCover.cameras = [doorCam];
+
+	doorStatic = new FlxSprite(getFlaX(866), -62, Paths.image('stages/house/staticdoor'));
+	doorStatic.cameras = [doorCam];
+
+	
+	camLine = new FlxSprite();
+	camLine.frames = Paths.getFrames('stages/house/line');
+	camLine.animation.addByPrefix('line', 'line', 0);
+	camLine.animation.play('line');
+	camLineAnim = camLine.animation.curAnim;
+	camLine.screenCenter();
+	camLine.cameras = [game.camBetween];
+	setVar("sporbbLine", camLine);
+
+
+
+	game.add(doorBack);
+	game.add(henchman);
+	game.add(doorFore);
+	game.add(muko);
+	game.add(mukos);
+	game.add(pico);
+	game.add(picoDoor);
+	game.add(bambi);
+	game.add(bambiDoor);
+	game.add(doorStatic);
+	game.add(doorCover);
+	game.add(camLine);
+	
+	doorCam.scroll.set(doorFore.x + doorFore.width - (doorCam.width / (doorZoom / 1.1)), (doorFore.height - FlxG.height) * .5);
+
+	Console.registerObject("camLine", camLine);
+}
+
+function onCreatePost() {
+	final stage = getVar("room");
+	picoRun = new DeependAnimate(1100.2, -459.6, Paths.atlas('stages/house/picorun'));
+	picoRun.addSymbolForce("picorunningin", "picorunningin", 24, false);
+	picoRun.anim.onComplete.add(picoRunComplete);
+	game.add(picoRun);
+	game.dad.active = game.dad.visible = false;
+	setVar("splitMode", false);
+}
+
+function picoRunAnim() {
+	picoRun.visible = true;
+	picoRun.anim.play("picorunningin");
+}
+
+function picoRunComplete() {
+	picoRun.visible = false;
+	getVar("picoChar").visible = true;
+}
+
+function onUpdate() {
+	doorCam.zoom = (game.camGame.zoom / game.defaultCamZoom) * doorZoom;
+}
+
+function beatHit() {
+	camLineAnim.curFrame = FlxMath.wrap(camLineAnim.curFrame + 9, 0, camLineAnim.numFrames);
+}
+
+function onUpdatePost(e) {
+	if (doorCam.x < FlxG.width)
+	{
+		camLine.visible = true;
+		camLine.x = doorCam.x - (camLine.width * .5);
+		doorCam.visible = true;
+	}
+	else if (!getVar("splitMode"))
+	{
+		camLine.visible = false;
+	}
+	doorCam.width = Math.max(1, FlxG.width - doorCam.x);
+	if (doorCam.width <= 1)
+		doorCam.visible = false;
+}
+
+function beatTime(beat) {
+	return beat * (Conductor.instance.crochet / 1000);
+}
+
+function stepTime(step) {
+	return step * (Conductor.instance.stepCrochet / 1000);
+}
+
+function spikeIntro() {
+    game.dad.active = game.dad.visible = true;
+    game.dad.animation.play("slide-in", false);
+    game.dad.animation.curAnim.curFrame = 0;
+    game.dad.animation.curAnim.paused = true;
+
+    game.dad.specialAnim = true;
+
+    game.tween(game.dad, {x: 0}, 0.3, { //thanks
+        ease: FlxEase.quadOut,
+        onComplete: function(twn:FlxTween) {
+            game.dad.animation.curAnim.paused = false;
+        }
+    });
+}
+
+function picoIntro() {
+	henchman.active = henchman.visible = picoDoor.active = picoDoor.visible = pico.active = pico.visible = true;
+	doorStatic.visible = false;
+	picoDoor.animation.play('door');
+	henchman.animation.play('henchman');
+	pico.anim.play("PICOENTER");
+
+	doorCam.x = FlxG.width;
+	game.tween(doorCam, {x: FlxG.width * 0.5}, 0.5, {ease: FlxEase.circOut});
+}
+
+function picoAnimComplete() {
+	doorStatic.visible = true;
+	pico.active = pico.visible = false; // dont destroy cause that takes up time with atlases
+	picoDoor.active = picoDoor.visible = false;
+	game.tween(doorCam, {x: FlxG.width}, 0.5, {ease: FlxEase.circIn});
+}
+
+function mukoIntro() {
+	tweenToChar(BF, .5, FlxEase.circOut, null, p.set(400));
+	muko.active = muko.visible = true;
+	doorStatic.visible = false;
+	muko.anim.play("muko");
+
+	doorCam.x = FlxG.width;
+	game.tween(doorCam, {x: FlxG.width * 0.5}, 0.5, {ease: FlxEase.circOut});
+	game.boyfriend.skipDance = true;
+	game.boyfriend.onPlayAnim.add(gabiPlayAnim);
+}
+
+function gabiPlayAnim(n, __, ___, ____) {
+	if (n != "mukoenter" && n != "idle") {
+		trace(n);
+		game.boyfriend.scale.x = -1;
+		game.boyfriend.onPlayAnim.remove(gabiPlayAnim);
+	}
+}
+
+function mukoAnimComplete() {
+	game.boyfriend.skipDance = false;
+	tweenToChar(BF, 1.0, FlxEase.circInOut, null, p.set(50));
+	game.tween(doorCam, {x: FlxG.width}, 0.5, {ease: FlxEase.circIn, onComplete: _ -> {
+		muko.active = muko.visible = false; // dont destroy cause that takes up time with atlases
+		doorStatic.visible = true;
+	}});
+
+	mukos.active = mukos.visible = true;
+	mukos.animation.play("walk instance 1");
+	
+	game.tween(mukos, {x: -800}, 20, {
+    	ease: FlxEase.linear,
+    	onComplete: function(twn:FlxTween) {
+        	mukos.active = mukos.visible = false;
+    	}
+	});
+}
+
+function flipgabi() {
+	game.boyfriend.scale.x = -game.boyfriend.scale.x; // ok
+}
+
+var LEFT = 0;
+var DOWN = 1;
+var UP = 2;
+var RIGHT = 3;
+function onSing(data, char) {
+	if (char.scale.x == -1) {
+		data.direction = switch data.direction {
+			case LEFT: RIGHT;
+			case RIGHT: LEFT;
+			default: data.direction;
+		}
+		char.singFromData(data);
+		return true;
+	}
+	return false;
+}
+
+function bambiAnim() {
+	bambiIntro();
+	game.tween(doorCam, {x: FlxG.width * 0.5}, 0.5, {ease: FlxEase.expoOut});
+}
+
+function bambiIntro() {
+	game.canReset = false; // ge ius
+	doorStatic.visible = false;
+	bambiDoor.active = bambiDoor.visible = bambi.active = bambi.visible = true;
+	bambi.anim.play("bambi");
+	bambiDoor.animation.play("door");
+}
+
+function onDestroy() {
+	p.put();
+	p = null;
+}

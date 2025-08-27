@@ -1,0 +1,96 @@
+import deepend.game.DeependAnimate;
+import deepend.game.ColorSprite;
+
+final ok = 'gameOver/weekendLeavers';
+
+var leavers:DeependAnimate;
+var canLeave = true;
+var animComplete = false;
+var okTween:FlxTween;
+var noSpikes = false;
+var noPicos = false;
+var kys:ColorSprite;
+
+var id = 3;
+
+function loadImages() {
+	return ['$ok/spritemap1'];
+}
+
+function loadSounds() {
+	return [for (i in 0...3) 'sound:weekend/weekendgameoverlayer${i + 1}'];
+}
+
+function onDeath() {
+	if (game.curBeat < 360)
+	{
+		leavers.anim.curSymbol.hideLayer("spike");
+		id--;
+	}
+	if (game.curBeat < 680)
+	{
+		leavers.anim.curSymbol.hideLayer("pico");
+		id--;
+	}
+}
+
+function onCreate() {
+	game.persistentDraw = true;
+	game.gfGroup.visible = false;
+	game.dadGroup.visible = false;
+	game.boyfriendGroup.visible = false;
+	game.partnerGroup.visible = false;
+	game.variables.get("picoChar").visible = false;
+	game.camGame.camFollow.setPosition(820, -564.3 + FlxG.height * .5);
+	game.camGame.camFollow.speed = 5;
+	game.camLock = false;
+	game.disableAllCamMovement = false;
+	FlxTween.num(game.camZoom, 1.1, .25, {ease: FlxEase.expoOut}, z -> game.camGame.zoom = z);
+	for (cam in FlxG.cameras.list) {
+		// ok
+		if (cam != game.camGame && cam != game.camOther && cam.exists) {
+			cam.stopFX();
+			FlxTween.num(cam.alpha, 0, .25, null, a -> {
+				cam.alpha = a;
+			});
+		} else {
+			trace('bad cam', cam, cam.exists);
+		}
+	}
+	final sound = FlxG.sound.play(Paths.sound('weekend/weekendgameoverlayer$id'));
+	sound.time = 780;
+
+	kys = new ColorSprite(0, 0, FlxG.width, FlxG.height, FlxColor.BLACK);
+	kys.cameras = [game.camOther];
+	kys.alpha = 0;
+	gameOver.add(kys);
+
+	game.modchartSprites.get("room").shader = null;
+	
+	Console.registerObject("leavers", leavers);
+}
+
+function onGameCreate() {
+	leavers = new DeependAnimate(-113.65, -560.35, Paths.atlas(ok));
+	leavers.addSymbolForce("leavers", "leavers", 24, false);
+	leavers.anim.addBySymbolIndices("leavers-loop", "leavers", [162, 163, 164], 24);
+	leavers.anim.play("leavers");
+	leavers.anim.onComplete.addOnce(() -> leavers.anim.play("leavers-loop"));
+	//leavers.anim.swfRender = true;
+	gameOver.add(leavers);
+}
+
+function onUpdate() {
+	if (controls.ACCEPT) {
+		if (canLeave) {
+			FlxTween.tween(kys, {alpha: 1}, 2);
+			okTween = FlxTween.tween(game.camGame, {zoom: 1.09}, 2.1, {onComplete: _ -> MusicBeatState.resetState()});
+			canLeave = false;
+		} else {
+			okTween.cancel();
+			MusicBeatState.resetState();
+		}
+	} else if (controls.BACK) {
+		gameOver.leave();
+	}
+}

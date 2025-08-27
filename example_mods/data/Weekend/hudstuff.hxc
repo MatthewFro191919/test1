@@ -1,0 +1,18 @@
+function onCreatePost() {
+	game.preventReloadHealthBarColors = true;
+	game.setSongColors(game.gf.healthColor, game.boyfriend.healthColor, game.gf.healthColor);
+	game.iconP2.changeIcon(game.gf.healthIcon);
+}
+
+// called from chart
+function spikeIntro() {
+	game.setSongColors(game.dad.healthColor, game.gf.healthColor, game.dad.healthColor);
+	game.iconP1.changeIcon(game.gf.healthIcon);
+	game.iconP2.changeIcon(game.dad.healthIcon);
+}
+
+function picoSings() {
+	final pico = getVar("picoChar");
+	game.setSongColors(game.dad.healthColor, pico.healthColor, pico.healthColor);
+	game.iconP1.changeIcon(pico.healthIcon);
+}

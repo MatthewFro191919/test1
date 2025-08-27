@@ -1,0 +1,138 @@
+// this sorta sucked in lua
+final prefix = "ohungi-unstable";
+final noKill = ["ohungi-unstable", "ohungi-unstable-riko"];
+
+final ohungis = [
+	{
+		name: "",
+		hasNormal: true,
+		hasAlt: true
+	},
+	{
+		name: "-aubrey",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-aubrey-2",
+		hasNormal: false,
+		hasAlt: true
+	},
+	{
+		name: "-binos",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-bisque",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-cinder",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-cinder-2",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-dallas",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-dnbf",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-riko",
+		hasNormal: false,
+		hasAlt: true
+	},
+	{
+		name: "-riko-2",
+		hasNormal: true,
+		hasAlt: false
+	},
+	{
+		name: "-sylvia",
+		hasNormal: false,
+		hasAlt: true
+	},
+	{
+		name: "-cogs",
+		hasNormal: false,
+		hasAlt: true,
+	},
+	{
+		name: "-kn1ght",
+		hasNormal: false,
+		hasAlt: true,
+	},
+	{
+		name: "-kat",
+		hasNormal: false,
+		hasAlt: true,
+	},
+	{
+		name: "-kat2",
+		hasNormal: false,
+		hasAlt: true,
+	},
+	{
+		name: "-sporbb",
+		hasNormal: true,
+		hasAlt: false,
+	},
+	{
+		name: "-cogs-2",
+		hasNormal: false,
+		hasAlt: true,
+	},
+	{
+		name: "-jo",
+		hasNormal: false,
+		hasAlt: true,
+	}
+];
+
+for (i in ohungis)
+	i.name = prefix + i.name;
+
+ohungis.sort((a, b) -> {
+	final aa = noKill.contains(a.name);
+	final bb = noKill.contains(b.name);
+	if (aa && bb)
+		return 0;
+	else if (aa)
+		return -1;
+	else if (bb)
+		return 1;
+	return 0;
+});
+
+function loadCharacters() {
+	var toKill = ClientPrefs.lowQuality ? 12 : 4;
+	trace('killing', toKill, 'out of', ohungis.length);
+	
+	while (toKill > 0) {
+		final die = FlxG.random.int(2, ohungis.length - 1);
+		trace("killing", ohungis[die]);
+		ohungis.splice(die, 1);
+		toKill--;
+	}
+
+	setLoadingValue("ohungisLoaded", ohungis);
+
+	final chars = [for (i in ohungis) {id: i.name, type: DAD}];
+	trace("loading these", chars);
+	return chars;
+}
+
+function getScriptOrder() {
+	return -999;
+}

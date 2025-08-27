@@ -1,0 +1,163 @@
+import deepend.game.HUDCamera;
+
+var plrStrumsCam:HUDCamera;
+var oppStrumsCam:HUDCamera;
+
+var coolShader:ShaderFilter;
+
+var points:Array<{x:Float, y:Float, z:Float}> = [
+    {x: -1.78, y: -1, z: 0},
+    {x:  1.78, y: -1, z: 0},
+    {x:  1.78, y:  1, z: 0},
+    {x: -1.78, y:  1, z: 0}
+];
+
+var rotation = {x: 0, y: 0, z: 0};
+var FOV:Float = 10;
+
+var offset = 320;
+
+var spinPattern = [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    28,
+    30,
+    31
+];
+
+function onCreatePost() {
+    plrStrumsCam = new HUDCamera('Player Strum Cam');
+    plrStrumsCam.bgColor = 0x00000000;
+	plrStrumsCam.fixer.active = false;
+
+    game.hudHandler.addCamera(plrStrumsCam);
+    CoolUtil.insertCamera(plrStrumsCam, game.camStrums, false);
+    
+    oppStrumsCam = new HUDCamera('Opponent Strum Cam');
+    oppStrumsCam.bgColor = 0x00000000;
+	oppStrumsCam.fixer.active = false;
+    CoolUtil.insertCamera(oppStrumsCam, game.camStrums, false);
+    game.hudHandler.addCamera(oppStrumsCam);
+    
+    game.grpNoteSplashes.cameras = game.playerStrums.cameras = [plrStrumsCam];
+    game.opponentStrums.camera = oppStrumsCam;
+
+    game.playerStrums.x -= offset;
+    game.opponentStrums.x += offset;
+
+    coolShader = new ShaderFilter(game.createRuntimeShader("inverseBilinear"));
+    plrStrumsCam.filters = [coolShader];
+    oppStrumsCam.filters = [coolShader];
+    
+    coolShader.shader.setBool("flipFix", true);
+}
+
+var elapsedTime:Float = 0;
+function onUpdate(elapsed:Float) {
+    elapsedTime += elapsed;
+
+    for (camera in [plrStrumsCam, oppStrumsCam]) {
+        camera.x = (camera == plrStrumsCam ? offset : -offset);
+    }
+
+    updatePointPosition();
+}
+
+function onNoteSpawn(noteData) {
+    var note = game.notes.members[noteData.index];
+    if (note != null) {
+        if (note.mustPress == true) // suck my nuts
+            note.cameras = [plrStrumsCam];
+        else
+            note.cameras = [oppStrumsCam];
+    }
+}
+
+var spinTween:FlxTween;
+
+function stepTime(step) {
+	return step * (Conductor.instance.stepCrochet / 1000);
+}
+
+function onStepHit() {
+	if (!playSession.modcharts)
+		return;
+    if ((curStep > 252 && curStep < 376)) {
+        var modStep = curStep % 32;
+        for (i in spinPattern) {
+            if (i == modStep) {
+                var tweenLength = (i >= 28 ? 0.5 : 1.5);
+
+                if (spinTween != null) spinTween.cancel();
+                
+                rotation.y = 0;
+                spinTween = game.tween(rotation, {y: degreesToRadians(180)}, stepTime(2));
+            }
+        }
+    }
+}
+
+function updatePointPosition() {
+    var rotationMatrixX:Array<Array<Float>> = [
+        [1, 0, 0],
+        [0, Math.cos(rotation.x), -Math.sin(rotation.x)],
+        [0, Math.sin(rotation.x), Math.cos(rotation.x)]
+    ];
+    
+    var rotationMatrixY:Array<Array<Float>> = [
+        [Math.cos(rotation.y), 0, Math.sin(rotation.y)],
+        [0, 1, 0],
+        [-Math.sin(rotation.y), 0, Math.cos(rotation.y)]
+    ];
+
+    var rotationMatrixZ:Array<Array<Float>> = [
+        [Math.cos(rotation.z), -Math.sin(rotation.z), 0],
+        [Math.sin(rotation.z), Math.cos(rotation.z), 0],
+        [0, 0, 1]
+    ];
+
+    var rotatedPoints = points.map(function(point) {
+        var x = point.x;
+        var y = point.y;
+        var z = point.z;
+
+        var y1 = rotationMatrixX[1][1] * y + rotationMatrixX[1][2] * z;
+        var z1 = rotationMatrixX[2][1] * y + rotationMatrixX[2][2] * z;
+        y = y1;
+        z = z1;
+
+        var x1 = rotationMatrixY[0][0] * x + rotationMatrixY[0][2] * z;
+        var z2 = rotationMatrixY[2][0] * x + rotationMatrixY[2][2] * z;
+        x = x1;
+        z = z2;
+
+        var x2 = rotationMatrixZ[0][0] * x + rotationMatrixZ[0][1] * y;
+        var y2 = rotationMatrixZ[1][0] * x + rotationMatrixZ[1][1] * y;
+        x = x2;
+        y = y2;
+
+        return {x: x, y: y, z: z};
+    });
+
+    var projectedPoints = rotatedPoints.map(function(point) {
+        var scale = 1 / (1 + point.z / FOV); // Perspective projection
+        var x = point.x * scale;
+        var y = point.y * scale;
+
+        return {x: x, y: y};
+    });
+
+    coolShader.shader.setFloatArray("pointA", [projectedPoints[0].x, projectedPoints[0].y]);
+    coolShader.shader.setFloatArray("pointB", [projectedPoints[1].x, projectedPoints[1].y]);
+    coolShader.shader.setFloatArray("pointC", [projectedPoints[2].x, projectedPoints[2].y]);
+    coolShader.shader.setFloatArray("pointD", [projectedPoints[3].x, projectedPoints[3].y]);
+}
+
+function degreesToRadians(degrees:Float) { return degrees * (Math.PI / 180); }
+
+function debugPrint(text:Dynamic = '') PlayState.instance.addTextToDebug(text, 0xFFFFFFFF);

@@ -1,0 +1,35 @@
+{
+  "pause": {
+    "left_side": [{ "id": "OHUNGI" }],
+    "right_side": [{ "id": "DAVE" }]
+  },
+  "credits": {
+    "music": "shiftyyyy2",
+    "art": {
+      "BACKGROUND": "fristo",
+      "SPRITES": [
+		"gorbini",
+        "riko",
+        "statictigers",
+        "pointyyesm",
+        "sporbb",
+        "cogs",
+        "kautaruma",
+        "decompileddarcy",
+        "gubrey",
+        "binos",
+        "cinder",
+        "dave and bambi fanart",
+        "kn1ghtnight",
+        "squareverylong",
+        "longdonny"
+      ],
+      "ANIMATIONS": ["gorbini", "pointyyesm", "statictigers", "sporbb", "riko"]
+    },
+    "code": {
+      "EVENTS": ["boxyyyy_", "kautaruma"],
+      "CHART": "pointyyesm",
+      "MODCHART": ["kautaruma", "izzee"]
+    }
+  }
+}

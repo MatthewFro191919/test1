@@ -1,0 +1,9 @@
+
+
+function onCreatePost() {
+	game.typeCameraOverride.set(DAD, game.dadMap.get("ohungi-unstable"));
+}
+
+function getScriptOrder() {
+	return 9999;
+}

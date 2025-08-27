@@ -1,0 +1,72 @@
+{
+  "music": "Hey Dave",
+  "dialogue": [
+    {
+      "character": "bart",
+      "position": "left",
+      "emotion": "mad",
+      "text": "now you must <font color=\"#FF0000\">CHOOSE...</font>",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bart",
+      "position": "right",
+      "emotion": "neutral",
+      "text": "between right",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bart",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "ore left",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bart",
+      "position": "middle",
+      "emotion": "mad",
+      "text": "now choose bitch",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bart",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "ok now lets go away nwo bye",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stageback",
+  "font": "comic"
+}

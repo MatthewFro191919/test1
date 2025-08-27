@@ -1,0 +1,90 @@
+{
+  "music": "teleprompt",
+  "dialogue": [
+    {
+      "character": "carl",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "Hey Dave! Hold on, I need to finish mining this vein of iron I just found. Could you hold for a bit?",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgcarl",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 3,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesuprised",
+      "text": "What?",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "carl",
+      "position": "left",
+      "emotion": "drilling",
+      "text": "<event event=\"emote_character\" emote=\"phonecringe\" char=\"girlfriend\">",
+      "font": null,
+      "boxEmotion": "intense",
+      "sound": "drilling",
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonecringe",
+      "text": "<event event=\"remove_character\" char=\"carl\"><event event=\"play_sound\" vol=\"0.5\" path=\"phonebeep\">OKAY, no more of that.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stages/house/living_room",
+  "font": "comic"
+}

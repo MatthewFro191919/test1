@@ -1,0 +1,42 @@
+{
+  "data": {
+    "drilling": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": true,
+      "offset": [
+        28.1914893617021,
+        -29.8936170212766
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    }
+  },
+  "defaultPos": "left",
+  "fps": 24,
+  "historyColor": "#3861ED",
+  "historyTextColor": "#000000",
+  "icon": "caller",
+  "neutral": "neutral",
+  "origin": [
+    248.25,
+    545.5
+  ],
+  "scale": 0.94,
+  "sound": {
+    "sounds": [
+      "default"
+    ],
+    "pitch": [
+      0,
+      0
+    ],
+    "prefix": ""
+  }
+}

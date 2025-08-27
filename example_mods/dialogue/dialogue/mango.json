@@ -1,0 +1,72 @@
+{
+  "music": "Hodgepodge",
+  "dialogue": [
+    {
+      "character": "bambi",
+      "position": "right",
+      "emotion": "accusing",
+      "text": "WHAT THE FUCK IS THIS. WHAT THE FUCK IS THIS. THIS IS SO NASTY.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bambi",
+      "position": "right",
+      "emotion": "accusing",
+      "text": "WHAT IS THIS STRANGELY SHAPED FUCKED UP PIECE OF SHIT. SOMEONE EXPLAIN TO ME THIS DISGUSTING MASS OF WHAT THE FUCK EVER THIS EVEN IS.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "bambi",
+      "position": "right",
+      "emotion": "stressed",
+      "text": "WHY DO THINGS EXIST LIKE THIS. WHAT THE HELL DO I TAG THIS NASTY THING. WHAT IS THIS. WHAT IS THIS",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "dave",
+      "position": "left",
+      "emotion": "disappointed",
+      "text": "It's a sliced mango. ",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": "SilencePlaceholder"
+    },
+    {
+      "character": "bambi",
+      "position": "right",
+      "emotion": "neutral",
+      "text": "Oh. I like mangoes.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "dialogue/backgrounds/mango",
+  "font": "comic"
+}

@@ -1,0 +1,14 @@
+function onCreatePost() {
+	box.titleCardMap.get("ohungi").visible = false;
+}
+
+function onStart(index) {
+	switch index {
+		case 14, 33:
+			box.backgroundMusic.volume = 0;
+		case 30:
+			box.titleCardMap.get("ohungi").visible = true;
+		case 50:
+			box.canSkip = false;
+	}
+}

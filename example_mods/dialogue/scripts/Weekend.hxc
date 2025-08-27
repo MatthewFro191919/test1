@@ -1,0 +1,193 @@
+import deepend.dialogue.Phone;
+import deepend.dialogue.PhoneButton;
+import deepend.dialogue.Dialogue;
+import deepend.ui.editors.Button;
+import deepend.system.utils.FileUtil;
+import deepend.game.FlxFilteredSprite;
+import openfl.filters.BlurFilter;
+import flixel.group.FlxTypedSpriteGroup;
+import haxe.io.Path;
+
+var left:Button;
+var right:Button;
+var david:DialogueCharacter;
+var callBg:FlxFilteredSprite;
+var callGroup:FlxTypedSpriteGroup;
+var callBuffer:Float;
+var nextCallPos:Int = null;
+var skipButton:PhoneButton;
+var phone:Phone;
+var callersOffset:Int = 0;
+var doneCallers = false;
+
+
+
+final WEEKEND_FIXER = "weekendfixerlmao.json";
+final callers = [for (file in FileUtil.readDirectory('assets/data/dialogue/dialogue/callers/')) if (file != WEEKEND_FIXER) Path.withoutExtension(file)];
+
+function onCreatePost() {
+	for (caller in callers)
+		box.prepareDialogue(caller, Dialogue.get('callers/$caller').dialogue);
+	
+	david = box.characterMap.get("david");
+	david.colorTransform.redOffset = david.colorTransform.greenOffset = david.colorTransform.blueOffset = -255;
+
+	box.prepareDialogue("weekend-fix", Dialogue.get("callers/weekendfixerlmao").dialogue);
+	box.insertDialogue(31, "weekend-fix");
+}
+
+function onDialogueStarted() {
+	callGroup = new FlxTypedSpriteGroup();
+	callGroup._skipTransformChildren = true;
+	callGroup.visible = false;
+	callGroup.active = false;
+	box.add(callGroup);
+
+	callBg = new FlxFilteredSprite(0, 0, Paths.image("stages/house/living_room"));
+	callBg.active = false;
+	callBg.filters = [new BlurFilter(16, 16)];
+	callBg.screenCenter();
+	callBg.scale.set(1.5, 1.5);
+	callGroup.add(callBg);
+
+	phone = new Phone(callers);
+	phone.onClick.add(onClick);
+	callGroup.add(phone);
+
+	skipButton = new PhoneButton(5, 5, phone, "skip", false);
+	skipButton.setPosition(5, 5);
+	skipButton.clipRect?.put();
+	skipButton.clipRect = null;
+	skipButton.label.clipRect?.put();
+	skipButton.label.clipRect = null;
+	skipButton.alpha = skipButton.label.alpha = .5;
+	skipButton.visible = true;
+	skipButton.scale.set(.6, .6);
+	skipButton.updateHitbox();
+	skipButton.label.scale.set(.6, .6);
+	skipButton.label.updateHitbox();
+	skipButton.label.offset.y += 10;
+	callGroup.add(skipButton);
+
+	Console.registerObject("skipButton", skipButton);
+}
+
+function onClick(button) {
+	if (button == skipButton) {
+		phoneTransition(true);
+		return;
+	}
+	if (callBuffer <= 0) {
+		button.disabled = true;
+		trace('calling', button.char);
+		box.insertDialogue(box.curDialoguePos + 1, button.char);
+		nextCallPos = box.curDialoguePos + box.extraDialogue.get(button.char).length;
+		trace('inserted yay time to FADE', box.camera);
+		box.fade(FlxColor.BLACK, .5, false, () -> {
+			closeCallMenu();
+			box.dialogueFlxText.active = true;
+			box.canInteract = true;
+			box.curDialoguePos += 1;
+			final c = tongue.get(Localization.formatToId(button.char + "_NAME"), "dialogue");
+			trace('pushing caller', c);
+			box.history.rawPush({
+				label: Localization.map(tongue.get("$LABEL_CALLING", "dialogue").toUpperCase(), ["<C>" => c]),
+				icon: 'caller',
+				color: 0xFF3861ED,
+			});
+			box.next();
+			box.fade(FlxColor.BLACK, .5, true);
+		});
+	}
+}
+
+function onTextFinish(pos) {
+	switch pos {
+		case 3 if (!inEditor):
+		case 39:
+
+	}
+}
+
+var phoneTrans = false;
+function onLeave(pos) {
+	trace('ok im leave', pos);
+	switch pos {
+		case 30 if (!phoneTrans && !inEditor):
+			trace('gotta do phone trans bye');
+			phoneTransition();
+			box.songIndex = 0;
+			return phoneTrans = true;
+	}
+	if (pos == nextCallPos) {
+		nextCallPos = null;
+		trace('call done');
+		box.curDialoguePos -= 1;
+		phoneTransition();
+		return true;
+	}
+}
+
+function phoneTransition(?forceDone = false) {
+	box.dialogueFlxText.active = false;
+	box.canInteract = false;
+	box.fade(FlxColor.BLACK, .5, false, () -> {
+		var done = true;
+		if (!forceDone) {
+			for (button in phone.buttons.members) {
+				if (!button.disabled) {
+					done = false;
+					break;
+				}
+			}
+		}
+		if (done) {
+			box.dialogueFlxText.active = true;
+			box.canInteract = true;
+			box.curDialoguePos += 1;
+			box.next();
+			closeCallMenu();
+			callersOffset = box.curDialoguePos;
+			doneCallers = true;
+		} else {
+			// lazy
+			for (member in box.backStills.members)
+				box.backStills.remove(member);
+			openCallMenu();
+		}
+			
+		box.fade(FlxColor.BLACK, .5, true);
+	});
+}
+
+function onStart(pos) {
+	trace('ok im start', pos);
+	if (doneCallers) {
+		switch pos - callersOffset {
+			case 8:
+				FlxTween.tween(david.colorTransform, {
+					redOffset: 0,
+					greenOffset: 0,
+					blueOffset: 0,
+				}, .5);
+		}
+	}
+}
+
+function openCallMenu() {
+	FlxG.mouse.visible = false;
+	callGroup._skipTransformChildren = true;
+	callGroup.active = callGroup.visible = true;
+	callBuffer = .5;
+	callGroup._skipTransformChildren = false;
+}
+function closeCallMenu() {
+	FlxG.mouse.visible = true;
+	callGroup._skipTransformChildren = true;
+	callGroup.active = callGroup.visible = false;
+	callGroup._skipTransformChildren = false;
+}
+
+function onUpdate(e) {
+	callBuffer -= e;
+}

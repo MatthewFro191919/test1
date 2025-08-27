@@ -1,0 +1,77 @@
+{
+  "data": {
+    "scared": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": true,
+      "offset": [
+        0,
+        0
+      ],
+      "sound": null,
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    },
+    "mad": {
+      "blinkRates": [
+        0.7,
+        1.3
+      ],
+      "fps": -1,
+      "looped": false,
+      "offset": [
+        0,
+        0
+      ],
+      "sound": {
+        "sounds": [
+          "au",
+          "e",
+          "ei",
+          "fr",
+          "ge",
+          "ou"
+        ],
+        "pitch": [
+          0,
+          0
+        ],
+        "prefix": "bart/angry/"
+      },
+      "unblinkRates": [
+        0.05,
+        0.1
+      ]
+    }
+  },
+  "defaultPos": "left",
+  "fps": 24,
+  "historyColor": "0xBBAA6677",
+  "historyTextColor": "#000000",
+  "icon": "bart",
+  "neutral": "neutral",
+  "origin": [
+    103.5,
+    256
+  ],
+  "scale": 2,
+  "sound": {
+    "sounds": [
+      "be",
+      "e",
+      "en",
+      "i",
+      "n"
+    ],
+    "pitch": [
+      0,
+      0
+    ],
+    "prefix": "bart/default/"
+  }
+}

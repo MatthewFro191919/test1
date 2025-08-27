@@ -1,0 +1,103 @@
+{
+  "music": "teleprompt",
+  "dialogue": [
+    {
+      "character": "allen",
+      "position": "left",
+      "emotion": "neutral",
+      "text": "Is that true...? Dave, <i>missing?</i>",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": {
+        "path": "dialogue/stills/weekend/bgallen",
+        "pos": [
+          0,
+          -127
+        ],
+        "z": -2,
+        "center": true,
+        "scale": 1,
+        "antialiasing": true,
+        "animated": false,
+        "fps": 24,
+        "anim": "",
+        "loop": false,
+        "length": 4,
+        "transIn": {
+          "type": "move",
+          "length": 0.4,
+          "ease": "circout",
+          "x": -900,
+          "y": 0,
+          "callback": null
+        },
+        "transOut": {
+          "type": "move",
+          "length": 0.25,
+          "ease": "linear",
+          "x": -1000,
+          "y": 0,
+          "callback": null
+        }
+      },
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phoneneutral",
+      "text": "Yeah. It would be great if--",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "allen",
+      "position": "left",
+      "emotion": "phoneneutral",
+      "text": "Ahhh, I would love to, miss. Unfortunately, I'm booked every day... in every time slot.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "allen",
+      "position": "left",
+      "emotion": "phoneneutral",
+      "text": "I wish I could be the one begging <i>you</i> for help.",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    },
+    {
+      "character": "girlfriend",
+      "position": "right",
+      "emotion": "phonesad",
+      "text": "<event event=\"remove_character\" char=\"allen\"><event event=\"play_sound\" vol=\"0.5\" path=\"phonebeep\">Oh...",
+      "font": null,
+      "boxEmotion": "regular",
+      "sound": null,
+      "still": null,
+      "event": null,
+      "background": null,
+      "song": null
+    }
+  ],
+  "bg": "stages/house/living_room",
+  "font": "comic"
+}

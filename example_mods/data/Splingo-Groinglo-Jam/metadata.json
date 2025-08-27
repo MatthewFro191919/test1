@@ -1,0 +1,22 @@
+{
+  "pause": {
+    "left_side": [
+      { "id": "CUBLE_GOOBLE", "ranges": [{ "end": 1227 }, { "start": 2176 }] },
+      { "id": "JIMBLE_FLONG", "ranges": [{ "start": 1421, "end": 2163 }] }
+    ],
+    "right_side": [{ "id": "BF" }]
+  },
+  "credits": {
+    "music": ["mossysox", "wildythomas"],
+    "art": {
+      "BACKGROUND": "wildythomas",
+      "SPRITES": ["wildythomas", "binos"],
+      "ANIMATIONS": ["wildythomas", "binos"]
+    },
+    "code": {
+      "EVENTS": ["kautaruma", "mayo78"],
+      "CHART": "pointyyesm",
+      "MODCHART": "mayo78"
+    }
+  }
+}

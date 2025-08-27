@@ -1,0 +1,778 @@
+import flixel.group.FlxTypedSpriteGroup;
+import flixel.math.FlxBasePoint;
+import flixel.math.FlxRect;
+import deepend.game.DeependCamera;
+import deepend.shaders.ColorSwap;
+import deepend.game.ColorSprite;
+import deepend.game.OverclockBar;
+import deepend.game.OverclockBarType;
+import deepend.system.utils.MathUtil;
+import flixel.math.FlxMath;
+
+var p = FlxBasePoint.get();
+var p2 = FlxBasePoint.get();
+var doZoom = false;
+var splitCam:DeependCamera;
+var splitCamZoomMult:Float = 1.0;
+var copycat = false;
+var hsv:ColorSwap;
+var bg:FlxSprite;
+var camScale:FlxPoint;
+var crazyJimble = false;
+var shakeAmount = .0;
+
+var evil:ColorSprite;
+
+var jimbleBar:OverclockBar;
+var bfBar:OverclockBar;
+
+var flashing = false; // ClientPrefs.flashing;
+
+function onCreatePost() {
+	game.camHUD.alpha = game.camStrums.alpha = 0;
+	game.isCameraOnForcedPos = true;
+	game.disableAllCamMovement = true;
+	game.snapCamFollowToPos(-100, -900);
+
+	splitCam = new DeependCamera('Split Cam Cool');
+	splitCam.width = FlxG.width * .5;
+	splitCam.zoom = .8;
+	splitCam.visible = false;
+	hsv = new ColorSwap();
+	splitCam.filters = [new ShaderFilter(hsv.shader)];
+	CoolUtil.insertCamera(splitCam, game.camBetween);
+
+	bg = game.modchartSprites.get('background');
+	bg.origin.set(1005, 870);
+
+	evil = new ColorSprite(0, 0, FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+	evil.screenCenter();
+	evil.scrollFactor.set();
+	evil.alpha = 0;
+
+	camScale = game.camGame.multScale;
+
+	jimbleBar = new OverclockBar(-130.45, -91.05, game.dadMap.get('jimble-flong').healthColor, OverclockBarType.JIMBLE);
+	jimbleBar.cameras = [game.camBars];
+	game.add(jimbleBar);
+
+	Console.registerObject("jimbleBar", jimbleBar);
+	Console.registerObject("splitCam", splitCam);
+
+	bfBar = new OverclockBar(1314, 324, FlxColor.WHITE, OverclockBarType.BF);
+	bfBar.cameras = [game.camBars];
+	game.add(bfBar);
+
+	game.gfGroup.visible = game.gfGroup.active = false;
+}
+
+function showJimbleBar()
+{
+	tweenScroll(-162.7, -62.5);
+}
+
+function showBfBar()
+{
+	tweenScroll(160, 45.65);
+}
+
+function tweenScroll(bar, hud)
+{
+	game.tween(game.camBars.scroll, {x: bar}, stepTime(4), {ease: FlxEase.cubeOut});
+	game.tween(game.camHUD.scroll, {x: hud}, stepTime(4), {ease: FlxEase.cubeOut});
+	game.tween(game.camStrums.scroll, {x: hud}, stepTime(4), {ease: FlxEase.cubeOut});
+}
+
+function setCamScale(scalex, ?scaley, ?angle, ?split)
+{
+	if (scaley == null)
+		scaley = scalex;
+	final cam = (!split && (curStep < 1360 || curStep >= 1488)) ? game.camGame : splitCam;
+	cam.visible = true;
+	if (scalex == 1 && scaley == 1 && cam == splitCam)
+		splitCam.visible = false;
+	if (!ClientPrefs.flashing)
+		cam.multScale.set(Math.abs(scalex), Math.abs(scaley));
+	else
+		cam.multScale.set(scalex, scaley);
+	if (angle != null)
+	{
+		cam.worldAngle = angle;
+		hsv.hue = FlxG.random.float(-.1, .1);
+	}
+}
+
+function tweenCamScale(from, to, duration, ?ease)
+{
+	game.tweenManager.num(from, to, duration, {ease: ease}, _setcamscale);
+}
+
+function _setcamscale(s)
+{
+	setCamScale(s);
+}
+
+function copySplitScroll()
+{
+	splitCam.scroll.set(game.camGame.scroll.x, game.camGame.scroll.y);
+}
+		
+function funZoom(b, zoom)
+{
+	stepEvent(b, _ -> tweenCamScale(camScale.x, zoom, stepTime(2), FlxEase.cubeOut), 'fun zoom $zoom');
+}
+
+function weirdAye(b, a)
+{
+	stepEvent(b, _ -> {
+		tweenCamScale(camScale.x, camScale.x * 1.1, stepTime(4), FlxEase.bounceOut);
+		game.tween(game.camGame, {worldAngle: a}, stepTime(4), {ease: FlxEase.bounceOut});
+	});
+	stepEvent(b + 4, _ -> {
+		tweenCamScale(camScale.x, 1, stepTime(4), FlxEase.sineOut);
+		game.tween(game.camGame, {worldAngle: 0}, stepTime(4), {ease: FlxEase.sineOut});
+	});
+}
+
+function makeEvents()
+{
+	// duuude this looks like such a mess
+	for (i in 0...2)
+	{
+		final b = 16 + (i * 64);
+
+		for (i in 0...2)
+		{
+			final b = b + (32 * i);
+			stepEvent(b + 24, _ -> setCamScale(1.025), 'noob zoom $i');
+			stepEvent(b + 25, _ -> setCamScale(1.05), 'noob zoom 2 $i');
+			stepEvent(b + 26, _ -> tweenCamScale(1.05, 1, stepTime(4), FlxEase.cubeOut), 'noob zoom bye $i');
+		}
+
+		final b = 144 + (64 * i);
+
+		funZoom(b + 4, 1.025);
+		funZoom(b + 6, 1.05);
+		funZoom(b + 8, 1);
+		funZoom(b + 12, 1.025);
+		funZoom(b + 14, 1.05);
+		funZoom(b + 16, 1);
+		
+		stepEvent(b + 24, _ -> setCamScale(1.025));
+		stepEvent(b + 25, _ -> setCamScale(1.05));
+		funZoom(b + 26, 1.0);
+
+		stepEvent(b + 40, _ -> setCamScale(1.0625));
+		stepEvent(b + 42, _ -> setCamScale(1.025));
+		stepEvent(b + 43, _ -> setCamScale(1.05));
+		funZoom(b + 45, 1.0);
+		funZoom(b + 48, 1.1);
+		if (i == 0)
+		{
+			funZoom(b + 64, 1.0);
+		}
+		else
+		{
+			stepEvent(266 - 4, _ -> tweenCamScale(camScale.x, 1, stepTime(4), FlxEase.linear));
+			stepEvent(266, _ -> tweenCamScale(1, 1.4, stepTime(6), FlxEase.cubeIn));
+			stepEvent(272, _ -> tweenCamScale(1.4, 1, stepTime(6), FlxEase.cubeOut));
+		}
+
+		final b = 880 + (i * 128);
+		stepEvent(b, _ -> tweenZoom(.85, stepTime(4), FlxEase.cubeOut));
+		for (i in 0...3)
+			stepEvent(b + (8 + i), _ -> setCamScale(1 + ((i + 1) * .05)));
+		stepEvent(b + 12, _ -> {
+			setCamScale(1);
+			tweenZoom(.7, stepTime(4), FlxEase.backOut);
+		});
+
+
+		final b = 272 + (64 * i);
+
+		weirdAye(b + 28, -3);
+		weirdAye(b + 44, 3);
+
+		final b = 400 + (64 * i);
+
+		for (i in 0...4)
+			stepEvent(b + 32 + i, _ -> setCamScale(1 + (i * .025)));
+		stepEvent(b + 36, _ -> tweenCamScale(camScale.x, 1, stepTime(2), FlxEase.backOut));
+
+
+		final b = 912 + (128 * i);
+		stepEvent(b, _ -> tweenZoom(1.1, stepTime(32), FlxEase.linear));
+		stepEvent(b + 32, _ -> tweenZoom(.7, stepTime(4), FlxEase.backOut));
+
+		final b = 1232 + (i * 32);
+		stepEvent(b, _ -> tweenZoom(.7, stepTime(2), FlxEase.elasticOut));
+		stepEvent(b + 16, _ -> tweenZoom(.8, stepTime(2), FlxEase.elasticOut));
+		if (i == 0)
+		{
+			stepEvent(b + 28, _ -> tweenZoom(.85, stepTime(2), FlxEase.elasticOut));
+			stepEvent(b + 30, _ -> tweenZoom(.9, stepTime(2), FlxEase.elasticOut));
+		}
+		else
+		{
+			stepEvent(b + 28, _ -> tweenZoom(.9, stepTime(4), FlxEase.cubeIn));
+			stepEvent(b + 32, _ -> tweenZoom(.7), stepTime(2), FlxEase.elasticOut);
+		}
+
+		final b = i * 64;
+
+		stepEvent(1368, _ -> splitCam.width = FlxG.width * .55);
+		stepEvent(b + 1368, _ -> setCamScale(-1.1, 1.1, 15));
+		stepEvent(b + 1370.5, _ -> setCamScale(1.2, null, -15));
+		stepEvent(b + 1372, _ -> setCamScale(-1, 1, 0));
+		stepEvent(b + 1373, _ -> setCamScale(.9));
+		stepEvent(b + 1374, _ -> setCamScale(1, -1, 45));
+		stepEvent(b + 1376, _ -> setCamScale(1));
+		stepEvent(b + 1384, _ -> setCamScale(-.9, null, 12));
+		stepEvent(b + 1386, _ -> setCamScale(1, -1, 15));
+		stepEvent(b + 1388, _ -> setCamScale(.7, null, 5));
+		stepEvent(b + 1389, _ -> setCamScale(.65, null, 2));
+		stepEvent(b + 1390, _ -> setCamScale(-1, 1));
+		if (i == 0)
+		{
+			stepEvent(1392, _ -> setCamScale(1));
+			stepEvent(1416, _ -> setCamScale(1.05));
+			stepEvent(1419, _ -> setCamScale(1.1));
+			stepEvent(1422, _ -> {
+				setCamScale(1.15);
+				tweenCamScale(1.15, 1, stepTime(2), FlxEase.cubeOut);
+				game.tweenManager.num(hsv.hue, 0, stepTime(2), {ease: FlxEase.cubeOut}, s -> hsv.hue = s);
+			});
+		}
+		else
+		{
+			stepEvent(b + 1368, _ -> {
+				splitCam.x = FlxG.width - splitCam.width;
+				game.getCharCameraPosition(BF, p.set(-splitCam.width * .25, -FlxG.height * .5), splitCam.scroll);
+			});
+			stepEvent(1472, _ -> {
+				setCamScale(-1.1);
+				splitCam.x = 0;
+				splitCam.scroll.set(p2.x, p2.y);
+			});
+			stepEvent(1474, _ -> setCamScale(-1.15, 1.15));
+			stepEvent(1476, _ -> setCamScale(-1.2));
+			stepEvent(1478, _ -> setCamScale(-1.25, 1.25));
+
+			stepEvent(1480, _ -> setCamScale(1.3));
+			stepEvent(1482, _ -> setCamScale(-1.35, 1.35));
+			stepEvent(1484, _ -> setCamScale(1.4));
+			stepEvent(1486, _ -> setCamScale(-1.45, 1.45));
+			stepEvent(1488, _ -> {
+				copySplitScroll();
+				copycat = true;
+				game.tweenManager.num(1.45, 1, stepTime(4), {ease: FlxEase.cubeOut}, s -> setCamScale(s, s, null, true));
+				game.tweenManager.num(hsv.hue, 0, stepTime(4), {ease: FlxEase.cubeOut}, s -> hsv.hue = s);
+			});
+		}
+
+		final b = 1488 + (32 * i);
+		stepEvent(b + 12, _ -> setCamScale(1.1));
+		stepEvent(b + 14, _ -> setCamScale(1.3));
+		stepEvent(b + 16, _ -> setCamScale(1));
+		stepEvent(b + 28, _ -> tweenCamScale(1, 1.2, stepTime(4), FlxEase.cubeIn));
+		stepEvent(b + 32, _ -> tweenCamScale(1.2, 1, stepTime(4), FlxEase.backOut));
+		if (i == 0)
+			stepEvent(b + 28, _ -> tweenToChar(BF, stepTime(4), FlxEase.cubeInOut));
+	}
+	stepEvent(1302, _ -> tweenZoom(.8, stepTime(3), FlxEase.backOut));
+	stepEvent(1305, _ -> tweenZoom(.7, stepTime(2), FlxEase.backOut));
+	stepEvent(1352, _ -> {
+		game.cameraSpeed = 999;
+		tweenZoom(1, stepTime(4), FlxEase.cubeIn);
+	});
+	stepEvent(1356, _ -> {
+		game.cameraSpeed = 1;
+		tweenZoom(.6, stepTime(4), FlxEase.sineOut);
+	});
+	stepEvent(1368, _ -> tweenZoom(.7, stepTime(8), FlxEase.sineInOut));
+
+	for (i in 0...4)
+	{
+		final s = 1.4 + (i * .05);
+		stepEvent(1654 + (i * .1), _ -> splitCam.multScale.set(s, s));
+	}
+	
+
+	stepEvent(2301 + (1/3), _ -> setCamScale(1.1));
+	stepEvent(2303 + (1/3), _ -> tweenCamScale(1.1, 1, stepTime(2), FlxEase.cubeOut));
+}
+
+function onUpdatePost(e:Float)
+{
+	splitCam.zoom = game.camGame.zoom * splitCamZoomMult;
+	game.camBars.zoom = game.camHUD.zoom;
+	if (copycat)
+		copySplitScroll();
+
+	final t = FlxEase.sineIn(1 - (curDecBeat % 1));
+	if (curDecBeat >= 0 && bg.exists) 
+	{
+		final s = 1 + (.025 * t);
+		bg.scale.set(s, s);
+		bg.angle = ((curBeat % 2 == 0) ? -5 : 5) * t;
+	}
+
+	if (shakeAmount > 0) 
+	{
+		//trace(shakeAmount);
+		game.camGame.scrollOffset.x = FlxG.random.float(-shakeAmount, shakeAmount);
+		game.camGame.scrollOffset.y = FlxG.random.float(-shakeAmount, shakeAmount);
+		game.camGame.angle = FlxG.random.float(-shakeAmount * .5, shakeAmount * .5); // cause worldAngle and angle act the same on funkCamera sprtites
+		shakeAmount = Math.max(0, shakeAmount - e * 20);
+	}
+	else
+	{
+		game.camGame.scrollOffset.set();
+	}
+
+	//if (FlxG.keys.justPressed.G) {
+	//	showJimbleBar();
+	//} else if (FlxG.keys.justPressed.H) {
+	//	tweenScroll(0, 0);
+	//} else if (FlxG.keys.justPressed.J) {
+	//	showBfBar();
+	//}
+	jimbleBar.value = MathUtil.smoothLerpDecay(jimbleBar.value, 1, e, .01);
+}
+
+function beatHit() {
+	if (doZoom && curBeat < 579)
+		bludZoom();
+}
+
+function bludZoom() {
+	addZoom(.015, 0.03, 0.03);
+}
+
+function doStep(step) {
+	switch step {
+		case 0:
+			tweenZoom(.8, stepTime(16), FlxEase.sineIn);
+			duet(stepTime(16), FlxEase.sineIn);
+			game.tween(game.camHUD, {alpha: 1}, stepTime(16), {ease: FlxEase.cubeIn});
+			game.tween(game.camStrums, {alpha: 1}, stepTime(16), {ease: FlxEase.cubeIn});
+		case 16:
+			game.isCameraOnForcedPos = false;
+			game.disableAllCamMovement = false;	
+			tweenToChar(DAD, stepTime(2), FlxEase.sineOut);
+			doZoom = true;
+		case 783:
+			game.tween(game.camHUD, {alpha: 0}, stepTime(16));
+			game.tween(game.camStrums, {alpha: 0}, stepTime(16));
+		case 832:
+			game.tween(game.camHUD, {alpha: 1}, stepTime(10), {ease: FlxEase.cubeIn});
+			game.tween(game.camStrums, {alpha: 1}, stepTime(10), {ease: FlxEase.cubeIn});
+			doZoom = false;
+		case 528, 560, 592, 1104:
+			duet(stepTime(2), FlxEase.cubeOut, (step >= 1104) ? p.set(0, 200) : null);
+			tweenZoom((step != 1104) ? game.defaultCamZoom - .2 : .5, stepTime(2), FlxEase.cubeOut, () -> {
+				if (step == 1104)
+					tweenZoom(.7, stepTime(120 - 2), FlxEase.linear);
+			});
+			switch step {
+				case 592:
+					game.tween(game.camGame, {worldAngle: 0}, stepTime(2), {ease: FlxEase.cubeOut});
+			}
+		case 556, 588:
+			tweenToChar((step == 556) ? DAD : BF, stepTime(2), FlxEase.cubeOut);
+			tweenZoom(game.defaultCamZoom + .2, stepTime(2), FlxEase.cubeOut);
+			if (step == 588)
+				game.tween(game.camGame, {worldAngle: 5}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 656:
+			game.isCameraOnForcedPos = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.backOut);
+			tweenZoom(.9, stepTime(2), FlxEase.backOut);
+		case 688:
+			tweenToChar(BF, stepTime(2), FlxEase.backOut);
+		case 720:
+			tweenToChar(DAD, stepTime(2), FlxEase.cubeOut);
+			tweenZoom(.8, stepTime(4), FlxEase.cubeOut);
+		case 752:
+			splitCam.visible = true;
+			copySplitScroll();
+			p2.set(splitCam.scroll.x, splitCam.scroll.y);
+			game.tweenManager.num(1, 1.4, stepTime(6), {ease: FlxEase.expoOut}, n -> splitCamZoomMult = n);
+		case 758:
+			game.tween(splitCam, {x: -FlxG.width * .5, worldAngle: 90}, stepTime(6), {ease: FlxEase.expoIn, onComplete: _ -> {
+				splitCam.visible = false;
+				splitCamZoomMult = 1.0;
+				splitCam.x = 0;
+				splitCam.worldAngle = 0;
+			}});
+		case 1132, 1164, 1180, 1196, 1212:
+			tweenToChar(switch step {
+				case 1132, 1180: DAD;
+				case 1164, 1196, 1212: BF;
+			}, stepTime(2), FlxEase.cubeOut);
+			game.tweenManager.num(0, .4, stepTime(2), {ease: FlxEase.cubeOut}, v -> game.camZoomOffset = v);
+			if (step == 1164 || step == 1196)
+				game.tween(game.camGame, {worldAngle: -5}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 1136, 1168, 1184, 1200, 1216:
+			game.tweenManager.num(.4, 0, stepTime(2), {ease: FlxEase.cubeOut}, v -> game.camZoomOffset = v);
+			// offset of 200 * (zoom progress to .7)
+			// makes it go more down every duet interuption
+			duet(stepTime(2), FlxEase.cubeOut, p.set(0, 200 * (1 - ((game.defaultCamZoom - .5) / .2))));
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 1224:
+			game.isCameraOnForcedPos = false;
+			tweenToChar(DAD, stepTime(1), FlxEase.expoOut);
+			tweenZoom(game.defaultCamZoom + .4, stepTime(2), FlxEase.cubeOut);
+			doZoom = false;
+			shakeAmount = 4;
+		case 1228:
+			shakeAmount = 2;
+		case 838:
+			game.fileMorphPartner();
+			tweenToChar(BF, stepTime(4), FlxEase.expoOut, null, p.set(180, 50));
+			tweenZoom(3, stepTime(4), FlxEase.expoOut);
+		case 842:
+			tweenZoom(1.3, stepTime(6), FlxEase.expoIn);
+		case 848:
+			tweenZoom(.6, stepTime(4), FlxEase.cubeOut);
+			doZoom = true;
+		case 970:
+			tweenToChar(BF, stepTime(12), FlxEase.cubeInOut);
+		case 1084:
+			doZoom = false;
+			tweenZoom(.9, stepTime(8), FlxEase.cubeIn);
+		case 1223:
+			for (note in game.notes) {
+				if (note.inactive) {
+					note.ignoreModchart = true;
+					// basically just become a static sprite
+					note.parentStrum = null;
+					// 20ble 22 numbers
+					note.velocity.set(FlxG.random.float(-200, 200), FlxG.random.float(-60, -140));
+					note.acceleration.y = 1000;
+					note.angularVelocity = FlxG.random.float(-100, 100);
+					if (ClientPrefs.downscroll) {
+						note.acceleration.y *= -1;
+						note.velocity.y *= -1;
+					}
+					// so it doesnt die
+					note.strumTime = Math.POSITIVE_INFINITY;
+					note.moves = true;
+					game.tween(note, {whiteOffset: -.6}, 1.9);
+					game.tween(note.multScale, {x: 2.5, y: 2.5}, 2, {onComplete: _ -> {
+						game.removeNote(note);
+					}});
+				}
+			}
+		case 1233:
+			doZoom = true;
+		case 1616:
+			crazyJimble = true;
+			game.dad.idleSuffix = '-alt';
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut);
+			tweenCamScale(1, 1.3, stepTime(2), FlxEase.elasticOut);
+			showJimbleBar();
+			game.tweenManager.num(0, .7, stepTime(4), {ease: FlxEase.cubeOut}, setBarPerc);
+		case 1621:
+			tweenCamScale(1.3, 1, stepTime(4), FlxEase.expoOut);
+		case 1625:
+			setCamScale(1.1);
+			game.camGame.worldAngle = 25;
+		case 1627:
+			setCamScale(1);
+			game.camGame.worldAngle = 0;
+		case 1628:
+			setCamScale(1.1);
+		case 1630:
+			setCamScale(1.3);
+		case 1632:
+			setCamScale(.9);
+			tweenCamScale(.9, 1, stepTime(2), FlxEase.expoOut);
+		case 1636:
+			tweenCamScale(1, 1.2, stepTime(4), FlxEase.expoIn);
+		case 1639:
+			setCamScale(1);
+			tweenCamScale(1, .9, stepTime(4), FlxEase.linear);
+		case 1642:
+			game.tweenManager.tween(camScale, {x: 1.2, y: 1}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 1645:
+			game.tweenManager.tween(camScale, {x: 1}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 1652:
+			splitCam.visible = true;
+			splitCam.width = FlxG.width;
+			splitCam.multScale.set(1.4, 1.4);
+			splitCam.x = 0;
+		case 1656:
+			game.tween(splitCam, {y: FlxG.height}, stepTime(4), {ease: FlxEase.cubeIn});
+		case 1680:
+			tweenZoom(.2, stepTime(5), FlxEase.cubeOut);
+			game.tween(game.camGame, {worldAngle: -45}, stepTime(5), {ease: FlxEase.cubeOut});
+			tweenToChar(BF, stepTime(10), FlxEase.sineInOut);
+			showBfBar();
+		case 1685:
+			tweenZoom(.7, stepTime(5), FlxEase.cubeInOut);
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(5), {ease: FlxEase.cubeInOut});
+		case 1696:
+			tweenScroll(0, 0);
+		case 1704:
+			tweenZoom(1, stepTime(4), FlxEase.cubeIn);
+		case 1712:
+			tweenZoom(.7, stepTime(8), FlxEase.cubeOut);
+		case 1744:
+			tweenCamScale(1, 1.3, stepTime(2), FlxEase.elasticOut);
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut);
+			tweenZoom(1, stepTime(4), FlxEase.linear);
+		case 1748:
+			tweenZoom(.7, stepTime(4), FlxEase.cubeOut);
+			tweenCamScale(1.3, 1, stepTime(4), FlxEase.cubeOut);
+		case 1752:
+			game.tween(game.camGame, {worldAngle: 25}, stepTime(4));
+		case 1756:
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(4), {ease: FlxEase.backOut});
+		case 1758:
+			tweenCamScale(1, 1.1, stepTime(2), FlxEase.backOut);
+		case 1760:
+			tweenCamScale(1.1, 1, stepTime(2), FlxEase.cubeOut);
+		case 1765:
+			game.tween(game.camGame, {worldAngle: 360}, stepTime(11));
+		case 1776:
+			tweenZoom(1, stepTime(4), FlxEase.cubeOut);
+		case 1780:
+			tweenZoom(.4, stepTime(4), FlxEase.expoOut);
+		case 1784:
+			tweenZoom(.5, stepTime(4), FlxEase.cubeInOut);
+		case 1788:
+			setCamScale(1.05);
+		case 1789:
+			setCamScale(1.1);
+		case 1790:
+			setCamScale(1.2);
+		case 1790:
+			setCamScale(1.2);
+		case 1792:
+			tweenCamScale(1.2, 1, stepTime(2), FlxEase.cubeOut);
+		case 1803:
+			game.camGame.worldAngle = 0;
+			game.tween(game.camGame, {worldAngle: -45}, stepTime(5), {ease: FlxEase.elasticInOut});
+		case 1808:
+			tweenToChar(BF, stepTime(9), FlxEase.linear);
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(9));
+		case 1824:
+			game.defaultCamZoom += .1;
+		case 1868:
+			game.addBehindGF(evil);
+			game.tween(evil, {alpha: 1}, stepTime(4), {ease: FlxEase.cubeIn});
+			game.tweenManager.num(.85, 1, stepTime(4), {ease: FlxEase.cubeIn}, setBarPerc);
+			showJimbleBar();
+			tweenZoom(1.3, stepTime(4), FlxEase.cubeIn);
+		case 1872:
+			tweenZoom(.7, stepTime(2), FlxEase.elasticOut);
+			game.camLock = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut);
+		case 1876:
+			tweenZoom(.9, stepTime(2), FlxEase.elasticOut);
+			evil.alpha = .5;
+		case 1880:
+			tweenZoom(.8, stepTime(2), FlxEase.elasticOut);
+			game.camLock = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut, null, p.set(-80));
+			evil.alpha = .25;
+		case 1882:
+			tweenZoom(.7, stepTime(2), FlxEase.elasticOut);
+			game.camLock = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut, null, p.set(80));
+			evil.alpha = .125;
+		case 1884:
+			tweenZoom(.6, stepTime(2), FlxEase.elasticOut);
+			game.camLock = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut, null, p.set(-50, 80));
+			evil.alpha = .0625;
+		case 1885:
+			tweenZoom(.7, stepTime(2), FlxEase.linear);
+			game.camLock = false;
+			tweenToChar(DAD, stepTime(2), FlxEase.linear);
+			evil.alpha = 0;
+		case 1895:
+			tweenZoom(1, stepTime(8), FlxEase.sineIn);
+			game.tween(game.camGame, {worldAngle: -35}, stepTime(8), {ease: FlxEase.sineIn});
+		case 1903:
+			tweenZoom(.7, stepTime(2), FlxEase.cubeOut);
+			tweenToChar(BF, stepTime(2), FlxEase.cubeOut);
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 1911:
+			tweenZoom(.8, stepTime(2), FlxEase.cubeOut);
+		case 1928:
+			tweenZoom(.75, .0);
+		case 1929:
+			tweenZoom(.8, .0);
+		case 1944, 1961:
+			shakeAmount += 2;
+		case 1968:
+			tweenZoom(1.1, stepTime(2), FlxEase.cubeOut);
+			tweenToChar(BF, stepTime(2), FlxEase.cubeOut);
+		case 1980:
+			tweenZoom(.9, stepTime(2), FlxEase.cubeOut);
+		case 1982:
+			tweenZoom(.7, stepTime(2), FlxEase.cubeOut);
+		case 1996:
+			evil.alpha = 1;
+			game.tween(evil, {alpha: 0}, stepTime(4));
+		case 1935:
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut);
+		case 2003:
+			game.camGame.worldAngle = -45;
+		case 2004:
+			game.camGame.worldAngle = 45;
+		case 2005:
+			game.camGame.worldAngle = -45;
+		case 2006:
+			game.camGame.worldAngle = 0;
+			tweenZoom(1.1, stepTime(3), FlxEase.cubeOut);
+		case 2010:
+			tweenZoom(.7, stepTime(1), FlxEase.cubeOut);
+		case 2018:
+			tweenZoom(1.1, stepTime(8), FlxEase.cubeIn);
+		case 2026:
+			tweenZoom(.6, stepTime(2), FlxEase.elasticOut);
+		case 2029:
+			tweenZoom(.7, stepTime(3), FlxEase.cubeOut);
+		case 2064:
+			tweenToChar(DAD, stepTime(2), FlxEase.elasticOut);
+			tweenZoom(.9, stepTime(2));
+		case 2066:
+			tweenZoom(.8, 0);
+		case 2067:
+			tweenZoom(.7, 0);
+		case 2070:
+			tweenZoom(.8, stepTime(1), FlxEase.cubeIn);
+		case 2071:
+			tweenZoom(.7, stepTime(1), FlxEase.cubeOut);
+		case 2072:
+			game.camGame.worldAngle = -25;
+		case 2073:
+			game.camGame.worldAngle = 0;
+		case 2076:
+			game.camGame.worldAngle = 35;
+			game.tween(game.camGame, {worldAngle: -35}, stepTime(4));
+		case 2080:
+			game.tween(game.camGame, {worldAngle: 0}, stepTime(2), {ease: FlxEase.elasticOut});
+		case 2082:
+			tweenZoom(.9, stepTime(1), FlxEase.elasticOut);
+		case 2084:
+			tweenZoom(1.3, stepTime(1), FlxEase.elasticOut);
+		case 2086:
+			tweenZoom(1.5, stepTime(1));
+		case 2088:
+			tweenZoom(.8, stepTime(4), FlxEase.backOut);
+		case 2094:
+			tweenZoom(.9, stepTime(2));
+		case 2096:
+			tweenZoom(.7, stepTime(4), FlxEase.cubeOut);
+			tweenToChar(BF, stepTime(4), FlxEase.cubeOut);
+		case 2120:
+			tweenZoom(.8, stepTime(4));
+			game.tween(evil, {alpha: .5}, stepTime(4));
+		case 2122:
+			//splitCam.width = FlxG.width * .5;
+			//splitCam.x = -splitCam.width;
+			//splitCam.worldAngle = 0;
+			//splitCam.y = 0;
+			//copycat = false;
+			//splitCam.visible = true;
+			//splitCamZoomMult = .65;
+			//splitCam.scroll.set(440.5, 112.4);
+			//game.tween(splitCam, {x: 0}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 2124:
+			tweenZoom(.85, stepTime(2), FlxEase.backOut);
+			game.tween(evil, {alpha: .75}, stepTime(4), {ease: FlxEase.backOut});
+		case 2126:
+			tweenZoom(.9, stepTime(2), FlxEase.backOut);
+			game.tween(evil, {alpha: 1}, stepTime(4), {ease: FlxEase.backOut});
+		case 2128:
+			tweenZoom(.5, stepTime(8), FlxEase.expoOut);
+			game.tween(evil, {alpha: 0}, stepTime(4));
+			doZoom = false;
+		case 2136:
+			//game.tween(splitCam, {x: -splitCam.width}, stepTime(2), {ease: FlxEase.cubeOut});
+		case 2172:
+			tweenZoom(.7, stepTime(8), FlxEase.cubeInOut);
+		case 2144:
+			crazyJimble = false;
+			tweenScroll(0, 0);
+			game.camLock = true;
+			game.typeCameraOverride.set(DAD, game.dadMap.get('cuble-gooble-3D'));
+			tweenToChar(DAD, 0);
+		case 2176:
+			game.timer(stepTime(1/3), _ -> tweenZoom(.75, stepTime(2), FlxEase.cubeOut));
+		case 2178:
+			game.timer(stepTime(2/3), _ -> tweenZoom(.8, stepTime(2), FlxEase.cubeOut));
+		case 2185:
+			tweenZoom(.7, stepTime(4), FlxEase.cubeOut);
+		case 2194:
+			doZoom = true;
+		case 2224:
+			game.camLock = true;
+			tweenToChar(BF, stepTime(6), FlxEase.cubeInOut);
+		case 2254:
+			tweenZoom(.9, stepTime(2), FlxEase.cubeOut);
+		case 2256:
+			tweenZoom(1, stepTime(2), FlxEase.cubeOut);
+		case 2258:
+			tweenZoom(.8, stepTime(4), FlxEase.cubeInOut);
+			tweenToChar(DAD, stepTime(4), FlxEase.cubeInOut);
+		case 2289:
+			tweenZoom(.85, stepTime(4), FlxEase.cubeOut);
+			tweenToChar(BF, stepTime(4), FlxEase.cubeOut);
+		case 2297:
+			setCamScale(1.025);
+		case 2300:
+			setCamScale(1.05);
+		// rest of this e. e eee.. is in makeEvents cause its on thirds
+		case 2324:
+			duet(beatTime(4), FlxEase.cubeOut);
+			tweenZoom(.6, beatTime(8), FlxEase.cubeOut);
+		case 2356:
+			game.camGame.visible = game.camStrums.visible = false;
+			for (i in game.healthBarGroup.members)
+				i.visible = false;
+			game.counterGroup.visible = true;
+			game.accuracyTxt.visible = game.scoreTxt.visible = true;
+			game.timeBarBG.visible = false;
+			game.timeBar.visible = false;
+			game.timeTxt.visible = false;
+	}
+}
+
+var LEFT = 0;
+var DOWN = 1;
+var UP = 2;
+var RIGHT = 3;
+function onSing(data, char)
+{
+	if (char == game.dadMap.get('jimble-flong') && game.variables.get("noJimbleSing") == true)
+		return true;
+	final shouldFlip = (char == game.boyfriend ? splitCam.x > 0 : splitCam.x == 0);
+	final flipX = (splitCam.multScale.x < 0 && shouldFlip);
+	final flipY = (splitCam.multScale.y < 0 && shouldFlip);
+	final prev = data.direction;
+	data.direction = switch data.direction 
+	{
+		case LEFT if (flipX): RIGHT;
+		case RIGHT if (flipX): LEFT;
+		case UP if (flipY): DOWN;
+		case DOWN if (flipY): UP;
+		default: data.direction;
+	}
+	if (char == game.dad && crazyJimble) 
+	{
+		data.alt = true;
+		shakeAmount = Math.max(1, shakeAmount + .1);
+		jimbleBar.value -= .1;
+	}
+	char.singFromData(data);
+	return true;
+}
+
+function setBarPerc(v)
+{
+	jimbleBar.value = v;
+}

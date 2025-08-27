@@ -1,0 +1,217 @@
+import deepend.game.HealthIcon;
+import flixel.math.FlxMath;
+import deepend.system.ClientPrefs;
+
+var icon:HealthIcon;
+var jimbleIcon:HealthIcon;
+
+var cuble:Character;
+var jimble:Character;
+var jimbleAnim:FlxAnimation;
+
+var cubleMic:FlxSprite;
+
+var byed = false;
+
+var cubleMicFloat = true;
+
+function dFlip() {
+	return ClientPrefs.downScroll ? -1 : 1;
+}
+
+function onCreatePost() {
+	icon = new HealthIcon('cuble-gooble');
+	icon.cameras = [game.camHUD];
+	icon.playAnim('lose');
+	icon.visible = false;
+	icon.moves = true;
+	game.add(icon);
+
+	jimbleIcon = new HealthIcon('jimble-flong');
+	jimbleIcon.cameras = [game.camHUD];
+	jimbleIcon.x = -300;
+	jimbleIcon.moves = true;
+	game.add(jimbleIcon);
+	
+	jimble = game.dadMap.get('jimble-flong');
+	cuble = game.dadMap.get('cuble-gooble-3D');
+	
+	game.dadGroup.remove(cuble);
+	game.dadGroup.insert(0, cuble);
+
+	game.variables.set('jimbleColor', colorFromChar(jimble));
+	game.preventReloadHealthBarColors = true;
+
+	cubleMic = new FlxSprite();
+	cubleMic.antialiasing = false;
+	cubleMic.frames = Paths.getFrames('stages/deepFences/cublemic');
+	cubleMic.animation.addByPrefix('mic', 'image', 6);
+	cubleMic.animation.play('mic');
+	//cubleMic.scale.set(cuble.scale.x, cuble.scale.y);
+	cubleMic.updateHitbox();
+	cubleMic.angularVelocity = 15;
+	cubleMic.moves = true;
+	cubleMic.visible = false;
+	game.variables.set('cubleMic', cubleMic);
+	game.add(cubleMic);
+	Console.registerObject("cubleMic", cubleMic);
+}
+
+function doStep(step) {
+	switch step {
+		case 1223:
+			jimbleIcon.y = game.iconP2.y;
+			tween('hi', game.tweenManager.num(0, 1, CoolUtil.stepsToSeconds(1), null, jimbleTween));
+		case 1224:
+			game.iconP2.visible = false;
+			icon.setPosition(game.iconP2.x, game.iconP2.y);
+			icon.visible = true;
+			tween('fling', game.tween(icon, {x: 0}, 2));
+			icon.acceleration.y = 500 * dFlip();
+			icon.velocity.y = -600 * dFlip();
+
+			var l = game.healthBar.left;
+			tween('color', game.tweenManager.color(l, CoolUtil.stepsToSeconds(8), l.color, FlxColor.BLACK, {onComplete: _ -> {
+				tween('fdsf', game.tweenManager.color(l, CoolUtil.stepsToSeconds(4), FlxColor.BLACK, game.variables.get('jimbleColor')));
+			}}));
+			tween('hi', game.tweenManager.num(1, .5, CoolUtil.stepsToSeconds(8), {ease: FlxEase.cubeOut}, jimbleTween));
+		case 2123:
+			cubleComeBack();
+	}
+}
+
+function cubleComeBack() {
+	//game.dad.alpha = 0;
+	//cubleMic.visible = true;
+	//cubleMic.angularVelocity = 0;
+	//jimble.alpha = 1;
+	cuble.alpha = 1;
+	icon.visible = true;
+	icon.acceleration.y = 0;
+	icon.velocity.y = 0;
+	icon.y = FlxG.height;
+	icon.angle = 90;
+	icon.playAnim('idle');
+	tween('hiIcon', game.tween(icon, {y: game.iconP2.y, angle: 0}, CoolUtil.stepsToSeconds(2), {ease: FlxEase.cubeOut, onComplete: _ -> {
+		tween('hiIcon', game.tweenManager.num(0, 1, CoolUtil.stepsToSeconds(2) + ((1 / 24) * 6), {ease: FlxEase.cubeIn, onComplete: _ -> {
+			game.iconP2.visible = true;
+			icon.visible = false;
+		}}, cubleTween));
+	}}));
+
+	var endPos = cuble.getPosition();
+	cuble.x -= 525;
+	cuble.y += 60;
+	cuble.playAnim('die-static');
+	cuble.skipDance = true;
+	timer('playanim', game.timer(CoolUtil.stepsToSeconds(4), _ -> {
+		cuble.skipDance = false;
+		cuble.playAnim('die');
+		cuble.specialAnim = true;
+		tween('backatmyY', game.tween(cuble, {y: cuble.y + 160}, CoolUtil.stepsToSeconds(8), {ease: FlxEase.sineInOut}));
+		var l = game.healthBar.left;
+		tween('noo', game.tweenManager.color(l, CoolUtil.stepsToSeconds(4), game.variables.get('jimbleColor'), FlxColor.BLACK, {onComplete: _ -> {
+			tween('noo', game.tweenManager.color(l, CoolUtil.stepsToSeconds(4), FlxColor.BLACK, colorFromChar(cuble)));	
+		}}));
+	}));
+	cubleMicFloat = false;
+	cubleMic.angle %= 360;
+	tween('fda', game.tween(cubleMic, {x: 748.177, y: 395.464, angle: -45.41}, .25, {ease: FlxEase.cubeOut}));
+	cuble.animation.callback = (n, f, _) -> {
+		if (n == 'die') {
+			switch f {
+				case 6:
+					jimble.playAnim('push');
+					jimble.skipDance = true;
+					game.variables.set("noJimbleSing", true);
+					tween('jfim', game.tween(jimble, {x: 2300, y: -200, angle: 230}, CoolUtil.stepsToSeconds(32), {ease: FlxEase.circOut}));
+					tween('jfimscale', game.tween(jimble.scale, {x: .6, y: .6}, CoolUtil.stepsToSeconds(32), {ease: FlxEase.circOut}));
+
+					jimbleIcon.setPosition(game.iconP2.x, game.iconP2.y);
+					jimbleIcon.acceleration.y = 600 * dFlip();
+					jimbleIcon.velocity.y = -700 * dFlip();
+					jimbleIcon.visible = true;
+					game.iconP2.changeIcon('cuble-gooble');
+					tween('splatter', game.tween(jimbleIcon, {x: FlxG.width - (jimbleIcon.width * .5)}, CoolUtil.stepsToSeconds(4), {onComplete: _ -> {
+						jimbleIcon.playAnim("lose");
+						tween('splatterScale', game.tween(jimbleIcon.scale, {x: .5, y: 2}, 1 / 12, {ease: FlxEase.expoOut}));
+						jimbleIcon.acceleration.y = 30 * dFlip();
+						jimbleIcon.velocity.y = 0;
+					}}));
+				case 31:
+					cubleMic.visible = false;
+			}
+		}
+	}
+	tween('backatmyX', game.tween(cuble, {x: cuble.x + 525 - 425}, CoolUtil.stepsToSeconds(8), {ease: FlxEase.cubeOut, onComplete: _ -> {
+		tween('backatmyX', game.tween(cuble, {x: cuble.x - 25}, CoolUtil.stepsToSeconds(4), {ease: FlxEase.cubeInOut, onComplete: _ -> {
+			tween('backatmyX', game.tween(cuble, {x: endPos.x, y: endPos.y}, CoolUtil.stepsToSeconds(4), {ease: FlxEase.cubeOut, startDelay: CoolUtil.stepsToSeconds(3)}));
+		}}));
+	}}));
+}
+
+function onUpdatePost(elapsed) {
+	if (cubleMicFloat) {
+		var et = Conductor.instance.songPosition / 500;
+		cubleMic.x = 450 + (Math.cos(et) * 10);
+		cubleMic.y = 600 + (Math.sin(et) * 60);
+	}
+
+	//game.camZoom = .5;
+	//if (FlxG.keys.justPressed.B)
+	//	cubleComeBack();
+}
+
+function cancelTween(t:String) {
+	if (game.modchartTweens.exists(t))
+		game.modchartTweens.get(t).cancel();
+}
+
+function finishTween(t:String) {
+	var t = game.modchartTweens.get(t);
+	if (t != null && !t.finished) {
+		t.percent = 1;
+		t.update(0);
+		t.finish();
+	}
+}
+
+function tween(key:String, tween:FlxTween) {
+	finishTween(key);
+	game.modchartTweens.set(key, tween);
+	return tween;
+}
+
+function timer(key:String, timer:FlxTimer) {
+	if (game.modchartTimers.exists(key))
+		game.modchartTimers.get(key).cancel();
+	game.modchartTimers.set(key, timer);
+}
+
+function colorFromChar(char) {
+	return FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
+}
+
+function onEvent(name:String, v1:String, v2:String) {
+	if (name == 'Change Character' && v1 == 'Dad') {
+		switch v2 {
+			case 'jimble-flong':
+				tween('hi', game.tweenManager.num(.5, 1, CoolUtil.stepsToSeconds(8), {ease: FlxEase.quadIn, onComplete: _ -> {
+					jimbleIcon.visible = false;
+					game.iconP2.visible = true;
+				}}, jimbleTween));
+		}
+	}
+}
+
+function lerpIcon(icon, min, s) {
+	icon.x = FlxMath.lerp(min, game.iconP2.x, s);
+}
+
+function jimbleTween(s) {
+	lerpIcon(jimbleIcon, -300, s);	
+}
+
+function cubleTween(s) {
+	lerpIcon(icon, 0, s);
+}

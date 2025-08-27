@@ -1,0 +1,80 @@
+import deepend.game.ColorSprite;
+import deepend.states.substates.gameover.GameOverSubstate;
+
+var bf:FlxSprite;
+var explode:FlxSprite;
+var background:ColorSprite;
+var noob = false;
+
+function loadSounds() {
+	return ['sound:explode'];
+}
+
+function onGameCreate() {
+	bf = new FlxSprite();
+	bf.frames = Paths.getFrames('gameOver/bfexplode');
+	bf.animation.addByPrefix('idle', 'idle', 16, false);
+	// its fixed now but like just incase
+	trace(tryFunc(() -> secret()));
+	bf.animation.play('idle');
+	bf.cameras = [game.camOther];
+	bf.antialiasing = false;
+	bf.setGraphicSize(FlxG.width);
+	bf.updateHitbox();
+	bf.screenCenter();
+	gameOver.add(bf);
+
+	explode = new FlxSprite();
+	explode.frames = Paths.getFrames('stages/deepFences/BOOM');
+	explode.animation.addByPrefix('BigBoomies', 'BigBoomies', 30, false);
+	explode.animation.play('BigBoomies');
+	explode.scale.set(4.5, 4.5);
+	explode.updateHitbox();
+	explode.cameras = [game.camGame];
+	explode.antialiasing = false;
+	gameOver.add(explode);
+	Console.registerObject(explode);
+}
+
+function loadImages() {
+	return ['gameOver/bfexplode'];
+}
+
+function bfAnimFinish(_) {
+	final sub = game.gameOverSubState;
+	sub.skipSound = game.gameOverSubState.skipBf = true;
+	if (!GameOverSubstate.extendedGameover)
+	{
+		sub.swipe.visible = false;
+		sub.spinFile.offset.y = -500;
+		sub.spinFile.alpha = 1;
+		sub.customDeependTimer = 0;
+		FlxTween.tween(sub.spinFile.offset, {y: 0}, 2, {ease: FlxEase.cubeOut, startDelay: 1});
+	}
+	gameOver.openSubState(sub);
+}
+
+function onCreate() {
+	game.boyfriendGroup.visible = false;
+	explode.setPosition(game.boyfriend.x + ((game.boyfriend.width - explode.width) * .5), game.boyfriend.y + ((game.boyfriend.height - explode.height) * .5));
+	FlxG.sound.play(Paths.sound("explode"));
+}
+
+
+function hasBoth() {
+	return true;
+}
+
+function open() {
+	return game.curStep >= 842;
+}
+
+function onUpdate(elapsed) {
+	game.callOnLuas('gameOverUpdate', [elapsed]);
+	if (noob) {
+		if (controls.ACCEPT)
+			MusicBeatState.resetState();
+		else if (controls.BACK)
+			gameOver.leave();
+	}
+}

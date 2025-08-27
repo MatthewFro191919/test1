@@ -1,0 +1,32 @@
+import flixel.math.FlxMath;
+
+var stupid = null;
+function loadModchart()
+{
+	if (!inEditor)
+	{
+		numericForInterval(1616, 2140, 4, i -> {
+			modManager.queueFunc(i, i + 3, (_, s) -> {
+				if (!getScroll())
+					return;
+				final t = FlxMath.lerp(1, 0, FlxEase.cubeOut((s - i) / 3));
+				stupid.x = 25 * t * ((Math.floor(s / 4) % 2 == 0) ? -1 : 1);
+			});
+			modManager.queueFunc(i + 3.5, i + 4, (_, s) -> {
+				if (!getScroll())
+					return;
+				final t = FlxEase.cubeIn((s - (i + 3)));
+				stupid.x = 25 * t * ((Math.floor(s / 4) % 2 != 0) ? -1 : 1);
+			});
+		});
+	}
+}
+
+function getScroll() 
+{
+	if (stupid == null && game != null && game.camGame != null && game.camGame.scrollOffset2 != null)
+		stupid = game.camGame.scrollOffset2;
+	else
+		return false;
+	return true;
+}

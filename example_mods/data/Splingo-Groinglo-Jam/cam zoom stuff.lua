@@ -1,0 +1,37 @@
+--function onBeatHit()
+--    if (curBeat >= 128 and curBeat < 144) or (curBeat >= 596 and curBeat < 628) or (curBeat >= 224 and curBeat < 248) then
+--        setProperty("isCameraOnForcedPos", true)
+--        setProperty("moveCameraOnNote", false)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.65 or 0.6)
+--        setProperty("camGame.camFollow.x", (getMidpointX("boyfriend") + getMidpointX("dad")) / 2);
+--        setProperty("camGame.camFollow.y", 400);
+--    elseif (curBeat >= 144 and curBeat < 160) or (curBeat >= 248 and curBeat < 256) then
+--        setProperty("isCameraOnForcedPos", true)
+--        setProperty("moveCameraOnNote", false)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.85 or 0.7)
+--        setProperty("camGame.camFollow.x", (getMidpointX("boyfriend") + getMidpointX("dad")) / 2);
+--        setProperty("camGame.camFollow.y", 400);
+--    elseif (curBeat >= 256 and curBeat < 272) or (curBeat >= 384 and curBeat < 400) then
+--        setProperty("isCameraOnForcedPos", true)
+--        setProperty("moveCameraOnNote", false)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.45 or 0.5)
+--        setProperty("camGame.camFollow.x", (getMidpointX("boyfriend") + 775) / 2);
+--        setProperty("camGame.camFollow.y", 400);
+--    elseif (curBeat >= 320 and curBeat < 356) then
+--        setProperty("isCameraOnForcedPos", true)
+--        setProperty("moveCameraOnNote", false)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.65 or 0.6)
+--        setProperty("camGame.camFollow.x", (getMidpointX("boyfriend") + 775) / 2);
+--        setProperty("camGame.camFollow.y", 400);
+--    elseif (curBeat >= 356 and curBeat < 384) then
+--        setProperty("isCameraOnForcedPos", true)
+--        setProperty("moveCameraOnNote", false)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.85 or 0.7)
+--        setProperty("camGame.camFollow.x", (getMidpointX("boyfriend") + 775) / 2);
+--        setProperty("camGame.camFollow.y", 400);
+--    elseif curStep < 2096 or curStep > 2123 then
+--		setProperty("isCameraOnForcedPos", false)
+--        setProperty("moveCameraOnNote", true)
+--        setProperty("defaultCamZoom", (curBeat < 256) and 0.8 or 0.7)
+--    end
+--end

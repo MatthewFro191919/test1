@@ -1,0 +1,18 @@
+{
+  "pause": {
+    "left_side": [{ "id": "OHUNGI" }],
+    "right_side": [{ "id": "BF" }]
+  },
+  "credits": {
+    "music": "impyboo",
+    "art": {
+      "BACKGROUND": "fristo",
+      "SPRITES": ["pointyyesm", "statictigers"]
+    },
+    "code": {
+      "EVENTS": "boxyyyy_",
+      "CHART": "pointyyesm",
+      "MODCHART": "mayo78"
+    }
+  }
+}

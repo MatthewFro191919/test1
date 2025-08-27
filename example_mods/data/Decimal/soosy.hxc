@@ -1,0 +1,77 @@
+//import deepend.game.HealthIcon;
+//import flixel.math.FlxMath;
+
+//var beatsAh:Int = 0;
+//var FlxTween = game.tweenManager;
+
+//function onBeatHit() {
+//	if (beatsAh < 288) {
+//		if (beatsAh == 0) {
+//			game.camGame.y = -5;
+//			game.camStrums.y = -30;
+//		}
+	
+//		tween('im making pizza$beatsAh', FlxTween.tween(game.camGame, {y: 0}, 0.385, {ease: FlxEase.quadIn, onComplete:
+//			function(twn:FlxTween) {
+//				game.camGame.angle = 0.5 * (beatsAh % 2 == 0 ? -1 : 1);
+	
+//				game.camGame.y = -5;
+	
+//				if (!game.camGameZoomLock) {
+//					if (beatsAh % 2 == 0)
+//						game.camGame.zoom += 0.05;
+//					else
+//						game.camGame.zoom += 0.025;
+//				}
+//			}
+//		}));
+	
+//		 tween('im making pizza2 $beatsAh', FlxTween.tween(game.camStrums, {y: 0}, 0.385, {ease: FlxEase.quadIn, onComplete:
+//			function(twn:FlxTween) {	
+//				game.camStrums.y = -30;
+	
+//				if (!game.camGameZoomLock) {
+//					if (beatsAh % 2 == 0) {
+//						game.camHUD.zoom += 0.025;
+//						game.camStrums.zoom += 0.05;
+//					} else {
+//						game.camHUD.zoom += 0.0125;
+//						game.camStrums.zoom += 0.025;
+//					}
+//				}
+//			}
+//		}));
+	
+//		beatsAh++;
+//	} else {
+//		tween('im making pizza final', FlxTween.tween(game.camGame, {y: 0, angle: 0}, 0.385, {ease: FlxEase.quadIn}));
+	
+//		tween('im making pizza2 final', FlxTween.tween(game.camStrums, {y: 0, angle: 0}, 0.385, {ease: FlxEase.quadIn}));
+//	}
+//}
+
+//function cancelTween(t:String) {
+//	if (game.modchartTweens.exists(t))
+//		game.modchartTweens.get(t).cancel();
+//}
+
+//function finishTween(t:String) {
+//	var t = game.modchartTweens.get(t);
+//	if (t != null && !t.finished) {
+//		t.percent = 1;
+//		t.update(0);
+//		t.finish();
+//	}
+//}
+
+//function tween(key:String, tween:FlxTween) {
+//	finishTween(key);
+//	game.modchartTweens.set(key, tween);
+//	return tween;
+//}
+
+//function timer(key:String, timer:FlxTimer) {
+//	if (game.modchartTimers.exists(key))
+//		game.modchartTimers.get(key).cancel();
+//	game.modchartTimers.set(key, timer);
+//}

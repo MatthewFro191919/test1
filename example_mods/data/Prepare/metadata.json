@@ -1,0 +1,18 @@
+{
+  "pause": {
+    "left_side": [{ "id": "TANGO" }],
+    "right_side": [{ "id": "DAVE" }]
+  },
+  "credits": {
+    "music": ["wildythomas", "oryni"],
+    "art": {
+      "BACKGROUND": "binos",
+      "SPRITES": ["wildythomas", "oryni", "decompileddarcy", "bargames"],
+      "ANIMATIONS": ["wildythomas", "oryni", "decompileddarcy", "binos"]
+    },
+    "code": {
+      "EVENTS": "boxyyyy_",
+      "MODCHART": ["kautaruma", "izzee"]
+    }
+  }
+}

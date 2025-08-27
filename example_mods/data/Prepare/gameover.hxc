@@ -1,0 +1,34 @@
+final ango = 'gameOver/tangoGameOver';
+var spr:FlxSprite;
+
+function loadImages() {
+	return [ango];
+}
+
+function loadSounds() {
+	return ['sound:tangodie'];
+}
+
+function onCreate() {
+	game.persistentDraw = true;
+	spr = new FlxSprite();
+	spr.frames = Paths.getFrames(ango);
+	spr.antialiasing = false;
+	//trace(spr.frames, spr.animation);
+	spr.animation.addByPrefix('sprite', 'sprite', 24, false);
+	trace(tryFunc(() -> secret()));
+	spr.animation.play('sprite');
+	spr.cameras = [game.camOther];
+	gameOver.add(spr);
+
+	FlxG.sound.play(Paths.sound('tangodie'));
+}
+
+function onUpdate() {
+	if (spr != null && spr.animation.curAnim.finished) {
+		if (controls.ACCEPT)
+			MusicBeatState.resetState();
+		else if (controls.BACK)
+			gameOver.leave();
+	}
+}

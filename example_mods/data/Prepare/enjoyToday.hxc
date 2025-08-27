@@ -1,0 +1,1238 @@
+import deepend.game.Boyfriend;
+import deepend.game.Character;
+import deepend.game.DeependCamera;
+import deepend.system.Conductor;
+import flixel.group.FlxTypedSpriteContainer;
+import flixel.math.FlxRect;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+var prepareMidCameras:Array<DeependCamera> = [];
+var maskCams:Array<DeependCamera> = [];
+var tangoTimeCam:DeependCamera;
+var flickerGooning:FlxFlicker;
+
+var queerSing:Bool = false;
+var alternatorAngle:Bool = false;
+var ahhahahaodafjfsadis:Bool = false;
+var fernancitosLocos:Bool = false;
+var coolMan:Bool = false;
+var interestingGambit:Bool = false;
+var penarSplit:Bool = true;
+
+var TANGO_TWERK:Bool = false;
+
+var resetCamZoom:Bool = true;
+var saturationBop:Bool = true;
+
+var sickSection:Bool = false;
+var penisManSupremeLolos:Bool = false;
+var fartElapsed:Float = 0;
+
+var curSectionChar:String = '';
+var splitCamCur:String = '';
+
+var davePad:Character;
+var tangoPad:Character;
+var tangoTwerk:Character;
+
+var davePadGrp:FlxTypedSpriteContainer;
+var tangoPadGrp:FlxTypedSpriteContainer;
+var whatZafuck:MultiUseSprite;
+
+var shatter:MultiUseSprite;
+
+var gray:GrayscaleEffect;
+var colorSwap:ColorSwap;
+var colorBurn:ColorBurnEffect;
+var edgingEffect:EdgingEffect;
+var tintyShadery:FlxRuntimeShader;
+
+var tangoback:FlxBackdrop;
+var transitionVignette:FlxSprite;
+var faire:FlxSprite;
+var redThing:FlxSprite;
+var wawa:FlxBackdrop;
+
+var bark:FlxText;
+var TANGOTIME:FlxText;
+
+var daveEquation:FlxSprite;
+var polarCircle:FlxSprite;
+var allYouDoIsYapMan:FlxSprite;
+var daveEuler:FlxSprite;
+var explosoion:FlxSprite;
+
+var ahMannn = [];
+var myFuckingLifeRn = [];
+var intCamSize:Array<Array<Int>> = [];
+var zoomsWow:Array<Float> = [0.6, 0.9];
+var camAddZooms:Array<Float> = [0.045, 0.06];
+var camAddZoomsDenominator:Float = 8;
+
+function loadCharacters() {
+	return [
+		{id: "dave-thinkpad", type: BF},
+		{id: "tango-thinkpad", type: DAD},
+	];
+}
+
+function loadImages() {
+    return [
+        "stages/tangoSchool/fair",
+        "stages/tangoSchool/shatter",
+        "stages/tangoSchool/euler",
+    ];
+}
+
+function onCreate() {
+    tangoTimeCam = new DeependCamera('Tango Time Cam');
+    CoolUtil.insertCamera(tangoTimeCam, game.camBars, false);
+    tangoTimeCam.bgColor = 0x00000000;
+	tangoTimeCam.visible = false;
+
+	wawa = new FlxBackdrop(Paths.image('stages/tangoSchool/waw'), 0x11, 0, 0);
+	wawa.alpha = 0.00001;
+    wawa.moves = true;
+    wawa.velocity.set(500, 500);
+    wawa.updateHitbox();
+	wawa.antialiasing = false;
+	wawa.camera = tangoTimeCam;
+	game.insert(0, wawa);
+
+    tangoback = new FlxBackdrop(Paths.image('stages/tangoSchool/tangoback'), 0x11, 0, 0);
+    tangoback.frames = Paths.getFrames('stages/tangoSchool/tangoback');
+    tangoback.animation.addByPrefix('toTango', 'to_tango', 10, false);
+    tangoback.animation.addByPrefix('toDave', 'to_dave', 10, false);
+
+    tangoback.animation.finishCallback = (animationName:String)->{
+        switch (animationName.toLowerCase()) {
+            case 'totango':
+                game.timer(1, function(tmr:FlxTimer) { tangoback.animation.play('toDave'); });
+            case 'todave':
+                game.timer(1, function(tmr:FlxTimer) { tangoback.animation.play('toTango'); });
+        }
+    };
+
+    tangoback.animation.play('toDave');
+
+    glowFilter = new DropShadowFilter(25, 45, 0x000000, 0.75, 6, 6, 2.5, 1, false, false, true);
+
+    tangoback.moves = true;
+    tangoback.velocity.set(50, 50);
+    tangoback.updateHitbox();
+    tangoback.scrollFactor.set();
+    tangoback.camera = tangoTimeCam;
+    tangoback.antialiasing = false;
+    tangoback.color = 0xFFACACAC;
+    tangoback.alpha = 0.00001;
+    game.add(tangoback);
+
+    faire = new FlxBackdrop('', 0x01, 0, 25);
+    faire.frames = Paths.getFrames('stages/tangoSchool/fair');
+    faire.animation.addByPrefix('fire', 'fair idle', 12);
+    CoolUtil.exactSetGraphicSize(faire, FlxG.width, FlxG.height);
+    faire.updateHitbox();
+    faire.animation.play('fire');
+    faire.antialiasing = false;
+    faire.alpha = 0.00001;
+	faire.camera = tangoTimeCam;
+    game.add(faire);
+
+	game.addCharacterToList("dave-thinkpad", BF);
+    davePad = game.boyfriendMap.get("dave-thinkpad");
+	game.boyfriendGroup.remove(davePad);
+	davePad.alpha = 1;
+	davePad.setPosition(-46, -100);
+    davePad.clipRect = FlxRect.get(0, 0, 800, 450);
+
+    var davePadBg = new FlxSprite(30, 30).makeGraphic(2, 2, 0xff000000);
+    davePadBg.setGraphicSize(240, 240);
+    davePadBg.updateHitbox();
+
+    var davePadOutlineShadow = new FlxFilteredSprite(0, 0, Paths.image('stages/tangoSchool/dave_pad'));
+    davePadOutlineShadow.filters = [glowFilter];
+
+    var davePadOutline = new FlxSprite(0, 0, Paths.image('stages/tangoSchool/dave_pad'));
+
+    davePadGrp = new FlxTypedSpriteContainer(FlxG.width * 0.675 - 150, 210);
+    davePadGrp.camera = tangoTimeCam;
+    davePadGrp.add(davePadBg);
+    davePadGrp.add(davePadOutlineShadow);
+    davePadGrp.add(davePad);
+    davePadGrp.add(davePadOutline);
+    game.add(davePadGrp);
+
+	game.addCharacterToList("tango-thinkpad", DAD);
+    tangoPad = game.dadMap.get("tango-thinkpad");
+	game.dadGroup.remove(tangoPad);
+	tangoPad.alpha = 1;
+	tangoPad.setPosition(-24, 0);
+    tangoPad.clipRect = FlxRect.get(40, 0, 360, 275);
+
+    var tangoPadBg = new FlxSprite(30, 30).makeGraphic(2, 2, 0xff000000);
+    tangoPadBg.setGraphicSize(240, 240);
+    tangoPadBg.updateHitbox();
+
+    var tangoPadOutlineShadow = new FlxFilteredSprite(0, 0, Paths.image('stages/tangoSchool/tango_pad'));
+    tangoPadOutlineShadow.filters = [glowFilter];
+
+    var tangoPadOutline = new FlxSprite(0, 0, Paths.image('stages/tangoSchool/tango_pad'));
+
+    tangoPadGrp = new FlxTypedSpriteContainer(FlxG.width * 0.325 - 150, 210);
+    tangoPadGrp.camera = tangoTimeCam;
+    tangoPadGrp.add(tangoPadBg);
+    tangoPadGrp.add(tangoPadOutlineShadow);
+    tangoPadGrp.add(tangoPad);
+    tangoPadGrp.add(tangoPadOutline);
+    game.add(tangoPadGrp);
+
+    tangoTimeCam.antialiasing = false;
+    tangoTimeCam.scroll.y = -FlxG.height;
+
+    game.oppOffset.set(-250, 0);
+    game.camOffset.set(300, 0);
+    
+    // mad tango -350
+    game.defaultCamZoom = 0.8;
+    game.startingCamZoom = 0.8;
+
+    // center (x: 1097.5 | y: 546 | zoom: 0.65)
+}
+
+function onCreatePost()
+{
+    if (colorSwap == null)
+        colorSwap = new ColorSwap();
+
+    if (colorBurn == null) {
+        colorBurn = new ColorBurnEffect();
+        colorBurn.colorBurnMix = 0;
+        colorBurn.colorBurnBlue = 255;
+        colorBurn.colorBurnGreen = 0;
+        colorBurn.colorBurnRed = 0;
+    }
+
+    if (gray == null) {
+        gray = new GrayscaleEffect();
+        gray.greyMixLevel = 0;
+    }
+
+	if (edgingEffect == null) {
+		edgingEffect = new EdgingEffect();
+		edgingEffect.edgeMix = 0;
+        edgingEffect.imageMix = 100;
+        edgingEffect.edgeColorG = 216;
+        edgingEffect.edgeColorB = 0;
+	}
+
+	if (tintyShadery == null && ClientPrefs.shaders) {
+		tintyShadery = game.createRuntimeShader("GradientMap");
+    	tintyShadery.setSampler2D("gradient", FlxG.bitmap.add(Paths.image("stages/tangoSchool/tangoGrad")).bitmap);
+    	tintyShadery.setFloat("mix_amount", 0.0);
+	}
+
+    for (penis in 0...3) {
+        var penisMan:GrayscaleEffect = new GrayscaleEffect();
+        penisMan.greyMixLevel = 0;
+        ahMannn.push(penisMan);
+
+        myFuckingLifeRn.push(new ShaderFilter(penisMan.shader));
+    }
+
+    for (i in [gray, colorBurn, colorSwap])
+        game.addShaderToCamera('game', i);
+
+	if (tintyShadery != null)
+		game.camGame.filters.push(new ShaderFilter(tintyShadery));
+    
+    game.vignette = new FlxSprite().loadGraphic(Paths.image('vignette'));
+	CoolUtil.exactSetGraphicSize(game.vignette, FlxG.width + 6, FlxG.height + 6);
+    game.vignette.updateHitbox();
+	game.vignette.screenCenter();
+	game.vignette.color = 0xFF000000;
+	game.vignette.alpha = 0.00001;
+	game.vignette.cameras = [game.camOther];
+    game.add(game.vignette);
+
+    prepareMidCameras.push(new DeependCamera('Prepare Mid Cam 0'));
+    CoolUtil.insertCamera(prepareMidCameras[0], game.camBetween, true);
+
+    prepareMidCameras.push(new DeependCamera('Prepare Mid Cam 1'));
+    CoolUtil.insertCamera(prepareMidCameras[1], game.camBetween, true);
+
+    prepareMidCameras.push(new DeependCamera('Prepare Mid Cam 2'));
+    CoolUtil.insertCamera(prepareMidCameras[2], game.camBetween, true);
+
+    maskCams.push(new DeependCamera('Prepare Mask Cam 0'));
+	CoolUtil.insertCamera(maskCams[0], game.camBetween, false);
+		
+    maskCams[0].bgColor = 0x00000000;
+
+	for (cam in prepareMidCameras)
+		cam.visible = false;
+
+	for (cam in maskCams)
+		cam.visible = false;
+
+    redThing = new FlxSprite(295, 0).makeGraphic(1, 1, FlxColor.RED);
+	redThing.scale.set(FlxG.width * 2, FlxG.height * 2);
+	redThing.updateHitbox();
+	redThing.cameras = [maskCams[0]];
+    redThing.angle = -78.83;
+    // lalaRed.visible = false;
+	game.add(redThing);
+
+    shatter = new MultiUseSprite();
+    shatter.frames = Paths.getFrames('stages/tangoSchool/shatter');
+    shatter.addAnimation('shatter', 'shatter shatter', null, 30, false);
+    shatter.addAnimation('nones', 'shatter normal', null, 30, false);
+    shatter.playAnimation('nones');
+    CoolUtil.exactSetGraphicSize(shatter, FlxG.width, FlxG.height);
+    shatter.updateHitbox();
+    shatter.cameras = [maskCams[0]];
+    shatter.visible = false;
+    game.add(shatter);
+
+	prepareMidCameras[0].filters = prepareMidCameras[1].filters = game.camGame.filters;
+
+    tangoTimeCam.filters = [new ShaderFilter(gray.shader), new ShaderFilter(edgingEffect.shader)];
+
+	prepareMidCameras[0].flashSprite.mask = maskCams[0].flashSprite;
+
+    prepareMidCameras[0].x = maskCams[0].x = 480;
+
+    prepareMidCameras[0].scroll.set(650, 210);
+
+    prepareMidCameras[1].setSize(640, 720);
+    prepareMidCameras[1].x = FlxG.width + prepareMidCameras[1].width;
+    prepareMidCameras[1].scroll.set(1500, 165);
+    prepareMidCameras[1].zoom = 0.9;
+
+    prepareMidCameras[2].visible = false;
+
+    whatZafuck = new MultiUseSprite(880 + 480, -125);
+    whatZafuck.frames = Paths.getFrames('stages/house/line');
+    whatZafuck.addAnimation('loop', 'line', null, 12, true);
+    whatZafuck.playAnimation('loop');
+    whatZafuck.animation.timeScale = 10;
+    whatZafuck.cameras = [game.camBetween];
+    whatZafuck.angle = 9.83;
+    game.add(whatZafuck);
+
+    transitionVignette = new FlxSprite(0, 700).loadGraphic(Paths.image('stages/deepCircus/vignette'));
+	CoolUtil.exactSetGraphicSize(transitionVignette, FlxG.width, transitionVignette.height);
+    transitionVignette.updateHitbox();
+	transitionVignette.color = 0xFF000000;
+	transitionVignette.cameras = [game.camBetween];
+    game.add(transitionVignette);
+
+    bark = new FlxText(0, 0, 0, 'starting');
+    bark.setFormat('Comic Sans MS', 266, FlxColor.WHITE, 'center');
+    bark.textField.antiAliasType = 'advanced';
+    bark.textField.sharpness = 400;
+    bark.updateHitbox();
+    bark.setPosition((FlxG.width - bark.width) / 2, ((FlxG.height - bark.height) / 2));
+    bark.camera = game.camBetween;
+    bark.visible = false;
+    game.add(bark);
+
+	TANGOTIME = new FlxText(0, 0, 0, '');
+    TANGOTIME.setFormat('Comic Sans MS', 126, FlxColor.WHITE, 'center');
+    TANGOTIME.textField.antiAliasType = 'advanced';
+    TANGOTIME.textField.sharpness = 400;
+    TANGOTIME.updateHitbox();
+    TANGOTIME.screenCenter();
+    TANGOTIME.camera = tangoTimeCam;
+    game.add(TANGOTIME);
+
+	tangoTwerk = new Character(0, 0, 'tango');
+	tangoTwerk.scale.set(0.6, 0.6);
+	tangoTwerk.playAnim('GOD');
+	tangoTwerk.updateHitbox();
+	tangoTwerk.setPosition(((FlxG.width - tangoTwerk.width) / 2) - 20, ((FlxG.height - tangoTwerk.height) / 2) - 20);
+ 	tangoTwerk.camera = tangoTimeCam;
+	tangoTwerk.visible = false;
+    game.insert(1, tangoTwerk);
+
+	daveEquation = new FlxSprite().loadGraphic(Paths.image('stages/tangoSchool/daveEquation'));
+    CoolUtil.exactSetGraphicSize(daveEquation, FlxG.width, FlxG.height);
+    daveEquation.updateHitbox();
+	daveEquation.camera = tangoTimeCam;
+    daveEquation.antialiasing = false;
+	daveEquation.alpha = 0.00001;
+    game.add(daveEquation);
+
+	polarCircle = new FlxSprite().loadGraphic(Paths.image('stages/tangoSchool/PolarWheel'));
+	// polarCircle.camera = game.camBetween;
+	polarCircle.scale.set(0.75, 0.75);
+	polarCircle.updateHitbox();
+	polarCircle.visible = false;
+	polarCircle.setPosition(FlxG.width - (polarCircle.width/1.5), FlxG.height - (polarCircle.height/1.5));
+	game.add(polarCircle);
+
+	allYouDoIsYapMan = new FlxSprite();
+	allYouDoIsYapMan.frames = Paths.getFrames('stages/tangoSchool/stop_that');
+	allYouDoIsYapMan.animation.addByPrefix('adiostango', 'tweak', 4);
+	allYouDoIsYapMan.animation.play('adiostango');
+	allYouDoIsYapMan.scale.set(0.65, 0.65);
+	allYouDoIsYapMan.updateHitbox();
+	allYouDoIsYapMan.setPosition(polarCircle.x + ((polarCircle.width - allYouDoIsYapMan.width) / 2) + 25, polarCircle.y + ((polarCircle.height - allYouDoIsYapMan.height) / 2) - 45);
+	allYouDoIsYapMan.visible = false;
+	// allYouDoIsYapMan.camera = game.camBetween;
+	game.add(allYouDoIsYapMan);
+
+	daveEuler = new FlxSprite();
+	daveEuler.frames = Paths.getFrames('stages/tangoSchool/euler');
+	daveEuler.animation.addByPrefix('oladave', 'idle', 30);
+	daveEuler.animation.play('oladave');
+	daveEuler.scale.set(0.65, 0.65);
+	daveEuler.updateHitbox();
+	daveEuler.setPosition(polarCircle.x + ((polarCircle.width - daveEuler.width) / 2) + 25, polarCircle.y + ((polarCircle.height - daveEuler.height) / 2) - 45);
+	daveEuler.visible = false;
+	// daveEuler.camera = game.camBetween;
+	game.add(daveEuler);
+
+    explosoion = new FlxSprite();
+    explosoion.frames = Paths.getFrames('stages/tangoSchool/explosoion');
+	explosoion.animation.addByPrefix('kabuum', 'explosoion kabom', 12, false);
+    // explosoion.animation.play('kabuum');
+	explosoion.scale.set(10, 10);
+    explosoion.antialiasing = false;
+	explosoion.updateHitbox();
+	explosoion.setPosition(polarCircle.x + ((polarCircle.width - explosoion.width) / 2) + 25, polarCircle.y + ((polarCircle.height - explosoion.height) / 2) - 45);
+	explosoion.visible = false;
+    // explosoion.camera = game.camBetween;
+	game.add(explosoion);
+
+    explosoion.animation.finishCallback = (animationName:String)->{explosoion.visible = false;};
+
+    if (FlxG.random.bool(1)) {
+        TANGO_TWERK = true;
+        bark.text = 'bargames';
+    }
+}
+
+function onEvent(eventName:String, value1:String, value2:String)
+{
+    if (eventName == 'Trigger Prepare Events') {
+        var eventshit:Int = Std.parseInt(value1);
+		var theothershit:Float = Std.parseFloat(value2);
+		if (Math.isNaN(eventshit)) return;
+		if (Math.isNaN(theothershit)) theothershit = 0.01;
+
+        switch (eventshit)
+        {
+            case 0:
+                game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+
+                alternatorAngle = !alternatorAngle;
+                
+                game.camGame.angle = 2.5 * (alternatorAngle == true ? 1 : -1);
+                game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});
+
+                game.triggerEventNote('Set Cam Zoom', '${game.defaultCamZoom += 0.1}', '');
+            case 1:
+                setZoom(game.defaultCamZoom += 0.025);
+                
+                colorSwap.saturation += 0.0125;
+            case 2:
+                game.camGameZoomLock = false;
+                game.tween(colorSwap, {saturation: 0}, 0.5, {ease: FlxEase.quadOut});
+
+                game.triggerEventNote('Add Camera Zoom', '0.03', '0.045');
+            case 3:
+                game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+                game.tweenManager.cancelTweensOf(colorSwap, ['saturation']);
+
+                alternatorAngle = !alternatorAngle;
+                colorSwap.saturation = 0.075;
+                
+                game.camGame.angle = 2.5 * (alternatorAngle == true ? 1 : -1);
+                game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});    
+                game.tween(colorSwap, {saturation: 0}, 0.25, {ease: FlxEase.quadOut});
+            case 4:
+                game.tween(gray, {greyMixLevel: 100}, 3.73, {ease: FlxEase.quadIn});  
+                tweenZoom(1.45, 3.73, FlxEase.quadIn);
+                // game.tween(game, {defaultCamZoom: 1.45}, 3.73, {ease: FlxEase.quadIn, onComplete: function});  
+                game.tween(game.vignette, {alpha: 0.45}, 3.73, {ease: FlxEase.quadIn});  
+            case 5:
+                game.isCameraOnForcedPos = true;
+
+                game.tween(gray, {greyMixLevel: 0}, 0.45, {ease: FlxEase.quadOut}); 
+                game.tween(game.vignette, {alpha: 0.0001}, 0.45, {ease: FlxEase.quadOut});
+                tweenZoom(0.6, 0.45, FlxEase.quadOut);
+                game.tween(game.camGame.camFollow, {x: game.getCharCameraPosition('dad', game.oppOffset).x, y: game.getCharCameraPosition('dad', game.oppOffset).y}, 0.45, {ease: FlxEase.quadOut, onComplete:
+                    function(twn:FlxTween) {
+                        game.isCameraOnForcedPos = false;
+                    }}
+                );
+            case 6:
+                coolMan = !coolMan;
+            case 7:
+                resetCamZoom = !resetCamZoom;
+
+                if (resetCamZoom && mustHitSection)
+                    curSectionChar = 'boyfriend';
+                else if (resetCamZoom && !mustHitSection)
+                    curSectionChar = 'dad';
+            case 8:
+                /*
+                if (!game.camGameZoomLock)
+                    game.camGameZoomLock = true;
+                
+                game.triggerEventNote('Set Cam Zoom', '${theothershit}', '');
+                FlxG.camera.zoom = game.defaultCamZoom;*/
+                setZoom(theothershit);
+            case 9:
+                game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+            
+                fernancitosLocos = !fernancitosLocos;
+                
+                game.camGame.angle = 3 * (fernancitosLocos == true ? 1 : -1);
+                game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});    
+            case 10:
+                game.tweenManager.cancelTweensOf(colorSwap, ['saturation']);
+
+                colorSwap.saturation = theothershit;
+            case 11:
+                game.oppOffset.x = -350;
+            case 12:
+                var curCharLol:String = 'boyfriend';
+
+                var okMan:FlxPoint;
+
+                switch (Math.round(theothershit))
+                {
+                    case 0:
+                        curCharLol = 'bf';
+                        okMan = (game.getCharCameraPosition(curCharLol, game.camOffset));
+                    case 1:
+                        curCharLol = 'dad';
+                        okMan = (game.getCharCameraPosition(curCharLol, game.oppOffset));
+                    default:
+                        curCharLol = 'bf';
+                        okMan = (game.getCharCameraPosition(curCharLol, game.camOffset));
+                }
+
+                game.isCameraOnForcedPos = true;
+                game.snapCamFollowToPos(okMan.x, okMan.y, true);
+                game.isCameraOnForcedPos = false;
+
+                if (resetCamZoom) {
+                    switch (curCharLol)
+                    {
+                        case 'bf':
+                            setZoom(0.9);
+                        case 'dad':
+                            setZoom(0.6);
+                    }
+                }
+                    
+            case 13:
+                saturationBop = !saturationBop;
+            case 14:
+                tweenZoom(1.15, 1.21, FlxEase.quadIn);
+                game.tween(colorBurn, {colorBurnMix: 45}, 1.21, {ease: FlxEase.quadIn});
+            case 15:
+				for (cam in [prepareMidCameras[0], maskCams[0]])
+					cam.visible = true;
+				
+                game.tween(prepareMidCameras[0], {x: 0}, 1.25, {ease: FlxEase.quadOut});
+                game.tween(maskCams[0], {x: 0}, 1.25, {ease: FlxEase.quadOut});
+                game.tween(whatZafuck, {x: 880}, 1.25, {ease: FlxEase.quadOut});
+            case 16:
+                game.tween(prepareMidCameras[0], {x: 1280}, 1.25, {ease: FlxEase.quadIn, onComplete:
+					function(twn:FlxTween) {
+						prepareMidCameras[0].visible = false;
+					}
+				});
+
+                game.tween(maskCams[0], {x: 1280}, 1.25, {ease: FlxEase.quadIn, onComplete:
+					function(twn:FlxTween) {
+						maskCams[0].visible = redThing.visible = false;
+						shatter.visible = true;
+					}
+				});
+
+                game.tween(whatZafuck, {x: 880 + 1280}, 1.25, {ease: FlxEase.quadIn});
+            case 17:
+                shatter.playAnimation('shatter', true);
+				game.camGame.worldAngle = 0;
+				interestingGambit = true;
+            case 18:
+                game.tween(colorBurn, {colorBurnMix: 0}, 3.25, {ease: FlxEase.linear});
+            case 19:
+                game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+                game.tweenManager.cancelTweensOf(colorSwap, ['saturation']);
+    
+                alternatorAngle = !alternatorAngle;
+                colorSwap.saturation = 0.375;
+                    
+                game.camGame.angle = 4.25 * (alternatorAngle == true ? 1 : -1);
+                game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});    
+                game.tween(colorSwap, {saturation: 0}, 0.25, {ease: FlxEase.quadOut});
+            case 20:
+                game.tween(gray, {greyMixLevel: 50}, 1.3, {ease: FlxEase.quadIn});  
+                tweenZoom(1.35, 1.2, FlxEase.quadIn);
+                game.tween(game.vignette, {alpha: 0.45}, 1.3, {ease: FlxEase.quadIn});  
+            case 21:
+                if (prepareMidCameras[0] != null && maskCams[0] != null) {
+                    whatZafuck.angle = 0;
+					prepareMidCameras[0].visible = true;
+
+                    prepareMidCameras[0].flashSprite.mask = null;
+
+                    prepareMidCameras[0].filters = [];
+
+                    prepareMidCameras[0].scroll.set(-98.893 - (98.893 * -4.5), 85.5 - (85.5 * -4.5));
+                    prepareMidCameras[0].zoom = 0.75;
+                    prepareMidCameras[0].setSize(320, 180);
+                    prepareMidCameras[0].setPosition(0, FlxG.height - 180);
+
+                    var newFunnyText:FlxText = new FlxText(0, 0, 0, 'TANGO SCREAM CAM');
+                    newFunnyText.setFormat(Paths.font('comic/normal.ttf'), 30, FlxColor.RED, 'center');
+                    newFunnyText.updateHitbox();
+                    newFunnyText.y = (prepareMidCameras[0].y - newFunnyText.height - 5);
+                    newFunnyText.cameras = [game.camBetween];
+
+                    flickerGooning = FlxFlicker.flicker(newFunnyText, 2.03, 0.15, false, false, _ -> {
+                        game.remove(newFunnyText);
+                        FlxDestroyUtil.destroy(newFunnyText);
+                    });
+
+                    game.add(newFunnyText);
+
+                    game.tween(prepareMidCameras[0], {y: 0, width: 1280, height: 720}, 2.03, {ease: FlxEase.quadIn, onComplete:
+                        function(twn:FlxTween) {
+                            prepareMidCameras[0].x = 1280;
+							prepareMidCameras[0].visible = false;
+
+                            onEvent('Trigger Prepare Events', '8', '0.75');
+
+                            onEvent('Trigger Prepare Events', '12', '1');
+
+                            gray.greyMixLevel = 0;
+                        }
+                    });
+
+                    game.tween(prepareMidCameras[0].scroll, {x: -98.893, y: 85.5}, 2.03, {ease: FlxEase.quadIn});
+                    game.tween(game.vignette, {alpha: 0.000001}, 2.03, {ease: FlxEase.quadIn});
+                    game.tween(newFunnyText, {x: newFunnyText.x + 960, y: ((prepareMidCameras[0].y - newFunnyText.height - 5)) - 540}, 2.03, {ease: FlxEase.quadIn});
+                }
+            case 22:
+
+                // tango Split Cam
+
+                if (prepareMidCameras[0] != null) {
+                    // making sure
+                    prepareMidCameras[0].flashSprite?.mask = null;
+					prepareMidCameras[0].visible = true;
+
+                    if (prepareMidCameras[0].filters == [])
+                        prepareMidCameras[0].filters = game.camGame.filters;
+
+                    if (prepareMidCameras[0].width != 420)
+                        prepareMidCameras[0].setSize(420, 720);
+
+                    if (splitCamCur != 'tango') {
+                        splitCamCur = 'tango';
+                        prepareMidCameras[0].scroll.set(260, 145);
+                        prepareMidCameras[0].zoom = 0.6;
+                        prepareMidCameras[0].setPosition(0 - prepareMidCameras[0].width, 0);
+                        whatZafuck.angle = 0;
+                        whatZafuck.setPosition(-20, -125);
+
+                        game.tween(whatZafuck, {x: 0 + prepareMidCameras[0].width - 20}, 1.1, {ease: FlxEase.quadOut});
+                        game.tween(prepareMidCameras[0], {x: 0}, 1.1, {ease: FlxEase.quadOut});
+                    }
+                }
+            case 23:
+                // dave Split Cam
+
+                if (prepareMidCameras[0] != null) {
+                    // making sures
+                    prepareMidCameras[0].flashSprite?.mask = null;
+					prepareMidCameras[0].visible = true;
+
+                    if (prepareMidCameras[0].filters == [])
+                        prepareMidCameras[0].filters = game.camGame.filters;
+
+                    if (prepareMidCameras[0].width != 420)
+                        prepareMidCameras[0].setSize(420, 720);
+
+                    if (splitCamCur != 'dave') {
+                        splitCamCur = 'dave';
+                        prepareMidCameras[0].scroll.set(1500, 215);
+                        prepareMidCameras[0].zoom = 0.9;
+                        prepareMidCameras[0].setPosition(FlxG.width + prepareMidCameras[0].width, 0);
+                        whatZafuck.angle = 0;
+                        whatZafuck.setPosition(FlxG.width + prepareMidCameras[0].width, -125);
+
+                        game.tween(prepareMidCameras[0], {x: FlxG.width - prepareMidCameras[0].width}, 1.1, {ease: FlxEase.quadOut});
+                        game.tween(whatZafuck, {x: 825}, 1.1, {ease: FlxEase.quadOut});
+                    }
+                }
+            case 24:
+                // vanish cam
+
+                switch (splitCamCur) 
+                {
+                    case 'tango':
+                        penarSplit = false;
+                        game.tweenManager.cancelTweensOf(prepareMidCameras[0].scroll, ['x']);
+
+                        game.tween(prepareMidCameras[0], {x: 0 - prepareMidCameras[0].width}, 0.5, {ease: FlxEase.quadIn, onComplete:
+							function(twn:FlxTween) {
+								prepareMidCameras[0].visible = false;
+							}
+						});
+
+                        game.tween(whatZafuck, {x: -20, alpha: 0.0001}, 0.5, {ease: FlxEase.quadIn});
+                    case 'dave':
+                        game.tween(whatZafuck, {x: FlxG.width + prepareMidCameras[0].width}, 0.5, {ease: FlxEase.quadIn});
+
+                        game.tween(prepareMidCameras[0], {x: FlxG.width + prepareMidCameras[0].width}, 0.5, {ease: FlxEase.quadIn, onComplete:
+							function(twn:FlxTween) {
+								prepareMidCameras[0].visible = false;
+							}
+						});
+                }
+            case 25:
+                var ohok:Bool = false;
+
+                var okMan:FlxPoint;
+
+                if (Math.round(theothershit) == 1)
+                    ohok = true;
+
+                if (ohok) okMan = game.oppOffset
+                else okMan = game.camOffset;
+
+                game.moveCamera(ohok, okMan);
+            case 26:
+                game.isCameraOnForcedPos = true;
+                tweenZoom(0.65, 1.15, FlxEase.quadInOut);
+                game.tween(game.camGame.camFollow, {x: 1097.5, y: 546}, 1.3, {ease: FlxEase.quadInOut});
+            case 27:
+                game.triggerEventNote('Add Camera Zoom', '0.1', '0.085');
+
+                game.tween(colorSwap, {hue: .05}, 0.5, {ease: FlxEase.quadOut}); 
+                game.tween(gray, {greyMixLevel: 45}, 0.5, {ease: FlxEase.quadOut});
+                game.tween(game.vignette, {alpha: 0.25}, 0.5, {ease: FlxEase.quadOut});
+                tweenZoom(0.8, 0.5, FlxEase.quadOut);
+                sickSection = true;
+                game.addCinematicBars(0.5);
+            case 28:
+                game.tween(game.camGame.camFollow, {x: game.getCharCameraPosition('dad', game.oppOffset).x, y: game.getCharCameraPosition('dad', game.oppOffset).y}, 0.25, {ease: FlxEase.cubeOut, onComplete:
+                    function(twn:FlxTween) {
+                        game.isCameraOnForcedPos = false;
+                    }}
+                );
+            case 29:
+                game.isCameraOnForcedPos = true;
+                tweenZoom(0.65, 0.73, FlxEase.quadOut);
+                // game.getCharCameraPosition('bf', game.camOffset).x, y: game.getCharCameraPosition('bf', game.camOffset).y
+                game.tween(game.camGame.camFollow, {x: 1097.5, y: 546}, 0.73, {ease: FlxEase.quadInOut});
+            case 30:
+                tweenZoom(1.1, 1.3, FlxEase.linear);
+                game.tween(game.camGame.camFollow, {x: game.getCharCameraPosition('bf', game.camOffset).x, y: game.getCharCameraPosition('bf', game.camOffset).y}, 1.3, {ease: FlxEase.quadIn, onComplete:
+                    function(twn:FlxTween) {
+                        game.isCameraOnForcedPos = false;
+                    }
+                });
+            case 31:
+				prepareMidCameras[0].visible = prepareMidCameras[1].visible = true;
+                prepareMidCameras[0].filters = game.camGame.filters;
+
+                prepareMidCameras[0].flashSprite?.mask = null;
+                
+                prepareMidCameras[0].setSize(640, 720);
+                prepareMidCameras[0].scroll.set(245, 145);
+                prepareMidCameras[0].zoom = 0.75;
+                prepareMidCameras[0].setPosition(-640, 0);
+
+                game.tween(prepareMidCameras[0], {x: 0}, 1.1, {ease: FlxEase.cubeOut});
+                game.tween(prepareMidCameras[1], {x: FlxG.width - prepareMidCameras[1].width}, 1.1, {ease: FlxEase.cubeOut});
+
+                whatZafuck.setPosition(610, -125 + whatZafuck.height);
+                whatZafuck.angle = 0;
+                whatZafuck.alpha = 1;
+
+                game.tween(game.vignette, {alpha: 0.45}, 1.1, {ease: FlxEase.linear});
+
+                game.tween(whatZafuck, {y: -125}, 1.1, {ease: FlxEase.cubeOut});
+            case 32:
+                game.tween(game.vignette, {alpha: 0}, 1.7, {ease: FlxEase.quadIn});
+                // game.tween(whatZafuck, {y: -125 - whatZafuck.height + 35}, 1.7, {ease: FlxEase.quadIn});
+                game.tween(prepareMidCameras[0].scroll, {y: prepareMidCameras[0].scroll.y - prepareMidCameras[0].height}, 1.7, {ease: FlxEase.quadIn});
+                game.tween(prepareMidCameras[1].scroll, {y: prepareMidCameras[1].scroll.y - prepareMidCameras[0].height}, 1.7, {ease: FlxEase.quadIn});
+                game.tween(transitionVignette, {y: -745}, 1.7, {ease: FlxEase.quadIn, onComplete:
+                    function(twn:FlxTween) {
+                        whatZafuck.y = 3000;
+
+                        prepareMidCameras[0].visible = prepareMidCameras[1].visible = false;
+                        colorSwap.hue = -0.1;
+                        gray.greyMixLevel = 0;
+                    }
+                });
+            case 33:
+                queerSing = true;
+
+                onEvent('Trigger Prepare Events', '35', '');
+
+                sickSection = false;
+                game.camGame.visible = false;
+                game.camGame.worldAngle = 0;
+
+				tangoTimeCam.visible = prepareMidCameras[0].visible = true;
+
+                for (i in 0...prepareMidCameras.length) {
+                    prepareMidCameras[i].filters = [myFuckingLifeRn[i], new ShaderFilter(colorBurn.shader), new ShaderFilter(colorSwap.shader)];
+
+                    prepareMidCameras[i].zoom = 0.7;
+
+                    prepareMidCameras[i].setSize(FlxG.width, (FlxG.height/3)*(3-i));
+
+                    prepareMidCameras[i].setPosition(0, 0 + (240 * i));
+                    prepareMidCameras[i].visible = true;
+					prepareMidCameras[i].exists = true;
+                    prepareMidCameras[i].alpha = 0.00001;
+
+                    if (i == 0 || i == 2)
+                        prepareMidCameras[i].scroll.set(-200, 115);
+
+                    if (i == 0)
+						prepareMidCameras[i].alpha = 1;
+
+                    if (i == 1)
+                        prepareMidCameras[i].scroll.set(-275, 237);
+
+					ahMannn[i].greyMixLevel = 0;
+                }
+
+                game.boyfriend.onDance.add(davePadDance);
+                game.dad.onDance.add(tangoPadDance);
+                
+                game.tween(tangoTimeCam.scroll, {y: 0}, 1.2, {ease: FlxEase.quintOut});
+                // game.tween(transitionVignette, {y: -170}, 1.2);
+                game.tween(tangoback, {alpha: 1}, 1.2, {ease: FlxEase.quintOut});
+                game.tween(faire, {alpha: 1}, 19.46, {ease: FlxEase.linear});
+            case 34:
+                queerSing = false;
+                transitionVignette.y = 700;
+
+                game.boyfriend.onDance.remove(davePadDance);
+                game.dad.onDance.remove(tangoPadDance);
+
+                game.tween(tangoPadGrp, {y: tangoPadGrp.y - 130, angle: -360, x: tangoPadGrp.x - 510}, 0.3, {ease: FlxEase.backIn});
+                game.tween(davePadGrp, {y: davePadGrp.y - 130, angle: 360, x: davePadGrp.x + 510}, 0.3, {ease: FlxEase.backIn});
+                game.tween(tangoback, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+                game.tween(faire, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+                game.tween(gray, {greyMixLevel: 0}, 0.3, {ease: FlxEase.quadOut});
+            case 35:
+                bark.visible = !bark.visible;
+            case 36:
+                game.tween(tangoTimeCam, {zoom: 1.15}, 1.3, {ease: FlxEase.quadIn});
+                game.tweenManager.color(tangoback, 1.3, tangoback.color, FlxColor.BLACK, {ease: FlxEase.quadIn});
+                game.tween(gray, {greyMixLevel: 100}, 1.3, {ease: FlxEase.quadIn});
+                game.tween(glowFilter, {distance: 0, strength: 0}, 1.3, {ease: FlxEase.quadIn});
+            case 37:
+                switch (Math.round(theothershit))
+                {
+                    case 0:
+						penisManSupremeLolos = true;
+						prepareMidCameras[0].visible = true;
+                        game.tween(prepareMidCameras[0], {height: 240}, 0.2, {ease: FlxEase.quintOut});
+                        game.tween(prepareMidCameras[1], {alpha: 1}, 0.27);
+                        game.tween(ahMannn[0], {greyMixLevel: 100}, 0.27, {onComplete: 
+                            function(twn:FlxTween) {
+                                prepareMidCameras[0].exists = false;
+                            }
+                        });
+                    case 1:
+                        game.tween(prepareMidCameras[1], {height: 240, y: 240}, 0.2, {ease: FlxEase.quintOut});
+                        game.tween(ahMannn[1], {greyMixLevel: 100}, 0.27, {onComplete: 
+                            function(twn:FlxTween) {
+                                prepareMidCameras[1].exists = false;
+                                game.tween(prepareMidCameras[2], {alpha: 1}, 0.2, {ease: FlxEase.quintOut});
+                            }
+                        });
+                    case 2:
+                        game.tween(ahMannn[2], {greyMixLevel: 100}, 0.27, {onComplete: 
+                            function(twn:FlxTween) {
+                                prepareMidCameras[2].exists = false;
+
+                                prepareMidCameras[0].angle = -35;
+                                prepareMidCameras[1].angle = 35;
+                                prepareMidCameras[2].angle = -30;
+
+                                for (cam in prepareMidCameras)
+                                    game.tween(cam, {y: FlxG.height + prepareMidCameras[0].height, angle: 0}, 0.75, {ease: FlxEase.backIn, onComplete:
+										(_)->{
+											cam.visible = false;
+											penisManSupremeLolos = false;
+										}
+									});
+
+								game.camGame.visible = true;
+
+								game.isCameraOnForcedPos = true;
+								onEvent('Trigger Prepare Events', '25', '1');
+								setZoom(0.9);
+								game.camGame.worldAngle = -15;
+                            }
+                        });
+					case 3:
+						// game.tween(prepareMidCameras[0], {y: prepareMidCameras.y - prepareMidCameras.height}, 0.5, {ease: FlxEase.quadIn});
+						game.tween(transitionVignette, {y: -745}, 0.5, {ease: FlxEase.quadIn});
+
+						tangoTimeCam.zoom = 1;
+
+						tangoPadGrp.setPosition((FlxG.width - tangoPadGrp.width) / 2, (tangoPadGrp.y + 130) + 525);
+						tangoPadGrp.angle = 0;
+
+						davePadGrp.visible = false;
+
+						faire.alpha = 1;
+						faire.y += (faire.height + 50);
+
+						game.timer(0.3, function(tmr:FlxTimer) {
+							queerSing = true;
+                    		game.tween(tangoPadGrp, {y: tangoPadGrp.y - 525}, 0.5, {ease: FlxEase.quadOut});
+							game.tween(wawa, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+                			game.tween(faire, {y: faire.y - (faire.height + 50)}, 0.5, {ease: FlxEase.quadOut});
+							edgingEffect.imageMix = 0;
+							edgingEffect.edgeMix = 100;
+                		});
+					case 4:
+						transitionVignette.y = 700;
+						// game.tween(edgingEffect, {imageMix: 0, edgeMix: 100}, 0.5, {ease: FlxEase.cubeIn});
+						game.tween(tangoTimeCam, {zoom: 5.65}, 0.89, {ease: FlxEase.quadIn, onComplete:
+							(_)-> {
+								faire.scale.set(1.6, 1.6);
+								faire.updateHitbox();
+								faire.setPosition(0, FlxG.height - faire.height);
+
+								prepareMidCameras[2].setSize(FlxG.width, FlxG.height);
+								prepareMidCameras[2].setPosition(0, 0);
+								prepareMidCameras[2].bgColor = 0x00000000;
+								prepareMidCameras[2].filters = [];
+								prepareMidCameras[2].zoom = 1;
+								prepareMidCameras[2].scroll.set();
+
+								CoolUtil.safeRemoveCamera(prepareMidCameras[2], false);
+								CoolUtil.insertCamera(prepareMidCameras[2], tangoTimeCam, false);
+
+								for (obj in [faire, polarCircle, allYouDoIsYapMan, daveEuler, explosoion]) {
+									try {
+										obj.camera = prepareMidCameras[2];
+									} catch (e:Dynamic) {
+										trace(obj);
+										trace(e);
+									}
+								}
+
+								tangoTimeCam.zoom = 1;
+								tangoPadGrp.visible = false;
+								wawa.color = 0xFF000000;
+								maskCams[0].x = 0;
+								maskCams[0].visible = polarCircle.visible = allYouDoIsYapMan.visible = prepareMidCameras[2].visible = prepareMidCameras[2].exists = true;
+                                game.counterGroup.alpha = game.accuracyTxt.alpha = game.scoreTxt.alpha = 0.445;
+								tangoTimeCam.flashSprite.mask = maskCams[0].flashSprite;
+							}
+						});
+
+						game.timer((2.0425/3.85), function(tmr:FlxTimer) { tangoPad.visible = false; });
+					case 5:
+						TANGOTIME.text = 'TANGO';
+						TANGOTIME.screenCenter();
+
+						if (TANGO_TWERK) {
+							tangoTwerk.visible = true;
+							tangoTwerk.playAnim('GOD', true);
+							tangoTwerk.setPosition(((FlxG.width - tangoTwerk.width) / 2) - 220, ((FlxG.height - tangoTwerk.height) / 2) - 220);
+						}
+					case 6:
+						TANGOTIME.text += '\nTIME';
+						TANGOTIME.screenCenter();
+
+						if (tintyShadery != null)
+							tintyShadery.setFloat("mix_amount", 1.0);
+						colorSwap.hue = 0;
+
+						if (TANGO_TWERK)
+							tangoTwerk.playAnim('GOD', true);
+						
+						tangoTwerk.setPosition(((FlxG.width - tangoTwerk.width) / 2) - 220, ((FlxG.height - tangoTwerk.height) / 2) - 220);
+					case 7:
+						CoolUtil.exactSetGraphicSize(transitionVignette, FlxG.height * 3, 2500);
+    					transitionVignette.updateHitbox();
+
+						transitionVignette.angle = 90;
+						transitionVignette.setPosition(FlxG.width + transitionVignette.height, -694);
+
+						TANGOTIME.visible = tangoTwerk.visible = tangoTimeCam.visible = false;			
+						edgingEffect.edgeColorR = 56;
+						edgingEffect.edgeColorG = 97;
+						edgingEffect.edgeColorB = 237;
+						shatter.playAnimation('nones', true);
+
+                        game.isCameraOnForcedPos = true;
+
+						game.tween(transitionVignette, {x: 0}, 0.5, {ease: FlxEase.quadOut, onComplete: (_)->{transitionVignette.visible = false;}});
+
+						game.timer(0.25, function(tmr:FlxTimer) { 
+							tangoTimeCam.visible = true; 
+							game.tween(daveEquation, {alpha: 1}, 0.33, {ease: FlxEase.quadOut}); 
+							if (tintyShadery != null)
+							{
+								tintyShadery.setSampler2D("gradient", FlxG.bitmap.add(Paths.image("stages/tangoSchool/daveGrad")).bitmap);
+								tintyShadery.setFloat("mix_amount", 1.0);
+							}
+						});
+					case 8:
+						polarCircle.setPosition(0 - (polarCircle.width/4), polarCircle.y);
+						daveEuler.visible = true;
+                        prepareMidCameras[0].exists = true;
+                        prepareMidCameras[0].filters = game.camGame.filters;
+						daveEuler.setPosition(polarCircle.x + ((polarCircle.width - daveEuler.width) / 2) + 25, polarCircle.y + ((polarCircle.height - daveEuler.height) / 2) - 45);
+                        explosoion.setPosition(polarCircle.x + ((polarCircle.width - explosoion.width) / 2) + 25, polarCircle.y + ((polarCircle.height - explosoion.height) / 2) - 45);
+						allYouDoIsYapMan.visible = false;
+						
+                        resetCamZoom = false;
+						onEvent('Trigger Prepare Events', '12', '0');
+
+						setZoom(1.25);
+                        // resetCamZoom = true;
+                    case 9:
+                        explosoion.visible = true;
+                        explosoion.animation.play('kabuum');
+
+                        game.timer(0.25, function(tmr:FlxTimer) { 
+							if (tintyShadery != null)
+								game.tweenManager.num(1.0, 0.0, 1, {ease: FlxEase.quadOut}, (_)->{tintyShadery.setFloat("mix_amount", _);});
+                            game.tween(colorSwap, {hue: -.1}, 1, {ease: FlxEase.quadOut});
+
+                            var popolala:Array<FlxBasic> = [game.counterGroup, game.accuracyTxt, game.scoreTxt];
+
+                            for (i in popolala)
+                                game.tween(i, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+
+                            polarCircle.visible = daveEuler.visible = false;
+						});
+
+                        game.isCameraOnForcedPos = true;
+                        tweenZoom(0.85, 0.65, FlxEase.quadIn);
+                        game.tween(game.camGame.camFollow, {x: game.getCharCameraPosition('dad', game.oppOffset).x, y: game.getCharCameraPosition('dad', game.oppOffset).y}, 0.65, {ease: FlxEase.quadIn});
+                    case 10:
+                        zoomsWow = [0.85, 1.15];
+                        camAddZoomsDenominator = 4;
+                    case 11:
+                        zoomsWow = [0.6, 0.9];
+                    case 12:
+                        game.isCameraOnForcedPos = true;
+                        tweenZoom(0.6, 0.32, FlxEase.quadIn);
+                        game.tween(game.camGame.camFollow, {x: game.getCharCameraPosition('dad', game.oppOffset).x, y: game.getCharCameraPosition('dad', game.oppOffset).y}, 0.32, {ease: FlxEase.quadIn, onComplete:
+                            (_)->{
+                                game.isCameraOnForcedPos = false;
+                                penarSplit = true;
+                            }
+                        });
+                    case 13:
+                        game.isCameraOnForcedPos = true;
+
+                        game.camGame.camFollow.setPosition(game.camGame.camFollow.x - (1263.5/6), game.camGame.camFollow.y - (160/6));
+                        setZoom(game.defaultCamZoom-0.05);
+                        colorSwap.hue += (0.1/6);
+                        colorBurn.colorBurnMix += (100/6);
+                    case 14:
+                        game.isCameraOnForcedPos = interestingGambit = false;
+                    case 15:
+                        game.tween(faire, {alpha: 0.00001}, 2.5, {ease: FlxEase.linear});
+                    case 16:
+                        game.isCameraOnForcedPos = true;
+                        resetCamZoom = false;
+                        tweenZoom(0.675, 1.29, FlxEase.quadIn);
+                        game.tween(game.camGame.camFollow, {x: 1097.5, y: 546}, 1.29, {ease: FlxEase.quadIn});
+                    case 17:
+                        game.removeCinematicBars(0.25);
+                    case 18:
+                        game.tween(colorBurn, {colorBurnMix: 25}, 0.25, {ease: FlxEase.quadInOut});
+                        //game.tween(game.camStrums, {alpha: 0}, 0.25, {ease: FlxEase.quadInOut});
+                    case 19:
+                        game.timer(0.25, function(tmr:FlxTimer) { 
+                            //game.tween(colorBurn, {colorBurnMix: 100}, 0.25, {ease: FlxEase.quadInOut});
+                            //game.tween(game.camStrums, {alpha: 1}, 0.25, {ease: FlxEase.quadInOut});
+						});
+                }
+            case 38:
+                game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+
+                alternatorAngle = !alternatorAngle;
+                
+                game.camGame.angle = 4.5 * (alternatorAngle == true ? 1 : -1);
+                game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});
+        }
+    }
+}
+
+function onMoveCamera(char:String)
+{
+    if (resetCamZoom && curSectionChar != char.toLowerCase()) {
+        curSectionChar = char.toLowerCase();
+
+        // trace(curSectionChar);
+        
+        switch (curSectionChar)
+        {
+            case 'boyfriend':
+                game.defaultCamZoom = zoomsWow[1];
+            case 'dad':
+                game.defaultCamZoom = zoomsWow[0];
+        }
+    }
+}
+
+function onBeatHit()
+{
+    if (coolMan) {
+        if (!ahhahahaodafjfsadis) {
+            ahhahahaodafjfsadis = true;
+    
+            game.tweenManager.cancelTweensOf(game.camGame, ['angle']);
+
+            if (saturationBop)
+                game.tweenManager.cancelTweensOf(colorSwap, ['saturation']);
+        
+            fernancitosLocos = !fernancitosLocos;
+            if (saturationBop) colorSwap.saturation = 0.225;
+            
+            game.camGame.angle = 3 * (fernancitosLocos == true ? 1 : -1);
+            game.tween(game.camGame, {angle: 0}, 0.25, {ease: FlxEase.quadOut});
+
+            if (saturationBop)
+                game.tween(colorSwap, {saturation: 0}, 0.25, {ease: FlxEase.quadOut});
+        } else {
+            ahhahahaodafjfsadis = false;
+    
+            game.triggerEventNote('Add Camera Zoom', '${camAddZooms[0]}', '${camAddZooms[1]}');
+        }
+    }
+
+	if (interestingGambit) {
+        game.tweenManager.cancelTweensOf(game.camGame, ['angle', 'y']);
+		game.tweenManager.cancelTweensOf(colorSwap, ['saturation']);
+    
+        fernancitosLocos = !fernancitosLocos;
+        colorSwap.saturation = 0.225;
+            
+    	game.camGame.worldAngle = 4.75 * (fernancitosLocos == true ? 1 : -1);
+		game.camGame.y = -15;
+
+        game.tween(game.camGame, {worldAngle: 0, y: 0}, 0.25, {ease: FlxEase.quadOut});
+        game.tween(colorSwap, {saturation: 0}, 0.25, {ease: FlxEase.quadOut});
+		game.triggerEventNote('Add Camera Zoom', '${camAddZooms[0]/camAddZoomsDenominator}', '${camAddZooms[1]/camAddZoomsDenominator}');
+	}
+}
+
+function onUpdatePost(elapsed:Float) {
+    if (sickSection) {
+        fartElapsed += elapsed;
+        game.camGame.worldAngle = (5.5/1.5) * Math.sin(fartElapsed / 2) * (60/ClientPrefs.framerate);
+    }
+
+	@:privateAccess {
+		if (flickerGooning != null)
+			flickerGooning.timer?.active = !game.paused;
+	}
+
+	polarCircle?.angle += (60/ClientPrefs.framerate);
+    
+    if (penarSplit) {
+        if (splitCamCur == 'tango' && prepareMidCameras[0] != null) {
+            switch (game.dad.animation.name) {
+                case 'singLEFT':
+                    game.tweenManager.cancelTweensOf(prepareMidCameras[0].scroll, ['x']);
+                    game.tween(prepareMidCameras[0].scroll, {x: 20}, 0.65, {ease: FlxEase.quadOut, onComplete: 
+                        function(twn:FlxTween) {
+                            game.tween(prepareMidCameras[0].scroll, {x: 260}, 1, {ease: FlxEase.quadOut});
+                        }
+                    });
+                case 'singRIGHT':
+                    game.tweenManager.cancelTweensOf(prepareMidCameras[0].scroll, ['x']);
+                    game.tween(prepareMidCameras[0].scroll, {x: 500}, 0.65, {ease: FlxEase.quadOut, onComplete:
+                        function(twn:FlxTween) {
+                            game.tween(prepareMidCameras[0].scroll, {x: 260}, 1, {ease: FlxEase.quadOut});
+                        }
+                    });
+                case "singDOWN", 'singUP':
+                    game.tweenManager.cancelTweensOf(prepareMidCameras[0].scroll, ['x']);
+                    game.tween(prepareMidCameras[0].scroll, {x: 260}, 0.65, {ease: FlxEase.quadOut});
+            }
+        }   
+    }
+	
+    if (queerSing) {
+        switch (davePad.animation.name) {
+            case "singLEFT", "singRIGHT":
+                davePad.clipRect.x = 0;
+                davePad.clipRect.setSize(800, 525);
+            case "singDOWN":
+                davePad.clipRect.x = 0;
+                davePad.clipRect.setSize(800, 335);
+            case "singUP":
+                davePad.clipRect.x = 50;
+                davePad.clipRect.setSize(800, 575);
+            default:
+                davePad.clipRect.x = 0;
+                davePad.clipRect.setSize(800, 450);
+        }
+        davePad.clipRect = davePad.clipRect;
+    }
+}
+
+function onFocusLost() {
+	if (penisManSupremeLolos) {
+		intCamSize = [];
+
+		for (c in 0...prepareMidCameras.length)
+			intCamSize.push([prepareMidCameras[c].width, prepareMidCameras[c].height, prepareMidCameras[c].angle, prepareMidCameras[c].y]);
+	}
+}
+
+function onFocus() {
+	if (intCamSize.length > 0) {
+		for (c in 0...intCamSize.length) {
+			prepareMidCameras[c].exists = true;
+
+			@:privateAccess {
+				game.tweenManager.forEachTweensOf(prepareMidCameras[c], null, (_)->_.active = false);
+
+				prepareMidCameras[c].setSize(intCamSize[c][0], intCamSize[c][1]);
+				prepareMidCameras[c].angle = intCamSize[c][2];
+				prepareMidCameras[c].y = intCamSize[c][3];
+
+				game.tweenManager.forEachTweensOf(prepareMidCameras[c], null, (_)->_.active = true);
+			}
+			
+			prepareMidCameras[c].exists = false;
+		}
+			
+	}
+}
+
+function onSing(data) {
+	if (queerSing && !data.miss) {
+		var char = data.note.mustPress ? davePad : tangoPad;
+		char.singFromData(data);
+	}
+}
+
+function davePadDance() {
+		davePad.dance();
+}
+
+function tangoPadDance() {
+		tangoPad.dance();
+}

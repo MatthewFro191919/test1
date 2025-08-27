@@ -1,0 +1,15 @@
+{
+	"char": "pico-shucked-die",
+	"sound": "picodiehaha",
+	"soundLoop": {
+		"start": 4100,
+		"id": "bloodloop"
+	},
+	"song": "shucked",
+	"pos": [-1260, -105],
+	"camPos": [168.787, -20.08],
+	"scalex": -1,
+	"instantLoop": true,
+	"canDance": false,
+	"songStartDelay": 1
+}

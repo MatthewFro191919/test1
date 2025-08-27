@@ -1,0 +1,189 @@
+notation:
+	[0-3]: supports mod, mod0, mod1, mod2, mod3
+	[0-3]*: supports mod0, mod1, mod2, mod3
+	{...}: extra parts that are seperate values that are added onto the original submod
+	property: a property that can be set with setModProperty or get with getModProperty
+
+AlphaModifier:
+	controls alpha and glow of notes
+		stealth
+			0-1 value that subtracts alpha
+		blink
+			if not 0, then it will blink at thirds i think
+		randomVanish
+			if not 0, has some crazy math to decide alpha idk
+		noteAlpha[0-3]
+			alpha for notes
+		alpha[0-3]
+			alpha
+		glow[0-3]
+			makes the notes more white from 0-255
+	
+BeatModifier
+	beat[0-3]
+	beaty[0-3]
+	beatz[0-3]
+
+CircleModifier
+	spins receptor in a circle
+		circle
+			distance of circle
+		circleSpread[0-3]
+			distance of time between columns
+		circleSpeed[0-3]
+			speed of spinning
+		circleOffset[0-3]
+			offset of time
+	
+ConfusionModifier
+	rotates notes and receptors
+		noteAngle
+		note[0-3]Angle
+		receptorAngle
+		receptor[0-3]Angle
+		confusion[0-3]
+
+DrunkModifier
+	drunk driving
+		drunk
+		drunkSpeed
+		drunkPeriod
+		drunkOffset
+		tipsy
+		tipsySpeed
+		tipsyOffset
+		bumpy
+		bumpyPeriod
+		bumpyOffset
+		tipZ
+		tipZSpeed
+		tipZOffset
+	
+FlipModifier
+	flips ntoes
+		flip
+
+FuriosityModifier
+	the old (or new? no idea) furiosity modchart, its actually more like the cuberoot modchart but whatever
+		furiosity
+		furiosityOffset
+		furiositySpread
+		furiositySpeed
+		otherfuriosityOffset
+
+HoldModifier
+	general modifier for holds
+		straightholds[0-3]
+		gayholds[0-3]
+
+InvertModifier
+	inverts
+		invert
+
+JimbleModifier
+	really fast sin cos and tan waves on everything which makes it looks like its shaking
+		jimble
+		jimbleSpeed
+		jimbleSpread
+
+LerpModifier
+	lerps strum properties with note properties
+		property ease
+			ease function that will be used (setModProperty("lerp", outCubic))
+		lerpx[0-3]
+		lerpy[0-3]
+		lerpscalex[0-3]
+		lerpscaley[0-3]
+		lerpangle[0-3]
+	
+BaseRotateModifier
+	basic rotater that exists
+	prefixes: local (middle of lane), strum (middle of strums), direction (middle of each strum)
+	each direction modifier has a wavy and spiral modifier baked in, spiral is sort of like a spiral path while wavy is a moving spiral path
+	also its in radians lol
+		prefixrotateX[0-3]{a, aa}
+		prefixrotateY[0-3]{a, aa}
+		prefixrotateZ[0-3]{a, aa}
+		
+		theres one for wavy and spiral and one for each axis:
+			(wavy/spiral)(X/Y/Z)[0-3]{a, aa}
+			(wavy/spiral)period(X/Y/Z)[0-3]{a, aa}
+			(wavy/spiral)offset(X/Y/Z)[0-3]{a, aa}
+
+OpponentModifier
+	swaps player and opponent sutrms
+		opponentSwap
+
+PulseModifier
+	sine wave to the notes how fun
+		pulse
+		pulseperiod
+
+ReverseModifier
+	please dont use this actually looking at this code now what the fuck dude
+
+RotateModifier
+	use localrotate this one sucks
+
+RotSpinModifier
+	my attempt to make some 2d spinning it kinda sucks
+		rotspinx
+		rotspiny
+
+ScaleModifier
+	itg scale modifier basically
+		squish[0-3]
+		stretch[0-3]
+		mini[0-3]X
+		mini[0-3]Y
+
+SpinModifier
+	2d spinning from the center of the strums
+	in degrees not radians
+		spin
+		spinscale
+		spinunscale
+		spinangle
+			if you dont want this modifier to rotate the sprites themselves set this to -1
+		
+SpiralModifier
+	spirals the notes for fun
+		spiral[0-3]
+		spiralperiod[0-3]
+		direction[0-3]
+			this one is fucking broken
+	
+SpriteModifier
+	direct just values of flixel sprites basically
+	any mod here can have the prefix {note, strum} to effect notes and strums seperately
+	except not really for strum, but you can just negate any strum value with a note value
+		x[0-3]{-a, -aa, -aaa, -aaaa}
+		y[0-3]{-a, -aa, -aaa, -aaaa}
+		z[0-3]{-a, -aa, -aaa, -aaaa}
+		angle[0-3]{-a, -aa, -aaa, -aaaa}
+		skewx[0-3]{-a, -aa, -aaa, -aaaa}
+		skewy[0-3]{-a, -aa, -aaa, -aaaa}
+		scalex[0-3]{-a, -aa, -aaa, -aaaa}
+			resulting scale will be currentscalex + scalex
+		scaley[0-3]{-a, -aa, -aaa, -aaaa}
+			resulting scale will be currentscaley + scaley
+
+TimeModifier
+	fun time modification
+		tQuantize[0-3]
+		tQLerp[0-3]
+		tAccel[0-3]
+			xmod basically
+		tQuantizeOffset[0-3]
+		xmod[0-3]
+
+TornadoModifier
+	it makes it go spin around
+		tornado
+		tornadoz
+
+TransformModifier
+	long ahh way for xyz if you want i guess
+		transform[0-3]X{-a, -aa, -aaa, -aaaa}
+		transform[0-3]Y{-a, -aa, -aaa, -aaaa}
+		transform[0-3]Z{-a, -aa, -aaa, -aaaa}

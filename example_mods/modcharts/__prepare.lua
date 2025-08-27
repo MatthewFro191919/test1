@@ -1,0 +1,171 @@
+-- your code goes here here:
+-- broken ahh erin modchart
+--alias {'noteskewx', 'skewx'} -- noteskewx in dde refers to only the notes and not the strums
+--setdefault {
+--3.6, 'xmod', 
+--100, 'overhead', 
+--100, 'dizzyholds', 
+--100, 'modtimer',
+--200, 'gayholds',
+---60, 'sawtoothperiod'
+--}
+
+
+---- v I AM TANGO AND THESE MODS CONTROL THE KICKS AND THESE MODS CONTROL THE KICKS AND TH
+--definemod {
+--'kickd',
+---200, 'tinyx',
+--200, 'tinyy',
+--10, 'y'
+--}
+--definemod {
+--'kicku',
+---200, 'tinyx',
+--200, 'tinyy',
+---10, 'y'
+--}
+--for i = 0, 26, 8 do
+--	add  {i, 0.02, linear, 200, 'kickd'}
+--	ease {i, 1, outCubic, 0, 'kickd'}
+--	add  {i+2.5, 0.02, linear, 200, 'kicku'}
+--	ease {i+2.5, 1, outCubic, 0, 'kicku'}
+--	add  {i+3.5, 0.02, linear, 200, 'kicku'}
+--	ease {i+3.5, 0.5, outCubic, 0, 'kicku'}
+--	add  {i+4, 0.02, linear, 200, 'kickd'}
+--	ease {i+4, 1, outCubic, 0, 'kickd'}
+--	add  {i+6.5, 0.02, linear, 200, 'kicku'}
+--	ease {i+6.5, 0.5, outCubic, 0, 'kicku'}
+--	add  {i+7, 0.02, linear, 200, 'kickd'}
+--	ease {i+7, 0.5, outCubic, 0, 'kickd'}
+--	add  {i+7.5, 0.02, linear, 200, 'kicku'}
+--	ease {i+7.5, 0.5, outCubic, 0, 'kicku'}
+--end
+--for i = 32, 60, 4 do
+--	add  {i, 0.02, linear, 200, 'kickd'}
+--	ease {i, 1, outCubic, 0, 'kickd'}
+--	add  {i+2.5, 0.02, linear, 200, 'kicku'}
+--	ease {i+2.5, 1, outCubic, 0, 'kicku'}
+--end
+---- ^ I AM TANGO AND THESE MODS CONTROL THE KICKS AND THESE MODS CONTROL THE KICKS AND TH
+---- presnare.ogg
+--for i = 18, 32, 4 do
+--	add  {i, 0, linear, 500, 'pulse'}
+--	ease {i, 2, outExpo, 0, 'pulse'}
+--end
+
+--for i = 33, 60, 2 do
+--	add  {i, 0, linear, 500, 'pulse'}
+--	ease {i, 2, outExpo, 0, 'pulse'}
+--end
+---- presnare.ogg
+
+---- v I AM TANGO AND THESE MODS CONTROL THE JIGGY
+--for i = 16, 60, 4 do
+--	ease {i, 2, linear, 40, 'x'}
+--	ease {i, 1, bounce, -50, 'y'}
+--	ease {i+1, 1, bounce, -50, 'y'}
+--	ease {i+2, 2, linear, -40, 'x'}
+--	ease {i+2, 1, bounce, -50, 'y'}
+--	ease {i+3, 1, bounce, -50, 'y'}
+--end
+--set {32, 500, 'beatz'}
+--set {64, 0, 'beatz'}
+---- ^ I AM TANGO AND THESE MODS CONTROL THE JIGGY
+
+---- v I AM TANGO AND THESE MODS CONTROL THE SAW
+--definemod {
+--'sawww',
+--100, 'sawtooth',
+--10, 'noteskewx',
+--100, 'sawtoothoffset'
+--}
+--for j = 0.5, 32, 16 do
+--	for i = j, j+7, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.75, 0.02, linear, -200, 'sawww'}
+--		ease {i+2.75, 0.25, outCubic, 0, 'sawww'}
+--		add  {i+3.25, 0.02, linear, -200, 'sawww'}
+--		ease {i+3.25, 0.25, outCubic, 0, 'sawww'}
+--	end
+--	for i = j+8, j+8, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, 200, 'sawww'}
+--		ease {i+2.5, 0.25, outCubic, 0, 'sawww'}
+--		add  {i+3.25, 0.02, linear, 200, 'sawww'}
+--		ease {i+3.25, 0.02, outCubic, 0, 'sawww'}
+--		add  {i+3.75, 0.02, linear, 200, 'sawww'}
+--		ease {i+3.75, 0.02, outCubic, 0, 'sawww'}
+--	end
+--	for i = j+11.5, j+11.5, 4 do
+--		add  {i, 0.02, linear, -200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1.5, 0.02, linear, -200, 'sawww'}
+--		ease {i+1.5, 1, outCubic, 0, 'sawww'}
+--		add  {i+3, 0.02, linear, 200, 'sawww'}
+--		ease {i+3, 0.25, outCubic, 0, 'sawww'}
+--		add  {i+3.25, 0.02, linear, -200, 'sawww'}
+--		ease {i+3.25, 0.25, outCubic, 0, 'sawww'}
+--		add  {i+3.5, 0.02, linear, 200, 'sawww'}
+--		ease {i+3.5, 0.25, outCubic, 0, 'sawww'}
+--		add  {i+3.75, 0.02, linear, -200, 'sawww'}
+--		ease {i+3.75, 0.25, outCubic, 0, 'sawww'}
+--	end
+--end
+--for j = 32.5, 48, 16 do
+--	for i = j, j+7, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, -200, 'sawww'}
+--		ease {i+2.5, 1, outCubic, 0, 'sawww'}
+--	end
+--	for i = j+8, j+8, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, 200, 'sawww'}
+--		ease {i+2.5, 1, outCubic, 0, 'sawww'}
+--	end
+--	for i = j+12, j+12, 4 do
+--		add  {i, 0.02, linear, -200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, -200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, 200, 'sawww'}
+--		ease {i+2.5, 1, outCubic, 0, 'sawww'}
+--	end
+--end
+--for j = 48.5, 64, 16 do
+--	for i = j, j+7, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, -200, 'sawww'}
+--		ease {i+2.5, 1, outCubic, 0, 'sawww'}
+--	end
+--	for i = j+8, j+8, 4 do
+--		add  {i, 0.02, linear, 200, 'sawww'}
+--		ease {i, 1, outCubic, 0, 'sawww'}
+--		add  {i+1, 0.02, linear, 200, 'sawww'}
+--		ease {i+1, 1, outCubic, 0, 'sawww'}
+--		add  {i+2.5, 0.02, linear, 200, 'sawww'}
+--		ease {i+2.5, 1, outCubic, 0, 'sawww'}
+--	end
+--end
+---- ^ I AM TANGO AND THESE MODS CONTROL THE SAW
+
+----bling blong next section
+--ease {60, 1, outCubic, 100, 'invert', 15, 'rotationz'}
+--ease {61, 1, outCubic, -125, 'invert', 75, 'flip', -15, 'rotationz'}
+--ease {62, 1, outCubic, 125, 'invert', 25, 'flip', -10, 'rotationy', 0, 'rotationz'}
+--ease {63, 1, outElastic, 0, 'invert', 50, 'flip', 10, 'rotationy'}
+--reset {64}

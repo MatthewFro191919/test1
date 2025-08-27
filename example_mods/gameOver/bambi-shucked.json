@@ -1,0 +1,16 @@
+{
+	"char": "bambi-shucked-die",
+	"sound": "bambiloss",
+	"song": "shucked",
+	"pos": [
+		1160,
+		-310
+	],
+	"camPos": [
+		1160,
+		-10
+	],
+	"scalex": 1,
+	"instantLoop": true,
+	"canDance": false
+}

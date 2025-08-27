@@ -1,0 +1,1274 @@
+import openfl.Lib;
+import deepend.system.Main;
+import flixel.math.FlxMath;
+import deepend.game.HUDCamera;
+import deepend.system.PlaySession;
+
+var sTEFFECT:SpotlightEffect;
+var bEFFECT:BloomEffect;
+var cBEFFECT:ColorBurnEffect;
+var edgingEffect:EdgingEffect;
+var peEFFECT:PerspectiveEffect;
+
+var totalLaps:Int = 0;
+
+var camAngel:Float = 0;
+
+var oldWindowSize:Array<Int> = [1280, 720];
+
+// var cachedProps:Map<Int, FlxSprite> = []; // loles
+
+var cachedProps:Array<FlxSprite> = []; // loles
+
+var openyoureyes:FlxSprite;
+var scaryy:FlxSprite;
+
+var locos_misteriosos:FlxSprite;
+
+var twisting:Bool = true;
+var gameTwisting:Bool = true;
+var evilTwisting:Bool = false;
+
+var cbBackstage:Bool = true;
+var isDoingCBTween:Bool = false;
+var isDoingBopRight:Bool = false;
+var rotatingModchart:Bool = true;
+var doingDelayAh:Bool = false;
+var propTime:Bool = false;
+
+var brahblahblah:Bool = false;
+var holaFernan:Bool = true;
+
+var barColorInterpolation:Bool = false;
+var startAddingElapsedLol:Float = 0;
+
+var fuckingTimersLol:Array<FlxTimer> = [];
+
+final scaryPath = ClientPrefs.disturbingContent ? 'OHMYGOD' : 'OHMYGOSH';
+
+var statsCam:DeependCamera;
+
+var oldModchart:Bool;
+
+final CONST_SCALE = 0.695;
+
+function loadImages() {
+	final arr = [
+		'OPENYOUREYES',
+		scaryPath,
+		'scrolling time',
+		'stage',
+		'ceiling',
+		'wall1',
+		'wall2',
+		'floor',
+		'HALLWAYS',
+		'pillar',
+		'pillar2',
+		'structure_shadow',
+		'lights',
+		'vignette',
+	];
+	for (i in 1...6)
+		arr.push(Paths.image('backstageprop$i'));
+	return [for (i in arr) 'stages/deepCircus/$i'];
+}
+
+function onCreate()
+{
+	game.defaultCamZoom = 1.45;
+	game.startingCamZoom = 1.45;
+
+	game.camOffset.set(150, 50);
+
+	oldModchart = false;
+}
+
+function onResize(w, h)
+{
+	refreshSpotlight(w, h);
+}
+
+function onCreatePost()
+{
+	game.countdownSounds = false;
+    if (peEFFECT == null) peEFFECT = new PerspectiveEffect();
+
+    if (sTEFFECT == null) {
+        sTEFFECT = new SpotlightEffect(true);
+        sTEFFECT.arghInputX = Lib.application.window.width / 2;
+        sTEFFECT.arghInputY = Lib.application.window.height / 2;
+        sTEFFECT.internalarghInputX = sTEFFECT.arghInputX;
+        sTEFFECT.internalarghInputY = sTEFFECT.arghInputY;
+        sTEFFECT.viewRange = 0.01; // I will do this later hahahahahahaha.A...H.A.H..AH...HA
+        sTEFFECT.internalViewRange = sTEFFECT.viewRange;
+        sTEFFECT.scale = Main.dpiScale;
+    }
+
+	refreshSpotlight(FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y);
+
+    if (bEFFECT == null) {
+        bEFFECT = new BloomEffect();
+    //	bEFFECT.intensity = 0.0; // Goes to 0.4
+        bEFFECT.threshold = 0.0; // Goes to 0.15
+        bEFFECT.size = 4.0;
+    }
+
+    if (game.colorSwag == null) {
+        game.colorSwag = new ColorSwap();
+        game.colorSwag.brightness = -0.35;
+    }
+
+    if (cBEFFECT == null) {
+        cBEFFECT = new ColorBurnEffect();
+        cBEFFECT.colorBurnRed = 125;
+        cBEFFECT.colorBurnMix = 50;
+    }
+
+    if (edgingEffect == null) {
+        edgingEffect = new EdgingEffect();
+        edgingEffect.edgeMix = 0;
+        edgingEffect.imageMix = 100;
+        edgingEffect.edgeColorG = 0;
+        edgingEffect.edgeColorB = 0;
+    }
+
+    game.camHUD.alpha = 0.0001;
+    camAngel = 4.45;
+
+    for (i in 1...6) {
+        var thatSprite = new FlxSprite().loadGraphic(Paths.image('stages/deepCircus/backstageprop$i'));
+        cachedProps.push(thatSprite);
+    }
+
+	// trace(cachedProps);
+
+    var funnyCam:DeependCamera = new DeependCamera('Sub Camera 1');
+    var laCaca:DeependCamera = new DeependCamera('Sub Camera 2');
+
+    for (i in [funnyCam, laCaca]) {
+        i.bgColor = 0x00000000;
+        game.deependCams.push(i);
+        game.subCams.push(i);
+    }
+
+    openyoureyes = new FlxSprite().loadGraphic(Paths.image('stages/deepCircus/OPENYOUREYES'));
+    CoolUtil.exactSetGraphicSize(openyoureyes, FlxG.width, FlxG.height);
+    openyoureyes.updateHitbox();
+    openyoureyes.cameras = [game.camOther];
+    openyoureyes.screenCenter();
+    openyoureyes.alpha = 0; // starts at zero then goes to 0.25
+    game.add(openyoureyes);
+
+    scaryy = new FlxSprite().loadGraphic(Paths.image('stages/deepCircus/$scaryPath'));
+    CoolUtil.exactSetGraphicSize(scaryy, FlxG.width, FlxG.height);
+    scaryy.updateHitbox();
+    scaryy.cameras = [funnyCam];
+    scaryy.screenCenter();
+    scaryy.alpha = 0; // starts at zero then goes to 0.85
+    game.add(scaryy);
+
+	locos_misteriosos = new FlxSprite(-415, 535).makeGraphic(1, 1, FlxColor.RED);
+	locos_misteriosos.scale.set(32, 32);
+	locos_misteriosos.updateHitbox();
+	locos_misteriosos.visible = false;
+	game.add(locos_misteriosos);
+
+	// -275
+
+	// -555
+
+	// hola Fernan
+
+	// game.members[game.members.length - 23].visible = false;
+
+    game.addShaderToCamera('game', cBEFFECT);
+    game.addShaderToCamera('game', bEFFECT);
+    game.addShaderToCamera('game', sTEFFECT);
+    game.addShaderToCamera('game', game.colorSwag);
+    game.addShaderToCamera('game', edgingEffect);
+    
+	if (PlaySession.instance.modcharts)
+		game.addShaderToCamera('strums', sTEFFECT);
+
+    game.addShaderToCamera('other', bEFFECT);
+
+    funnyCam.filters = [new ShaderFilter(bEFFECT.shader)];
+
+    if (game.transitionVignette != null) game.add(game.transitionVignette);
+
+    CoolUtil.insertCamera(laCaca, game.camBetween, false);
+    CoolUtil.insertCamera(funnyCam, game.camPause, false);
+
+	statsCam = new HUDCamera("backstage counters");
+	statsCam.bgColor = 0x00;
+	game.counterGroup.cameras = game.accuracyTxt.cameras = game.scoreTxt.cameras = game.judgementCounter.cameras = [statsCam];
+    CoolUtil.insertCamera(statsCam, game.camPause, false);
+	game.hudHandler.addCamera(statsCam);
+}
+
+function onUpdate(elapsed:Float)
+{
+    if (twisting)
+        for (i in getHudCams()) i.angle = Math.sin(game.elapsedTime / 1.5) * 4.45;		
+
+    if (gameTwisting) game.camera.angle = -(Math.sin(game.elapsedTime / 2) * 9.25);
+
+    if (evilTwisting && game.vignette != null) {
+        game.camGame.angle = Math.sin(game.elapsedTime * 8) / 2.45;
+        game.vignette.alpha = (Math.sin(game.elapsedTime * 12) / 50) + 0.13;
+		if (oldModchart)
+			game.camStrums.angle = -(Math.sin(game.elapsedTime * 5) * 2.45);
+
+		if (holaFernan) {
+			edgingEffect.edgeMix = ((Math.sin(game.elapsedTime * 8) / 5) + 0.8) * 100;
+			edgingEffect.imageMix = ((Math.cos(game.elapsedTime * 8) / 5) + 0.8) * 100;
+		}
+    } 
+
+	if (barColorInterpolation) {
+		startAddingElapsedLol += elapsed;
+
+		for (bar in [game.cinematicBars["top"], game.cinematicBars["bottom"]]) {
+			bar.color = FlxColor.interpolate(0xFFAA0000, 0xFF0000AA, ((-(Math.sin((5*startAddingElapsedLol)+(Math.PI/2))/2)) + 0.5));
+		}
+	}
+
+    if (evilTwisting && game.isCameraOnForcedPos) 
+		game.camera.camFollow.setPosition(locos_misteriosos.x, locos_misteriosos.y);
+
+	//if (FlxG.keys.justPressed.O)
+	//	pillarSpin(0.85);
+
+    // AWAPAA
+    if (scaryy != null) {
+        for (i in 0...game.subCams.length) {
+            var curCamShitt:FlxCamera = game.subCams[i];
+
+			try {
+				if (curCamShitt == scaryy.camera && twisting) {
+					curCamShitt.angle = -(Math.sin(game.elapsedTime * 5) * 2.45);
+					curCamShitt.x = -(Math.sin(game.elapsedTime * 6) * 2.45);
+				}
+			} catch (e:Dynamic) {
+				trace(e);
+			}
+        }
+    }
+}
+
+function onUpdatePost(elapsed:Float)
+{
+	statsCam.zoom = game.camHUD.zoom;
+	statsCam.alpha = FlxMath.lerp(.25, 1, game.camHUD.alpha);
+}
+
+function onEvent(eventName:String, value1:String, value2:String)
+{
+    if (eventName == 'Trigger Backstage Events') {
+        var eventshit:Int = Std.parseInt(value1);
+		var theothershit:Float = Std.parseFloat(value2);
+		if (Math.isNaN(eventshit)) return;
+		if (Math.isNaN(theothershit)) theothershit = 0.01;
+	
+		switch (eventshit)
+			{
+				case 0: // Intro
+					switch (Math.round(theothershit))
+						{
+							case 0:
+								game.tween(openyoureyes, {alpha: 1}, 1, {ease: FlxEase.quadInOut});
+								game.tween(scaryy, {alpha: 1}, 1.66, {ease: FlxEase.quadInOut});
+								game.tween(bEFFECT, {threshold: 0.75}, 1.66, {ease: FlxEase.quadInOut});
+
+								forEachPlayerStrum(function(spr:FlxSprite)
+									{
+										game.tweenManager.cancelTweensOf(spr);
+								    	spr.x -= 320;
+									});
+							case 1:
+								for (i in [openyoureyes, scaryy]) {
+									game.tweenManager.cancelTweensOf(i, ['alpha']);
+									i.alpha = 1;
+									game.tween(i, {alpha: 0}, 0.34, {ease: FlxEase.quadInOut});
+								}
+	
+					    		game.tween(sTEFFECT, {viewRange: 300, internalViewRange: 300}, 0.34, {ease: FlxEase.quadInOut});
+								game.tween(game.colorSwag, {brightness: 0}, 15.33, {ease: FlxEase.quadInOut});
+							case 2:
+								game.tweenManager.cancelTweensOf(cBEFFECT);
+	
+					    		game.tween(game.camHUD, {alpha: 1}, 0.67, {ease: FlxEase.quadInOut});
+								game.tween(sTEFFECT, {spotLightMix: 1, viewRange: 1000, internalViewRange: 1000}, 0.67, {ease: FlxEase.quadOut});
+								game.tween(cBEFFECT, {colorBurnMix: 0}, 0.67, {ease: FlxEase.quadOut});
+								game.tween(bEFFECT, {threshold: 0.9}, 0.67, {ease: FlxEase.quadOut});
+	
+								game.camZooming = false; // PSYCH ENGINE DE MIERDA POR QUÉ TIENES QUE COMPLICARTE TANTO 😭😭😭😭😭😭😭😭
+								game.isCameraOnForcedPos = true;
+								twisting = false;
+								gameTwisting = false;
+	
+								for (i in getGameCams())
+									game.tween(i, {angle: 0}, 0.67, {ease: FlxEase.quadInOut});
+									
+								forEachPlayerStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x + 320}, 0.67, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+	
+                                forEachOpponentStrum(function(spr:FlxSprite) { game.tween(spr, {alpha: 1}, 0.55, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+	
+                                game.tween(FlxG.camera, {zoom: 1}, 0.67, {ease: FlxEase.quadInOut});
+
+								game.tween(game.camGame.camFollow, {x: (game.dad.getMidpoint().x + 150) + (game.dad.cameraPosition.x + game.opponentCameraOffset.x), y: (game.dad.getMidpoint().y - 100) + (game.dad.cameraPosition.y + game.opponentCameraOffset.y)}, 0.67, {ease: FlxEase.quadInOut, onComplete:
+						    		function(twn:FlxTween) {
+					    				game.isCameraOnForcedPos = false;
+										game.camZooming = true;
+										game.defaultCamZoom = 1;
+									}}
+								);
+	
+							case 3:
+								if (!isDoingCBTween) {
+									isDoingCBTween = true;
+	
+                                    game.tween(cBEFFECT, {colorBurnRed: 0, colorBurnBlue: 175}, 1.5, {ease: FlxEase.quadInOut, onComplete:
+										function(twn:FlxTween) {
+											isDoingCBTween = false;
+											if (cbBackstage) onEvent('Trigger Backstage Events', '0', '4');
+										}}
+									);
+								}
+							case 4:
+								if (!isDoingCBTween) {
+									isDoingCBTween = true;
+	
+									game.tween(cBEFFECT, {colorBurnRed: 125, colorBurnBlue: 0}, 1.5, {ease: FlxEase.quadInOut, onComplete:
+										function(twn:FlxTween) {
+											isDoingCBTween = false;
+											if (cbBackstage) onEvent('Trigger Backstage Events', '0', '3');
+										}}
+									);
+	
+								}
+							case 5:
+								cbBackstage = false; // NONES!! ☺️☺️☺️
+							case 6:
+                                game.isCameraOnForcedPos = true;
+                                game.camGame.camFollow.setPosition(game.camGame.camFollow.x, game.camGame.camFollow.y);
+                                game.camGame.snapToTarget();
+
+								forEachOpponentStrum(function(spr:FlxSprite)
+									{
+										spr.alpha = 0;
+									});
+							case 7: 
+								game.defaultCamZoom += 0.15;
+						}
+
+				case 1: // Camera Bopping Angle
+					for (i in getGameCams()) { game.tweenManager.cancelTweensOf(i, ['angle']); }
+	
+					final angle = (isDoingBopRight ? -(camAngel) : camAngel);
+					if (oldModchart)
+						game.camStrums.angle = angle;
+					game.camGame.angle = -angle;
+	
+					for (i in getGameCams()) 
+                        game.tween(i, {angle: 0}, 0.256, {ease: FlxEase.quadOut});
+
+					isDoingBopRight = !isDoingBopRight;
+				case 2:
+					game.defaultCamZoom += 0.1;
+							
+					forEachPlayerStrum(function(spr:FlxSprite)
+						{
+                            game.tween(spr, {x: spr.x + (420 / 3), alpha: spr.alpha - (1 / 3)}, 0.65, {ease: FlxEase.quadOut});
+							game.tween(spr.multScale, {x: spr.multScale.x - 0.15, y: spr.multScale.y - 0.15}, 0.65, {ease: FlxEase.quadOut});
+					    });
+	
+					forEachOpponentStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x + (320 / 3)}, 0.65, {ease: FlxEase.quadOut}); });
+	
+                    game.tween(game.camHUD, {alpha: game.camHUD.alpha - (1 / 3)}, 0.65, {ease: FlxEase.quadOut});
+                    game.tween(game.vignette, {alpha: game.vignette.alpha + (1 / 3)}, 0.65, {ease: FlxEase.quadOut});
+				case 3:
+                    game.defaultCamZoom += 0.05;
+
+					game.tween(game.colorSwag, {saturation: -1, brightness: -0.45}, 0.67, {ease: FlxEase.quadInOut});
+					if (oldModchart)
+						game.tween(game.camStrums, {alpha: 0}, 0.67, {ease: FlxEase.quadInOut});
+					game.tween(game.camGame, {angle: 7.5}, 0.67, {ease: FlxEase.quadInOut});
+				case 4:
+					game.camOther.flash(FlxColor.WHITE, 0.5);
+	
+					game.vignette.alpha = 0;
+                    game.camGame.angle = 0;
+							
+                    for (i in getHudCams()) 
+                        i.alpha = 1;
+	
+					game.colorSwag.saturation = 0;
+					game.colorSwag.brightness = 0;
+	
+					forEachOpponentStrum(function(spr:FlxSprite) { spr.x -= 320; });
+	
+					forEachPlayerStrum(function(spr:FlxSprite)
+					    {
+						    spr.multScale.set(1.0, 1.0);
+							spr.x -= 420;
+							spr.alpha = 1;
+						});
+	
+                    game.defaultCamZoom = 1;
+				case 5:
+					game.defaultCamZoom += theothershit;
+				case 6:
+                    game.tweenManager.cancelTweensOf(game.defaultCamZoom);
+					game.defaultCamZoom = theothershit;
+				case 7:
+					var lolesOk:Array<Array<Float>> = [];
+
+					var ogDadPos:Array<Float> = [game.dad.x, game.dad.y];
+	
+                    game.tween(game.dad, {y: game.dad.y - 1200}, 1, {ease: FlxEase.backOut});
+	
+					var ogBFPos:Array<Float> = [game.boyfriend.x, game.boyfriend.y];
+	
+					game.tween(game.boyfriend, {y: game.boyfriend.y - 1200}, 1, {ease: FlxEase.backOut});
+	
+                    if (game.structure != null)
+					    game.tween(game.structure, {y: game.structure.y - 1200}, 1, {ease: FlxEase.backOut});
+
+					game.tween(game.camGame.camFollow, {y: game.camGame.camFollow.y - 750}, 1, {ease: FlxEase.backOut});
+					
+					if (game.black_screen != null)
+						game.tween(game.black_screen, {alpha: 1}, 0.85, {ease: FlxEase.quadIn});
+
+                    if (game.transitionVignette != null)
+                        game.tween(game.transitionVignette, {y: game.transitionVignette.y + 1600}, 1, {ease: FlxEase.backOut});
+
+					if (oldModchart)
+						game.tween(game.camStrums, {y: game.camStrums.y + 250, alpha: 0}, 0.7, {ease: FlxEase.quadOut});
+
+					for (i in 1...5) {
+						for (pilar in game.pillarArrayLol) {
+							if (pilar.ID == i) {
+								lolesOk.push([pilar.x, pilar.y]);
+	
+								game.tween(pilar, {y: pilar.y - 1200}, 1, {ease: FlxEase.backOut});
+							}
+						}
+					}
+
+					trace(lolesOk);
+	
+                    game.timer(0.58, function(tmr:FlxTimer) {
+							game.tweenManager.forEach(function(twn:FlxTween) twn.cancel());
+								
+							game.backment.forEach(function(spr:FlxSprite) { FlxDestroyUtil.destroy(spr); });
+
+							game.floorLalFront.visible = false;
+	
+							cBEFFECT.colorBurnMix = 44.5 + 55.5;
+							cBEFFECT.colorBurnRed = 65 - 45;
+							cBEFFECT.colorBurnBlue = 0;
+							game.colorSwag.saturation = 0.076;
+	
+                            game.dad.setPosition(ogDadPos[0], ogDadPos[1] + 350);
+                            game.boyfriend.setPosition(ogBFPos[0], ogBFPos[1] + 350);
+
+                            if (game.structure != null)
+							    game.structure.setPosition((0 - (game.structure.width / 2)) - 400, 702 + 350);
+
+                            if (game.transitionVignette != null)
+								game.transitionVignette.setPosition(-1940, -250); // -5390
+
+							if (oldModchart)
+							{
+								game.camStrums.y = 250;
+								game.camStrums.alpha = 0;
+							}
+							game.snapCamFollowToPos(-410, 885, true);
+
+							game.colorSwag.hue = 0;
+
+                            if (game.meatRoom != null) {
+                                game.meatRoom.color = 0xFF444444;
+
+                                game.tween(game.meatRoom, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+                            }
+								
+                            game.tween(game.boyfriend, {y: game.boyfriend.y - 350}, 1, {ease: FlxEase.quadOut});
+                            game.tween(game.camGame.camFollow, {y: game.camGame.camFollow.y - 350}, 1, {ease: FlxEase.quadIn});
+
+							for (i in 1...5) {
+								for (pilar in game.pillarArrayLol) {
+									if (pilar.ID == i) {
+										pilar.setPosition(lolesOk[i-1][0], lolesOk[i-1][1] + 350);
+	
+										game.tween(pilar, {y: pilar.y - 350}, 1, {ease: FlxEase.quadOut});
+									}
+								}
+							}
+
+							game.addCinematicBars(0.1);
+
+							if (game.black_screen != null)
+								game.timer(0.25, function(tmr:FlxTimer) {game.tween(game.black_screen, {alpha: 0.00001}, 3.75, {ease: FlxEase.quadOut}); });
+
+							game.tween(game.camGame, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+	
+							if (oldModchart)
+								game.timer(0.2, function(tmr:FlxTimer) { game.tween(game.camStrums, {y: game.camStrums.y - 250, alpha: 1}, 1, {ease: FlxEase.quadIn}); });
+	
+                            game.tween(game.transitionVignette, {y: game.transitionVignette.y + 1050, alpha: 0.00001}, 2, {ease: FlxEase.quadOut, onComplete:
+									function(twn:FlxTween) {
+										// transitionVignette.visible = false;
+										game.transitionVignette.setPosition(-1940, -5390);
+										// game.tween(game.transitionVignette, {alpha: 0.00001}, 4);
+									}
+								});
+	
+							game.tween(game.dad, {y: game.dad.y - 350}, 1, {ease: FlxEase.quadOut});
+
+                            if (game.structure != null)
+                                game.tween(game.structure, {y: game.structure.y - 350}, 1, {ease: FlxEase.quadOut});
+
+                            game.tween(cBEFFECT, {colorBurnMix: cBEFFECT.colorBurnMix - 34.5, colorBurnRed: cBEFFECT.colorBurnRed + 45}, 4.45 + 22.22, {ease: FlxEase.quadOut});
+                            game.tweenManager.color(game.meatRoom, 4.45 + 22.22, game.meatRoom.color, FlxColor.WHITE);
+	
+							onEvent('Trigger Backstage Events', '22', '6');
+						});
+				case 8 if (oldModchart):
+					forEachOpponentStrum(function(spr:FlxSkewedSprite)
+						{
+						    var acaada:Float = FlxG.random.float(0.495, 0.85) / CONST_SCALE;
+							spr.multScale.set(acaada, acaada);
+
+							if (FlxG.random.bool(50))
+								spr.skew.set(FlxG.random.float(5, 27.5) * (FlxG.random.bool(50) ? (-1) : 1), 0);
+							else
+								spr.skew.set(0, FlxG.random.float(5, 27.5) * (FlxG.random.bool(50) ? (-1) : 1));
+						
+						});
+				case 9 if (oldModchart):
+					forEachOpponentStrum(function(spr:FlxSkewedSprite)
+						{
+                            game.tween(spr.skew, {x: 0, y: 0}, 0.65, {ease: FlxEase.quadOut});
+                            game.tween(spr.multScale, {x: 1, y: 1}, 0.65, {ease: FlxEase.quadOut});
+						});
+				case 10 if (oldModchart):
+					forEachOpponentStrum(function(spr:FlxSkewedSprite)
+						{
+							game.tweenManager.cancelTweensOf(spr);
+	
+							switch (spr.ID) {
+								case 0:
+									game.tween(spr, {angle: -17.87, x: spr.x + 15, y: spr.y - 20}, theothershit, {ease: FlxEase.circOut});
+									game.tween(spr.skew, {x: -13.5}, theothershit, {ease: FlxEase.circOut});
+								case 1:
+									game.tween(spr, {angle: -8.32, y: spr.y - 60}, theothershit, {ease: FlxEase.circOut});
+									game.tween(spr.multScale, {x: 0.695 / CONST_SCALE, y: 0.325 / CONST_SCALE}, theothershit, {ease: FlxEase.circOut});
+								case 2:
+									game.tween(spr, {angle: 8.32, y: spr.y - 40}, theothershit, {ease: FlxEase.circOut});
+							    	game.tween(spr.multScale, {x: 0.495 / CONST_SCALE, y: 0.525 / CONST_SCALE}, theothershit, {ease: FlxEase.circOut});
+								case 3:
+									game.tween(spr, {angle: 15.87, x: spr.x - 7.5, y: spr.y - 20}, theothershit, {ease: FlxEase.circOut});
+									game.tween(spr.skew, {x: 7.5}, theothershit, {ease: FlxEase.circOut});
+								}
+						    });
+							
+				case 11 if (oldModchart):
+					forEachOpponentStrum(function(spr:FlxSkewedSprite)
+						{
+							game.tweenManager.cancelTweensOf(spr);
+	
+							switch (spr.ID) {
+								case 0:
+									game.tween(spr, {angle: 0, x: spr.x - 15, y: spr.y + 20}, theothershit, {ease: FlxEase.backOut});
+				                    game.tween(spr.skew, {x: 0}, theothershit, {ease: FlxEase.backOut});
+								case 1:
+									game.tween(spr, {angle: 0, y: spr.y + 60}, theothershit, {ease: FlxEase.backOut});
+									game.tween(spr.multScale, {x: 0.695 / CONST_SCALE, y: 0.695 / CONST_SCALE}, theothershit, {ease: FlxEase.backOut});
+								case 2:
+								    game.tween(spr, {angle: 0, y: spr.y + 40}, theothershit, {ease: FlxEase.backOut});
+									game.tween(spr.multScale, {x: 0.695 / CONST_SCALE, y: 0.695 / CONST_SCALE}, theothershit, {ease: FlxEase.backOut});
+								case 3:
+									game.tween(spr, {angle: 0, x: spr.x + 7.5, y: spr.y + 20}, theothershit, {ease: FlxEase.backOut});
+									game.tween(spr.skew, {x: 0}, theothershit, {ease: FlxEase.backOut});
+								}
+						});
+				case 12:
+					var dur:Float = theothershit;
+					if (dur == 0.01) dur = 0.33; 
+					onEvent('Trigger Backstage Events', '5', '0.1');
+					onEvent('Trigger Backstage Events', '10', '$dur');
+	
+					game.tween(game.colorSwag, {saturation: 0.75}, dur, {ease: FlxEase.quadInOut});
+					game.tween(game.vignette, {alpha: 0.6}, dur, {ease: FlxEase.quadInOut});
+					game.tween(game.camHUD, {alpha: 0.3}, dur, {ease: FlxEase.quadInOut});
+				case 13:
+					var dur:Float = theothershit;
+					if (dur == 0.01) dur = 0.15; 
+	
+					onEvent('Trigger Backstage Events', '5', '-0.1');
+					onEvent('Trigger Backstage Events', '11', '$dur');
+	
+					game.tween(game.colorSwag, {saturation: 0}, dur, {ease: FlxEase.circOut});
+					game.tween(game.vignette, {alpha: 0}, dur, {ease: FlxEase.circOut});
+					game.tween(game.camHUD, {alpha: 1}, dur, {ease: FlxEase.circOut});
+				case 14:
+					onEvent('Trigger Backstage Events', '5', '0.15');
+					game.tween(game.colorSwag, {saturation: -0.15, brightness: -0.05}, 0.33, {ease: FlxEase.quadOut});
+					game.tween(game.vignette, {alpha: 0.35}, 0.33, {ease: FlxEase.quadOut});
+				case 15:
+				    onEvent('Trigger Backstage Events', '5', '-0.15');
+                    game.tween(game.colorSwag, {saturation: 0, brightness: 0}, 0.15, {ease: FlxEase.quadInOut});
+					game.tween(game.vignette, {alpha: 0}, 0.15, {ease: FlxEase.quadInOut});
+				case 16:
+					game.isCameraOnForcedPos = true;
+							
+                    game.tween(game.camGame.camFollow, {x: -410, y: 545}, 0.33, {ease: FlxEase.quadOut});
+	
+					game.tween(game.camGame, {angle: -(Math.sin(game.elapsedTime / 2) * 9.25)}, 0.33, {ease: FlxEase.quadOut, onComplete:
+								function(twn:FlxTween) {
+									gameTwisting = true;
+								}
+							});
+				case 17:
+				    onEvent('Trigger Backstage Events', '6', '0.8');
+
+                    game.tween(game.colorSwag, {saturation: 0.65}, 7.67, {ease: FlxEase.quadInOut});
+                    game.tween(game.vignette, {alpha: 0.65}, 7.67, {ease: FlxEase.quadInOut});
+                    game.tween(game.camHUD, {alpha: 0.2}, 7.67, {ease: FlxEase.quadInOut});
+				case 18:
+				    onEvent('Trigger Backstage Events', '5', '-0.125');
+	
+                    game.tween(cBEFFECT, {colorBurnMix: 0}, 0.45, {ease: FlxEase.circOut});
+				case 19:
+					cBEFFECT.colorBurnRed = 75;
+					onEvent('Trigger Backstage Events', '5', '0.25');
+	
+                    game.tween(game.vignette, {alpha: 0.75}, 0.45, {ease: FlxEase.circOut});
+                    game.tween(cBEFFECT, {colorBurnMix: 50}, 0.45, {ease: FlxEase.circOut});
+				case 20:
+					onEvent('Trigger Backstage Events', '8', '');
+					onEvent('Trigger Backstage Events', '9', '');
+	
+					game.tween(game.camHUD, {alpha: 0}, 0.3, {ease: FlxEase.quadInOut});
+	
+					forEachPlayerStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x - 320}, 0.33, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+	
+					forEachOpponentStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x - 620}, 0.33, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+						
+				case 21:
+					onEvent('Trigger Backstage Events', '6', '1.45');
+	
+                    game.tween(game.camHUD, {alpha: 0}, 0.33, {ease: FlxEase.quadInOut});
+                    game.tween(game.vignette, {alpha: 0}, 0.33, {ease: FlxEase.quadInOut});
+	
+                    game.tween(sTEFFECT, {viewRange: 325, internalViewRange: 325, spotLightMix: 0}, 0.33, {ease: FlxEase.quadInOut});	
+	
+					final t = 0.33;
+					if (oldModchart)
+					{
+						game.tween(game.camStrums, {alpha: 1, angle: Math.sin(game.elapsedTime / 1.5) * 4.45}, t, {ease: FlxEase.quadInOut, onComplete:
+									function(twn:FlxTween) {
+										twisting = true;
+									}
+								});
+					}
+					else
+					{
+						game.timer(t, _ -> twisting = true);
+					}
+	
+					cbBackstage = true;
+	
+                    game.tween(cBEFFECT, {colorBurnMix: 50, colorBurnRed: 125}, 0.33, {ease: FlxEase.quadInOut, onComplete:
+								function(twn:FlxTween) {
+									onEvent('Trigger Backstage Events', '0', '4');
+								}
+							});
+				case 22:
+					switch (Math.round(theothershit)) {
+						case 0:
+							onEvent('Trigger Backstage Events', '8', '');
+                            game.colorSwag.saturation += 0.01;
+                            game.vignette.alpha += 0.05;
+							onEvent('Trigger Backstage Events', '5', '0.05');
+					    case 1:
+							onEvent('Trigger Backstage Events', '9', '');
+                            game.tween(game.vignette, {alpha: 0}, 0.65, {ease: FlxEase.quadOut});
+                            game.tween(game.colorSwag, {saturation: 0}, 0.65, {ease: FlxEase.quadOut});
+                            game.tween(game, {defaultCamZoom: 1}, 0.65, {ease: FlxEase.quadOut});
+						case 2:
+							game.tween(game.colorSwag, {saturation: 1, brightness: -0.45}, 1.22, {ease: FlxEase.quadInOut});
+						case 3:
+							game.tween(game, {defaultCamZoom: 0.75}, 1, {ease: FlxEase.quadInOut});
+						case 4:
+							game.tween(game.colorSwag, {hue: game.colorSwag.hue - 0.075}, 1.22, {ease: FlxEase.quadOut});
+						case 5:
+							game.tween(game.camHUD, {alpha: 0}, 0.65, {ease: FlxEase.quadInOut});
+                            game.tween(game.colorSwag, {saturation: 0.5}, 0.65, {ease: FlxEase.quadInOut});
+						case 6:
+							trace('pentis');
+
+							game.tweenManager.cancelTweensOf(game.defaultCamZoom);
+                            game.tweenManager.cancelTweensOf(game.vignette);
+
+                            game.vignette.alpha = 0;
+                            game.vignette.color = FlxColor.RED;
+	
+							game.tween(game, {defaultCamZoom: 0.32}, 25, {ease: FlxEase.quadInOut});
+                            game.tween(game.meatRoom.velocity, {y: 44.5}, 25, {ease: FlxEase.quadInOut});
+							game.tween(game.vignette, {alpha: 0.23}, 25, {ease: FlxEase.quadInOut});
+						case 7:
+                            game.tween(game.meatRoom.velocity, {x: 5050, y: 2445}, 4.75, {ease: FlxEase.backInOut});
+                            game.tween(game.colorSwag, {saturation: 0.445 + 0.2}, 0.75, {ease: FlxEase.backInOut});
+							game.tween(cBEFFECT, {colorBurnRed: 45}, 0.75, {ease: FlxEase.backInOut});
+                            game.tween(game, {defaultCamZoom: 0.58}, 0.75, {ease: FlxEase.backInOut});
+                            game.tween(game.camGame.camFollow, {x: -410, y: 445+125}, 0.75, {ease: FlxEase.backInOut});
+	
+                            forEachOpponentStrum(function(note:FlxSkewedSprite) { game.tween(note, {alpha: 0.445}, 0.325, {ease: FlxEase.quadInOut}); });
+	
+                            // Just making sure it doesn't fit in... -Boxy 08/01/24 12:13AM
+                            forEachPlayerStrum(function(note:FlxSkewedSprite) { game.tween(note, {alpha: 1}, 0.325, {ease: FlxEase.quadInOut}); });
+	
+							onEvent('Trigger Backstage Events', '32', 'EVERYTHING IS SPINNING AROUND!');
+	
+							evilTwisting = true;
+						case 8:
+							game.tween(game.colorSwag, {hue: -0.1}, 0.67, {ease: FlxEase.quadInOut});
+
+							onEvent('Trigger Backstage Events', '5', '0.05');
+						case 9: // unused
+							onEvent('Trigger Backstage Events', '31', '1');
+						case 10:
+							isCameraOnForcedPos = true;
+                            game.tween(game.camGame.camFollow, {x: -410, y: 445+125}, 1.33, {ease: FlxEase.quadInOut});
+						case 11:
+                            game.triggerEventNote('Add Camera Zoom', '0.0125', '0.0125');
+							onEvent('Trigger Backstage Events', '5', '0.3');
+                            // game.triggerEventNote('Camera Follow Pos', '', '');
+									
+                            game.tween(edgingEffect, {edgeMix: edgingEffect.edgeMix + 50, imageMix: edgingEffect.imageMix - 50}, 0.5, {ease: FlxEase.quadOut});
+						case 12:
+                            game.triggerEventNote('Add Camera Zoom', '0.0125', '0.0125');
+                            game.tween(edgingEffect, {edgeMix: edgingEffect.edgeMix + 50, imageMix: edgingEffect.imageMix - 50}, 0.5, {ease: FlxEase.quadOut});
+						case 13:
+                            game.triggerEventNote('Add Camera Zoom', '0.0125', '0.0125');
+                            game.tween(edgingEffect, {edgeMix: edgingEffect.edgeMix + 50}, 2.66, {ease: FlxEase.quadInOut});
+						case 14:
+							var aaerhgh:Array<BitmapFilter> = [];
+	
+							for (i in game.camGameShaders)
+								aaerhgh.push(new ShaderFilter(i.shader));
+		
+							aaerhgh.push(new ShaderFilter(peEFFECT.shader));
+							game.camGame.filters = aaerhgh;
+						case 15:
+							forEachPlayerStrum(function(spr:FlxSprite)
+								{
+                                    game.tweenManager.cancelTweensOf(spr);
+									spr.x -= 320;
+								});
+
+                            forEachOpponentStrum(function(spr:FlxSprite)
+								{
+                                    game.tweenManager.cancelTweensOf(spr);
+									spr.x -= 320;
+									spr.alpha = 0;
+								});
+									
+                            game.tween(sTEFFECT, {viewRange: 345, internalViewRange: 345}, 0.41, {ease: FlxEase.quadInOut});
+						case 16:
+                            game.tween(game, {defaultCamZoom: game.defaultCamZoom - 0.1}, 0.66, {ease: FlxEase.quadIn});
+                            game.tween(sTEFFECT, {viewRange: 1000, spotLightMix: 1, internalViewRange: 1000}, 0.66, {ease: FlxEase.quadInOut});
+						
+							game.isCameraOnForcedPos = true;
+                            game.tween(game.camGame.camFollow, {x: (game.boyfriend.getMidpoint().x - 100 + game.camOffset.x) - (game.boyfriend.cameraPosition.x - game.boyfriendCameraOffset.x), y: (game.boyfriend.getMidpoint().y - 100 + game.camOffset.y) + (game.boyfriend.cameraPosition.y + game.boyfriendCameraOffset.y)}, 0.6, {ease: FlxEase.quadInOut});
+						case 17:
+                            game.tween(game, {defaultCamZoom: 0.65}, 1, {ease: FlxEase.quadInOut});
+                            game.triggerEventNote('Camera Follow Pos', '-410', '545');
+	
+                            game.tween(sTEFFECT, {viewRange: 405, internalViewRange: 405}, 0.65, {ease: FlxEase.quadInOut});
+						case 18:
+							game.tween(sTEFFECT, {viewRange: 0.01, spotLightMix: 0, internalViewRange: 0.01}, 0.66, {ease: FlxEase.quadOut});
+							
+                        }
+				case 23:
+					forEachPlayerStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x + 320}, 0.33, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+		
+					forEachOpponentStrum(function(spr:FlxSprite) { game.tween(spr, {x: spr.x + 620}, 0.33, {ease: FlxEase.quadInOut, startDelay: 0.05 * spr.ID}); });
+				case 24:
+					onEvent('Trigger Backstage Events', '23', '');
+	
+					gameTwisting = false;
+					twisting = false;
+					cbBackstage = false;
+	
+                    game.tweenManager.cancelTweensOf(cBEFFECT);
+	
+                    game.tween(game.colorSwag, {saturation: 0, brightness: 0}, 0.83, {ease: FlxEase.quadInOut});
+                    game.tween(game.camHUD, {alpha: 1}, 0.83, {ease: FlxEase.quadInOut});
+                    game.tween(game.vignette, {alpha: 0}, 0.83, {ease: FlxEase.quadInOut});
+                    game.tween(sTEFFECT, {viewRange: 1000, spotLightMix: 1, internalViewRange: 1000}, 0.83, {ease: FlxEase.quadInOut});
+                    game.tween(cBEFFECT, {colorBurnMix: 0}, 0.83, {ease: FlxEase.quadInOut});	
+	
+					for (i in getGameCams()) 
+                        game.tween(i, {angle: 0}, 0.83, {ease: FlxEase.quadInOut});
+	
+                    game.tween(game, {defaultCamZoom: 1}, 0.83, {ease: FlxEase.quadInOut});	
+	
+					game.tween(game.camGame.camFollow, {x: (game.dad.getMidpoint().x + 150) + (game.dad.cameraPosition.x + game.opponentCameraOffset.x), y: (game.dad.getMidpoint().y - 100) + (game.dad.cameraPosition.y + game.opponentCameraOffset.y)}, 0.67, {ease: FlxEase.quadInOut, onComplete:
+						function(twn:FlxTween) {
+                            game.isCameraOnForcedPos = false;
+						}}
+					);
+	
+				case 25 if (oldModchart):
+                     forEachOpponentStrum(function(spr:FlxSkewedSprite) { spr.skew.set(FlxG.random.float(5, 27.5) * (FlxG.random.bool(50) ? (-1) : 1), FlxG.random.float(5, 27.5) * (FlxG.random.bool(50) ? (-1) : 1)); });
+				case 26:
+					onEvent('Trigger Backstage Events', '5', '-0.175');
+                    game.triggerEventNote('Camera Follow Pos', '-410', '545');
+	
+                    game.tween(sTEFFECT, {viewRange: 475, internalViewRange: 475}, 0.65, {ease: FlxEase.quadInOut});
+				case 27:
+					onEvent('Trigger Backstage Events', '5', '$theothershit');
+                    game.tween(game.vignette, {alpha: game.vignette.alpha + 0.1}, 0.45, {ease: FlxEase.sineIn});
+                    game.tween(game.colorSwag, {saturation: game.colorSwag.saturation + 0.025}, 0.45, {ease: FlxEase.sineIn});
+				case 28:
+					onEvent('Trigger Backstage Events', '5', '$theothershit');
+                    game.tween(game.vignette, {alpha: 0}, 0.45, {ease: FlxEase.sineIn});
+                    game.tween(game.colorSwag, {saturation: 0, hue: 0}, 0.45, {ease: FlxEase.sineIn});
+				case 29:
+					game.tween(game.vignette, {alpha: 0.65}, 4, {ease: FlxEase.quadInOut});
+                    game.tween(game.colorSwag, {hue: -0.1, saturation: -0.25}, 0.75, {ease: FlxEase.quadInOut});
+				case 30:
+                    game.triggerEventNote('Add Camera Zoom', '0.095', '0.1');
+					onEvent('Trigger Backstage Events', '1', '');
+				case 31: // modcharts siii PARA MAÑANA, TRATAR DE PASARLO A LERP. GRACIAS. -Boxy 08/01/24 12:53AM
+					var dur:Float = rotationStep(totalLaps);
+	
+					var ez:Null<EaseFunction> = FlxEase.sineIn;
+					var ezAlt:Null<EaseFunction> = FlxEase.sineOut;
+	
+					switch (Math.round(theothershit))
+						{
+							case 0:
+								if (rotatingModchart) {
+                                    forEachOpponentStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 20 + ((Note.swagWidth * note.ID) + 50), y: 80}, dur, {ease: ezAlt});
+                                        game.tween(note.multScale, {x: 1, y: 1}, dur, {ease: ezAlt});
+									});
+	
+                                    forEachPlayerStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 728 + ((Note.swagWidth * note.ID) + 50), y: 80}, dur, {ease: ezAlt});
+                                        game.tween(note.multScale, {x: 1, y: 1}, dur, {ease: ezAlt});
+									});
+	
+                                    game.tween(game.dad, {x: -1217, y: 375, alpha: 1}, dur, {ease: ezAlt});
+                                    game.tween(game.dad.scale, {x: 1, y: 1}, dur, {ease: ezAlt});
+	
+                                    game.tween(game.boyfriend, {x: -80, y: 410, alpha: 1}, dur, {ease: ezAlt});
+                                    game.tween(game.boyfriend.scale, {x: 1, y: 1}, dur, {ease: ezAlt});
+
+									game.tween(locos_misteriosos, {x: -415, y: 495}, dur, {ease: ezAlt});
+
+									pillarSpin(dur);
+	
+                                    game.timer((dur), function(tmr:FlxTimer) {
+										totalLaps++;
+	
+										game.remove(game.partnerGroup);
+										game.remove(game.dadGroup);
+										game.remove(game.boyfriendGroup);
+		
+										game.add(game.partnerGroup);
+										game.add(game.boyfriendGroup);
+										game.add(game.dadGroup);
+	
+										onEvent('Trigger Backstage Events', '31', '1');
+									});
+								}
+							case 1:
+								if (totalLaps == 0) ez = FlxEase.backIn;
+									
+								if (rotatingModchart) {
+                                    forEachOpponentStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 368 + ((Note.swagWidth * note.ID) + 50), y: 50}, dur, {ease: ez});
+                                        game.tween(note.multScale, {x: 1.22, y: 1.22}, dur, {ease: ez});
+									});
+	
+                                    forEachPlayerStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 368 + ((Note.swagWidth * note.ID) + 50), y: 109}, dur, {ease: ez});
+                                        game.tween(note.multScale, {x: 0.73, y: 0.73}, dur, {ease: ez});
+									});
+	
+                                    game.tween(game.dad, {x: -677, y: 355}, dur, {ease: ez});
+                                    game.tween(game.dad.scale, {x: 1.25, y: 1.25}, dur, {ease: ez});
+	
+                                    game.tween(game.boyfriend, {x: -623, y: 381, alpha: 0.5}, dur, {ease: ez});
+                                    game.tween(game.boyfriend.scale, {x: 0.75, y: 0.75}, dur, {ease: ez});
+
+									game.tween(locos_misteriosos, {x: -615, y: 535}, dur, {ease: ez});
+
+									pillarSpin(dur);
+	
+                                    game.timer((dur), function(tmr:FlxTimer) { onEvent('Trigger Backstage Events', '31', '2'); });
+								}
+							case 2:
+								if (rotatingModchart) {
+									forEachOpponentStrum(function(note:FlxSkewedSprite) {
+										game.tween(note, {x: 728 + ((Note.swagWidth * note.ID) + 80), y: 80}, dur, {ease: ezAlt});
+                                        game.tween(note.multScale, {x: 1, y: 1}, dur, {ease: ezAlt});
+									});
+	
+									forEachPlayerStrum(function(note:FlxSkewedSprite) {
+										game.tween(note, {x: 20 + ((Note.swagWidth * note.ID) + 50), y: 80}, dur, {ease: ezAlt});
+                                        game.tween(note.multScale, {x: 1, y: 1}, dur, {ease: ezAlt});
+									});
+	
+                                    game.tween(game.dad, {x: 403, y: 375, alpha: 1}, dur, {ease: ezAlt});
+                                    game.tween(game.dad.scale, {x: -1, y: 1}, dur, {ease: ezAlt});
+	
+                                    game.tween(game.boyfriend, {x: -1133, y: 410, alpha: 1}, dur, {ease: ezAlt});
+                                    game.tween(game.boyfriend.scale, {x: -1, y: 1}, dur, {ease: ezAlt});
+
+									game.tween(locos_misteriosos, {x: -415, y: 575}, dur, {ease: ezAlt});
+
+									pillarSpin(dur);
+	
+									game.timer((dur), function(tmr:FlxTimer) {
+										//trace(dad);
+	
+										game.remove(game.dadGroup);
+										game.remove(game.boyfriendGroup);
+		
+										game.add(game.dadGroup);
+										game.add(game.boyfriendGroup);
+	
+										onEvent('Trigger Backstage Events', '31', '3');
+									});
+								}
+							case 3:
+								if (rotatingModchart) {
+                                    forEachOpponentStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 368 + ((Note.swagWidth * note.ID) + 80), y: 109}, dur, {ease: ez});
+                                        game.tween(note.multScale, {x: 0.73, y: 0.73}, dur, {ease: ez});
+									});
+	
+                                    forEachPlayerStrum(function(note:FlxSkewedSprite) {
+                                        game.tween(note, {x: 368 + ((Note.swagWidth * note.ID) + 50), y: 50}, dur, {ease: ez});
+                                        game.tween(note.multScale, {x: 1.22, y: 1.22}, dur, {ease: ez});
+									});
+	
+                                    game.tween(game.dad, {x: -247, y: 375, alpha: 0.5}, dur, {ease: ez});
+                                    game.tween(game.dad.scale, {x: -0.75, y: 0.75}, dur, {ease: ez});
+
+                                    game.tween(game.boyfriend, {x: -617, y: 458, alpha: 1}, dur, {ease: ez});
+                                    game.tween(game.boyfriend.scale, {x: -1.25, y: 1.25}, dur, {ease: ez});
+
+									game.tween(locos_misteriosos, {x: -215, y: 535}, dur, {ease: ez});
+
+									pillarSpin(dur);
+	
+                                    game.timer((dur), function(tmr:FlxTimer) {
+											onEvent('Trigger Backstage Events', '31', '0');
+										});
+								}
+					    }
+				case 32:
+					Lib.application.window.title = Std.string(value2);
+				case 33:
+					game.tweenManager.forEach(function(twn:FlxTween) twn.cancel());
+	
+				    evilTwisting = false;
+					doingDelayAh = true;
+					rotatingModchart = false;
+
+					for (i in getGameCams()) 
+                        i.angle = 0;
+
+					onEvent('Trigger Backstage Events', '32', 'VS Dave: Dimensional Deep End | Backstage');
+				case 34:
+                    if (game.transitionVignette != null) {
+                        game.transitionVignette.alpha = 1;
+
+                        game.tween(game.transitionVignette, {y: game.transitionVignette.y + 3800}, 1, {ease: FlxEase.backOut});
+                    }
+
+					if (oldModchart)
+						game.tween(game.camStrums, {alpha: 0}, 0.5, {ease: FlxEase.backOut});
+
+                    game.timer(0.58, function(tmr:FlxTimer) {
+						game.tweenManager.forEach(function(twn:FlxTween) twn.cancel());
+					});
+				case 35:
+					holaFernan = false;
+					barColorInterpolation = false;
+
+					game.tween(edgingEffect, {edgeMix: 0, imageMix: 100}, 0.2, {ease: FlxEase.quadOut});
+
+					for (bar in [game.cinematicBars["top"], game.cinematicBars["bottom"]]) {
+						game.tweenManager.color(bar, 0.65, bar.color, FlxColor.BLACK, {ease: FlxEase.quadOut});
+					}
+				case 36:
+					onEvent('Trigger Backstage Events', '33', '');
+
+					cBEFFECT.colorBurnMix = 88.5;
+					cBEFFECT.colorBurnRed = 55;
+					cBEFFECT.colorBurnBlue = 0;
+						
+                    game.colorSwag.saturation = 0.076;
+                    game.colorSwag.hue = 0;
+
+					edgingEffect.imageMix = 100;
+					edgingEffect.edgeMix = 0;
+                        
+					if (oldModchart)
+						game.camStrums.alpha = 1;
+
+					game.triggerEventNote('Camera Follow Pos', '', '');
+
+					sTEFFECT.spotLightMix = 0;
+					sTEFFECT.viewRange = 0.01;
+					sTEFFECT.internalViewRange = 0.01;
+
+					twisting = true;
+
+					game.defaultCamZoom = 1.175;
+					game.isCameraOnForcedPos = false;
+
+					if (game.structure != null)
+						game.structure.visible = false;
+
+					if (game.theThreePillars != null)
+						game.theThreePillars.visible = false;
+
+                    game.dad.setPosition(-1217, 375);
+                    game.dad.scale.set(1, 1);
+                    game.dad.alpha = 1;
+
+                    game.boyfriend.setPosition(-80, 410);
+                    game.boyfriend.scale.set(1, 1);
+					game.boyfriend.alpha = 1;
+
+					game.remove(game.dadGroup);
+					game.remove(game.boyfriendGroup);
+					game.remove(game.partnerGroup);
+					if (game.fileAsset != null)
+						game.remove(game.fileAsset);
+
+					game.add(game.partnerGroup);
+					if (game.fileAsset != null)
+						game.add(game.fileAsset);
+					game.add(game.dadGroup);
+					game.add(game.boyfriendGroup);
+
+					if (game.transitionVignette != null)
+						FlxDestroyUtil.destroy(game.transitionVignette);
+
+                    if (game.meatRoom != null)
+						FlxDestroyUtil.destroy(game.meatRoom);
+
+					var aaerhgh:Array<BitmapFilter> = [];
+		
+					for (i in game.camGameShaders) aaerhgh.push(new ShaderFilter(i.shader));
+
+					game.camGame.filters = aaerhgh;
+				case 37:
+					game.dad.setPosition(-987, 375);
+                    game.dad.scale.set(1, 1);
+                    game.dad.alpha = 1;
+
+                    game.boyfriend.setPosition(-330, 420);
+                    game.boyfriend.scale.set(1, 1);
+					game.boyfriend.alpha = 1;
+
+                    forEachPlayerStrum(function(note:FlxSkewedSprite) {
+						note.setPosition(728 + ((Note.swagWidth * note.ID) + 50), 50);
+						note.multScale.set(1, 1);
+					});
+
+					game.removeCinematicBars(0.1);
+				case 38:
+					onEvent('Trigger Backstage Events', '22', '15');
+
+					game.tween(game.colorSwag, {saturation: 0, brightness: 0}, 8.66, {ease: FlxEase.linear});
+                    game.tween(cBEFFECT, {colorBurnMix: 0}, 8.66, {ease: FlxEase.linear});	
+					game.tween(game.vignette, {alpha: 0.0001}, 8.66, {ease: FlxEase.linear});	
+				case 39:
+					game.tween(sTEFFECT, {viewRange: 1000, spotLightMix: 1, internalViewRange: 1000}, 0.5, {ease: FlxEase.quadInOut});
+					game.tween(game, {defaultCamZoom: 0.375}, 0.5, {ease: FlxEase.quadInOut});
+
+					forEachPlayerStrum(function(note:FlxSkewedSprite) { game.tween(note, {alpha: 0}, 0.5, {ease: FlxEase.quadInOut}); });
+				case 40:
+					for (bar in [game.cinematicBars["top"], game.cinematicBars["bottom"]]) {
+						game.tween(bar.scale, {y: Std.int(FlxG.height / game.curBarThickness) * 1.65}, 0.5, {ease: FlxEase.circInOut});
+						game.tweenManager.color(bar, 0.5, bar.color, 0xFFAA0000);
+					}
+				case 41:
+					onEvent('Trigger Backstage Events', '22', '9');
+
+					for (bar in [game.cinematicBars["top"], game.cinematicBars["bottom"]]) {
+						game.tweenManager.cancelTweensOf(bar, ['color']);
+						game.tween(bar.scale, {y: Std.int(FlxG.height / game.curBarThickness) * 0.85}, 0.25, {ease: FlxEase.quadOut});
+						barColorInterpolation = true;
+					}
+					game.tween(game.cinematicBars["top"], {y: game.cinematicBars["top"].y -= 25}, 0.25, {ease: FlxEase.quadOut});
+					game.tween(game.cinematicBars["bottom"], {y: game.cinematicBars["bottom"].y += 25}, 0.25, {ease: FlxEase.quadOut});
+				case 42:
+					game.fileMorphPartner();
+				case 43:
+					onEvent('Trigger Backstage Events', '42', '');
+					onEvent('Trigger Backstage Events', '22', '17');
+
+					game.remove(game.dadGroup);
+					game.remove(game.boyfriendGroup);
+					game.remove(game.partnerGroup);
+					game.remove(game.fileAsset);
+
+					game.add(game.partnerGroup);
+					game.add(game.fileAsset);
+					game.add(game.dadGroup);
+					game.add(game.boyfriendGroup);
+
+			}
+    }
+}
+
+function onBeatHit()
+{
+    if (evilTwisting && FlxG.random.bool(41) && game.curBeat % 2 == 0 && !brahblahblah && propTime)
+        {
+            brahblahblah = true;
+
+            var choosenProp:Int = FlxG.random.int(0, 4);
+
+            var daWidthScale:Float = (choosenProp == 3 ? 1.25 : 2);
+
+            var daProp:FlxSprite = new FlxSprite();
+            daProp.loadGraphicFromSprite(cachedProps[choosenProp]);
+            CoolUtil.exactSetGraphicSize(daProp, FlxG.width, FlxG.height);
+            daProp.updateHitbox();
+            daProp.setPosition(0, -2000);
+			daProp.camera = game.camBetween;
+            game.add(daProp); 
+
+            game.tween(daProp, {y: daProp.y + 10000}, 2.45, {onComplete:
+                function(twn:FlxTween) {
+                    brahblahblah = false;
+                    FlxDestroyUtil.destroy(daProp);
+                    daProp = null;
+                }
+            });
+        }
+}
+
+function refreshSpotlight(width, height) {
+    if (sTEFFECT != null) {
+        sTEFFECT.arghInputX = width / 2;
+        sTEFFECT.arghInputY = height / 2;
+        sTEFFECT.viewRange = sTEFFECT.internalViewRange;
+        sTEFFECT.blurDistance = sTEFFECT.internalBlurDistance;
+        sTEFFECT.scale = (width/FlxG.width);
+    }
+}
+
+function rotationStep(timeAh:Int):Float {
+    var addition:Float = timeAh;
+
+    if (Math.isNaN(timeAh)) addition = 0;  
+
+    if (addition >= 4) addition = 4;
+
+    if (addition >= 4 && !propTime) propTime = true;
+
+    return Math.PI/(6 + addition);
+}
+
+function pillarSpin(dur:Float=0.85):Void {	
+	defaultPillarsLol();
+
+	for (pilar in game.pillarArrayLol) {
+		game.theThreePillars.remove(pilar);
+
+		if (pilar.ID == 1) {
+			game.tween(pilar, {x: game.structure.x + game.structure.width / 1.65, y: game.structure.y}, dur, {ease: FlxEase.linear});
+			game.tween(pilar.scale, {x: 1, y: 1}, dur, {ease: FlxEase.linear});
+			game.tweenManager.color(pilar, dur, FlxColor.WHITE, 0xFF999999, {ease: FlxEase.linear});
+		}
+
+		if (pilar.ID == 4) {
+			game.tween(pilar, {x: game.structure.x + game.structure.width / 2.75, y: (game.structure.y + 100) * 1.8}, dur, {ease: FlxEase.linear});
+			game.tween(pilar.scale, {x: 2, y: 2}, dur, {ease: FlxEase.linear});
+			game.tweenManager.color(pilar, dur, 0xFF999999, FlxColor.WHITE, {ease: FlxEase.linear});
+		}
+
+		if (pilar.ID == 2)
+			game.tweenManager.color(pilar, dur, 0xFF000000, 0xFF999999, {ease: FlxEase.linear});
+	}
+
+	for (plaal in game.pillarArrayLol)
+		game.theThreePillars.add(plaal);
+
+	fuckingTimersLol.push(game.timer(dur*(5/16), function(tmr:FlxTimer) {
+		for (i in game.pillarArrayLol)
+			game.theThreePillars.remove(i);
+
+		for (i in 1...5) {
+			for (plaal in game.pillarArrayLol) {
+				if ((i == 1 && plaal.ID == 3) || (i == 2 && plaal.ID == 2) || (i == 3 && plaal.ID == 1) || (i == 4 && plaal.ID == 4))
+					game.theThreePillars.add(plaal);
+			}
+		}
+	}));
+}
+
+function defaultPillarsLol():Void
+{
+	for (pilar in game.pillarArrayLol) {
+		game.theThreePillars.remove(pilar);
+		game.tweenManager.cancelTweensOf(pilar);
+		game.tweenManager.cancelTweensOf(pilar.scale);
+
+		if (pilar.ID == 1) {
+			pilar.scale.set(2, 2);
+			pilar.setPosition(game.structure.x + game.structure.width / 2.75, (game.structure.y + 100) * 1.8);
+			pilar.color = FlxColor.WHITE;
+		}
+
+		if (pilar.ID == 2)
+			pilar.color = 0xFF000000;
+
+		if (pilar.ID == 4) {
+			pilar.scale.set(1, 1);
+			pilar.setPosition(game.structure.x + game.structure.width / 10, game.structure.y);
+			pilar.color = 0xFF999999;
+		}
+	}
+
+	for (plaal in game.pillarArrayLol)
+		game.theThreePillars.add(plaal);
+
+	for (timer in fuckingTimersLol)
+		timer.cancel();
+}
+
+// functions that change if modcharts are disabled
+function getHudCams() {
+	return oldModchart ? [game.camStrums, game.camHUD] : [game.camHUD];
+}
+
+function getGameCams() {
+	return getHudCams().concat([game.camGame]);
+}
+
+function forEachPlayerStrum(func) {
+	if (oldModchart)
+		game.playerStrums.forEach(func);
+}
+
+function forEachOpponentStrum(func) {
+	if (oldModchart)
+		game.opponentStrums.forEach(func);
+}

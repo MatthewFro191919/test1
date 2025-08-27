@@ -1,0 +1,690 @@
+import deepend.states.substates.gameover.GameOverSettings;
+import flixel.group.FlxTypedSpriteContainer;
+import flixel.math.FlxMath;
+
+using StringTools;
+
+var bars;
+var VIGNETTE_ALPHA:Float = 0.2;
+
+var borderTop:FlxSprite;
+var borderBottom:FlxSprite;
+
+var paperGroup:FlxTypedSpriteContainer<MultiUseSprite>;
+var housePaper:MultiUseSprite;
+var boppersPaper:MultiUseSprite;
+
+var grayBG:GrayscaleEffect;
+var bgSprites:Array<FlxSprite>;
+
+var bfShadow:Character;
+var dadShadow:Character;
+
+var littles:Array<MultiUseSprite>;
+
+var paperGrad:FlxGraphic;
+var testGrad:FlxGraphic;
+var gradShader:FlxRuntimeShader;
+
+typedef TossedItem = {
+    var id:String;
+    var shot:Int;
+}
+
+var curThrown:Int = 0;
+var ITEMS:Array<TossedItem> = [
+    {id: "chips", shot: 14},
+    {id: "phone", shot: 8},
+    {id: "pot", shot: 20},
+    {id: "apple", shot: 17},
+    {id: "box", shot: 13},
+    {id: "sign", shot: 12},
+    {id: "crate", shot: 6},
+    {id: "book", shot: 7},
+    {id: "duck", shot: 12},
+    {id: "mug", shot: 13}
+];
+
+var barsCurTween:FlxTween;
+
+var playerSwap:Bool = false;
+
+var playerHint:FlxText;
+var modManager;
+
+function tweenBars(values:Dynamic, duration:Float, ?options:Null<TweenOptions>) {
+    if (barsCurTween != null)
+        barsCurTween.cancel();
+    barsCurTween = game.tween(bars, values, duration, options);
+}
+
+function loadCharacters() {
+    return [
+        {id: "pico-shucked-paper", type: BF},
+        {id: "bambi-shucked-paper", type: DAD},
+        {id: "bambi-shucked-die", type: BF},
+    ];
+}
+
+function loadImages() {
+    return [
+        "stages/house/living_room_paper",
+        "stages/house/bgboppers_shucked_paper",
+        "stages/house/paperborder",
+        "stages/house/thrown_objects",
+        "stages/house/popcorn/spritemap1",
+        "icons/icon-pico-duel"
+    ];
+}
+
+function createGrayscaleEffect():GrayscaleEffect {
+    var effect:GrayscaleEffect = new GrayscaleEffect();
+    effect.greyMixLevel = 0;
+    return effect;
+}
+
+function onCreate() {
+    //PlayState.forceModchart = true;
+
+    paperGroup = new FlxTypedSpriteContainer();
+    paperGroup.alpha = FlxMath.EPSILON;
+
+    housePaper = new MultiUseSprite(-1000, -1202);
+    housePaper.loadSprite("stages/house/living_room_paper");
+    housePaper.addAnimation("idle", "bg");
+    housePaper.playAnimation("idle");
+    housePaper.scale.set(0.9, 0.9);
+    housePaper.updateHitbox();
+    paperGroup.add(housePaper);
+
+    boppersPaper = new MultiUseSprite(-190, -630);
+    boppersPaper.loadSprite("stages/house/bgboppers_shucked_paper");
+    boppersPaper.addAnimation("idle", "boppers_normal");
+    boppersPaper.addAnimation("scared", "boppers_scared");
+    boppersPaper.playAnimation("idle");
+    boppersPaper.scale.set(0.9, 0.9);
+    boppersPaper.updateHitbox();
+    paperGroup.add(boppersPaper);
+
+    borderTop = new MultiUseSprite(-136.4, -316.75);
+    borderTop.frames = Paths.getFrames("stages/house/paperborder");
+    borderTop.addAnimation("idle", "papertopborder", null, 24);
+    borderTop.playAnimation("idle");
+    borderTop.color = 0xff999999;
+    paperGroup.add(borderTop);
+    borderTop.camera = game.camBetween;
+
+    borderBottom = new MultiUseSprite(-231.35, 336.85);
+    borderBottom.loadSprite("stages/house/paperborder");
+    borderBottom.addAnimation("idle", "paperbottomborder", null, 24);
+    borderBottom.playAnimation("idle");
+    borderBottom.color = 0xff999999;
+    paperGroup.add(borderBottom);
+    borderBottom.camera = game.camBetween;
+
+    game.insert(0, paperGroup);
+}
+
+function onCreatePost() {
+    bgSprites = new Array();
+    for (tag in ["room", "tristan", "gabi", "spike"]) {
+        bgSprites.push(game.modchartSprites.get(tag));
+    }
+
+    grayBG = createGrayscaleEffect();
+    for (sprite in bgSprites) {
+        sprite.shader = grayBG.shader;
+    }
+
+    if (game.hasPartner) {
+        paperGroup.remove(boppersPaper);
+        game.partner.shader = grayBG.shader;
+    }
+
+    for (char in loadCharacters()) {
+        game.addCharacterToList(char.id, char.type);
+    }
+    makeShadows();
+    theTosser();
+    
+    game.judgementCounter.baseX = 320;
+    game.moveCameraOnNote = false;
+    game.cameraSpeed = 1.5;
+
+    game.updateIcons = false;
+    game.preventReloadHealthBarColors = true;
+    game.healthBar.flipX = true;
+    game.iconP1.changeIcon("bambi");
+    game.iconP2.changeIcon("pico");
+
+    game.camStrums.alpha = 0;
+    game.camHUD.alpha = 0.001;
+    
+    game.vignette.camera = game.camBars;
+    bars = game.cinemaBars;
+    bars.gap = 0;
+
+    littles = new Array();
+    for (i in 0...3) {
+        var small:MultiUseSprite = new MultiUseSprite();
+        small.loadSprite("stages/house/popcorn");
+
+        small.addAnimation("bullet", "bulletshake", null, 24, false);
+        small.addAnimation("kernel", "kernelshake", null, 24, false);
+        small.addAnimation("popcorn", "popcorn", null, 24, false);
+
+        small.screenCenter();
+        small.x += (i-1) * 220 - 58;
+        small.y -= i < 2 ? 70 : 100;
+
+        small.visible = false;
+        small.camera = game.camBars;
+
+        game.add(small);
+        littles.push(small);
+    }
+
+    playerHint = new FlxText(0, 0, 0, getLocale("$PLAYER_HINT", "playstate"));
+    playerHint.setFormat(Paths.font('pointless.ttf'), 32, FlxColor.WHITE, "center", "outline", FlxColor.BLACK);
+    playerHint.alignment = game.botplayTxt.alignment;
+    playerHint.borderStyle = game.botplayTxt.borderStyle;
+    playerHint.borderSize = 3;
+    
+    playerHint.x = 320 - playerHint.width / 2;
+    playerHint.y = 170;
+    playerHint.flipY = ClientPrefs.downscroll;
+    playerHint.scrollFactor.set();
+    playerHint.camera = game.camStrums;
+    game.add(playerHint);
+
+    /*
+    tintShader = game.createRuntimeShader("TintShader");
+    tintShader.setFloatArray("white_tint", colorToArray(180, 255, 150));
+    tintShader.setFloatArray("black_tint", colorToArray(0, 85, 94));
+    tintShader.setFloat("mix_amount", 1.0);
+    */
+    paperGrad = FlxG.bitmap.add(Paths.image("stages/house/gradient-paper"));
+    testGrad = FlxG.bitmap.add(Paths.image("stages/house/gradient-test"));
+
+	if (ClientPrefs.shaders)
+	{
+		gradShader = game.createRuntimeShader("GradientMap");
+		gradShader.setSampler2D("gradient", paperGrad.bitmap);
+		gradShader.setFloat("mix_amount", 0.0);
+	}
+    
+	if (ClientPrefs.shaders)
+	{
+		var filter = new ShaderFilter(gradShader);
+		for (cam in [game.camGame, game.camHUD, game.camBetween])
+			cam.filters = [filter];
+	}
+
+    // shush! modchart.
+    modManager = game.modManager;
+    modManager.queueSet(0, "opponentSwap", 1);
+    modManager.queueEase(928, 944, "opponentSwap", 0, "cubeinout");
+    modManager.queueEase(1424, 1440, "opponentSwap", 1, "cubeinout");
+
+}
+
+function onDestroy() {
+	if (boppersPaper != null) {
+		boppersPaper.destroy();
+		boppersPaper = null;
+	}
+}
+
+function onUpdatePost(elapsed) {
+    playerHint.x = 960 - modManager.get("opponentSwap").getValue()*640 - playerHint.width / 2;
+}
+
+function colorToArray(r:Int, g:Int, b:Int):Array<Float> {
+    return [r/255, g/255, b/255, 1.0];
+}
+
+function setGradMix(num:Float) {
+	if (ClientPrefs.shaders)
+		gradShader.setFloat("mix_amount", num);
+}
+
+function makeShadows() {
+    bfShadow = new Character(0, 0, "pico-shucked-paper", true);
+    game.startCharacterPos(bfShadow, false);
+    game.startCharacterCallback(bfShadow, false);
+    bfShadow.x += 10;
+    bfShadow.y -= 10;
+    game.boyfriendGroup.insert(0, bfShadow);
+    var bf = game.boyfriendMap.get("pico-shucked-paper");
+    bf.onPlayAnim.add(bfShadow.playAnim);
+
+    dadShadow = new Character(0, 0, "bambi-shucked-paper");
+    game.startCharacterPos(dadShadow, true);
+    game.startCharacterCallback(dadShadow, true);
+    dadShadow.x -= 10;
+    dadShadow.y -= 10;
+    game.dadGroup.insert(0, dadShadow);
+    var dad = game.dadMap.get("bambi-shucked-paper");
+    dad.onPlayAnim.add(dadShadow.playAnim);
+
+    for (char in [bfShadow, dadShadow]) {
+        char.color = 0xff000000;
+        char.flipAnims = false;
+        char.alpha = 0.35;
+        char.visible = false;
+        char.skipDance = true;
+    }
+}
+
+function paperMario() {
+    paperGroup.alpha = 1;
+    for (spr in bgSprites) {
+        spr.alpha = FlxMath.EPSILON;
+    }
+
+    game.triggerEventNote("Change Character", "bf", "pico-shucked-paper");
+    game.triggerEventNote("Change Character", "dad", "bambi-shucked-paper");
+    bfShadow.visible = true;
+    dadShadow.visible = true;
+}
+
+function unpaperMario() {
+    paperGroup.visible = false;
+    for (spr in bgSprites) {
+        spr.alpha = 1;
+    }
+
+    game.triggerEventNote("Change Character", "bf", "pico-shucked");
+    game.triggerEventNote("Change Character", "dad", "bambi-shucked");
+    bfShadow.visible = false;
+    dadShadow.visible = false;
+}
+
+function throwItem(data:TossedItem):MultiUseSprite {
+    var item:MultiUseSprite = new MultiUseSprite();
+    item.setPosition(game.dad.x, game.dad.y);
+    item.moves = true;
+
+    item.loadSprite("stages/house/thrown_objects");
+    item.addAnimation("idle", data.id, null, 30, false);
+    item.playAnimation("idle");
+
+    item.onAnimFinish.add(() -> item.kill());
+    item.animationFrameCallback = (animName, frame) -> {
+        if (frame == data.shot)
+            item.moves = false;
+    }
+
+    game.add(item);
+    return item;
+}
+
+function theTosser() {
+    var dad = game.dadMap.get("bambi-shucked-paper");
+    dad.animationFrameCallback = (animName, frame) -> {
+        if (animName != "throw")
+            return;
+
+        switch (frame) {
+            case 16:
+                var item:MultiUseSprite = throwItem({id: "guitar", shot: 5});
+                item.y += 300;
+                item.velocity.set(-600, 0);
+
+            case 30, 31, 35, 40, 43, 47, 50, 53, 56, 58:
+                var data = ITEMS[curThrown++];
+                curThrown %= ITEMS.length;
+
+                var item:MultiUseSprite = throwItem(data);
+                item.x += FlxG.random.int(375, 450);
+                item.y += FlxG.random.int(25, 75);
+                
+                item.velocity.set(FlxG.random.int(-1200, -700), FlxG.random.int(-1200, -400));
+                item.velocity.x /= data.shot / 14;
+                item.acceleration.y = 3600;
+                item.maxVelocity.set(2400, 1000);
+        }
+    };
+}
+
+function onSing(data:SingData, char) {
+    if (!playerSwap)
+        return false;
+
+    var cancel:Bool = false;
+    if (char == game.dad && !data.note.mustHit) {
+        game.boyfriend.singFromData(data);
+        cancel = true;
+    } else if (char == game.getChar(game.lastPlayerSing) && data.note.mustPress){
+        game.dad.singFromData(data);
+        cancel = true;
+    }
+    return cancel;
+}
+
+function onGameOver() {
+    if (playerSwap)
+        game.gameOverSubState.settings = GameOverSettings.get("bambi-shucked");
+}
+
+function onStepHit() {
+    switch (curStep) {
+        case 0:
+            tweenBars({gap: 600}, beatTime(31), {ease: FlxEase.quadOut});
+            game.tween(game.camStrums, {alpha: 1}, beatTime(28), {ease: FlxEase.quadOut});
+            game.vignette.alpha = 0.5;
+
+            game.camLock = true;
+            game.snapCamFollowToPos(625, -50);
+
+            game.camZooming = false;
+            game.camGame.zoom = 0.55;
+            game.tween(game.camGame, {zoom: 0.65}, beatTime(31));
+        case 124:
+            game.tween(game.camGame, {zoom: 0.7}, beatTime(0.5), {ease: FlxEase.quadOut});
+        case 126:
+            tweenBars({angle: -10, gap: 500}, beatTime(1), {ease: FlxEase.backInOut});
+        case 128:
+            game.tween(game.camHUD, {alpha: 1}, beatTime(0.25));
+            game.tween(game.vignette, {alpha: VIGNETTE_ALPHA}, beatTime(0.25));
+            game.camLock = false;
+            game.camZooming = true;
+        case 144:
+            game.tween(playerHint, {alpha: 0}, 3);
+        case 190:
+            tweenBars({angle: 10}, beatTime(1), {ease: FlxEase.backInOut});
+        case 254:
+            tweenBars({angle: 0}, beatTime(1), {ease: FlxEase.backInOut});
+        case 356:
+            tweenBars({gap: 600}, beatTime(1), {ease: FlxEase.backInOut});
+        case 360:
+            tweenBars({gap: 400}, beatTime(1), {ease: FlxEase.elasticOut});
+        case 364:
+            tweenBars({gap: 300}, beatTime(1), {ease: FlxEase.elasticOut});
+        case 366:
+            tweenBars({angle: 10}, beatTime(1), {ease: FlxEase.elasticOut});
+        case 370:
+            tweenBars({angle: 12}, beatTime(1), {ease: FlxEase.elasticOut});
+        case 376:
+            tweenBars({angle: 75, gap: 0}, beatTime(1.75), {ease: FlxEase.quintIn});
+            game.tween(game.camGame, {angle: 63}, beatTime(1.75), {ease: FlxEase.quintIn});
+        case 384:
+            game.camGame.angle = 0;
+            game.tween(game.camGame, {angle: 0}, beatTime(0.5), {ease: FlxEase.quintOut});
+            bars.angle = -90;
+            tweenBars({angle: -45, gap: 670}, beatTime(1), {ease: FlxEase.backOut});
+
+            game.camLock = true;
+            game.snapCamFollowToPos(175, -50);
+            setZoom(1.2);
+        case 424:
+            tweenBars({gap: 720}, beatTime(0.5), {ease: FlxEase.cubeOut});
+        case 428:
+            tweenBars({angle: 0, gap: 550}, beatTime(1), {ease: FlxEase.backOut});
+
+            game.camLock = false;
+            game.defaultCamZoom = 0.7;
+            game.moveCam(BF, game.oppOffset);
+        case 447:
+            game.camLock = true;
+        case 448:
+            tweenBars({gap: 300}, beatTime(14));
+
+            game.tween(game.vignette, {alpha: 0.5}, beatTime(14));
+            game.tween(game.camGame.camFollow, {x: 1000}, beatTime(14));
+            tweenZoom(1.0, beatTime(14));
+        case 504:
+            tweenBars({gap: 720}, beatTime(0.25));
+            game.tween(game.vignette, {alpha: VIGNETTE_ALPHA}, beatTime(0.25));
+            tweenZoom(0.7, beatTime(2), FlxEase.cubeOut);
+        case 512:
+            tweenBars({gap: 450}, beatTime(0.6), {ease: FlxEase.backOut});
+            game.camLock = false;
+        case 588:
+            bars.gap = 425;
+            tweenBars({gap: 450}, beatTime(1), {ease: FlxEase.cubeOut});
+        case 630:
+            tweenBars({gap: 425}, beatTime(1), {ease: FlxEase.quadInOut});
+        case 634:
+            tweenBars({gap: 720}, beatTime(0.5), {ease: FlxEase.quadIn});
+        case 638:
+            tweenBars({angle: -10, gap: 550}, beatTime(0.5), {ease: FlxEase.quadIn});
+        case 640:
+            tweenBars({gap: 400}, beatTime(16));
+            tweenZoom(0.9, beatTime(32));
+        case 704:
+            tweenBars({angle: 10, gap: 550}, beatTime(0.5), {ease: FlxEase.backOut});
+        case 706:
+            tweenBars({gap: 400}, beatTime(15.5));
+        case 768:
+            tweenZoom(0.7, beatTime(0.5), FlxEase.quadOut);
+            tweenBars({angle: 0}, beatTime(0.5), {ease: FlxEase.cubeOut});
+        case 772:
+            tweenBars({gap: 600}, beatTime(0.5), {ease: FlxEase.cubeOut});
+        case 784 | 788 | 790:
+            bars.gap = 580;
+            tweenBars({gap: 600}, beatTime(0.5), {ease: FlxEase.quadOut});
+        case 890:
+            tweenBars({gap: 600}, beatTime(0.5));
+        case 896:
+            for (sprite in bgSprites)
+                sprite.active = false;
+            if (game.hasPartner)
+                game.partner.active = false;
+
+            game.tween(grayBG, {greyMixLevel: 100}, beatTime(0.25));
+            game.tween(game.camHUD, {alpha: 0}, beatTime(0.25));
+            tweenBars({gap: 720}, beatTime(0.25));
+            game.tween(game.vignette, {alpha: 0.4}, beatTime(0.25));
+
+            game.camLock = true;
+            game.camGame.camFollow.x = 625;
+            game.tween(game.camGame.camFollow.pos, {x: 625}, beatTime(0.5), {ease: FlxEase.cubeOut});
+            tweenZoom(0.65, beatTime(0.5), FlxEase.cubeOut);
+            game.tween(playerHint, {alpha: 1}, 3);
+        case 928:
+            playerSwap = true;
+            game.health = 2;
+            game.healthBar.flipX = false;
+            game.healthBar.setColors(game.boyfriend.healthColor, game.dad.healthColor);
+            game.iconP1.changeIcon("bambi");
+            game.iconP2.changeIcon("pico");
+            game.judgementCounter.baseX = 960;
+        case 960:
+            for (sprite in bgSprites)
+                sprite.active = true;
+            if (game.hasPartner)
+                game.partner.active = true;
+
+            game.tween(grayBG, {greyMixLevel: 0}, beatTime(0.25));
+            game.tween(game.camHUD, {alpha: 1}, beatTime(0.25));
+            tweenBars({gap: 600}, beatTime(0.5));
+            game.tween(game.vignette, {alpha: VIGNETTE_ALPHA}, beatTime(0.5));
+
+            game.camLock = false;
+            tweenZoom(0.7, beatTime(0.5), FlxEase.cubeOut);
+        case 962:
+            tweenBars({gap: 320}, beatTime(12));
+            tweenZoom(0.85, beatTime(12));
+        case 1002:
+            game.camLock = true;
+            trace("halllooo");
+
+            game.fileMorphPartner();
+            tweenToChar("dad", beatTime(1), FlxEase.quadOut);
+        case 1010:
+            tweenBars({angle: -22.5, gap: 500}, beatTime(1), {ease: FlxEase.cubeOut});
+            tweenZoom(0.7, beatTime(1), FlxEase.cubeOut);
+        case 1016:
+            game.iconP1.changeIcon("bambi-duel");
+            game.iconP2.changeIcon("pico-duel");
+        case 1020:
+            tweenBars({gap: 550}, beatTime(0.5));
+            tweenZoom(1.0, beatTime(1), FlxEase.backIn);
+        case 1022:
+            tweenBars({gap: 0}, beatTime(0.5), {ease: FlxEase.quintIn});
+        case 1024:
+            // papper
+            paperMario();
+
+            tweenBars({gap: 1200}, beatTime(0.25));
+
+            game.camLock = false;
+            tweenZoom(0.7, beatTime(1), FlxEase.cubeOut);
+        case 1040:
+            game.tween(playerHint, {alpha: 0}, 1.5);
+        case 1140:
+            game.dad.canSing = false;
+            game.dad.playAnim("guitar", true);
+            game.dad.specialAnim = true;
+        case 1148:
+            game.tween(game.camBetween, {zoom: 1.02}, beatTime(0.5), {ease: FlxEase.cubeOut});
+
+            game.camLock = true;
+            game.camGame.camFollow.x = 1000;
+            game.tween(game.camGame.camFollow.pos, {x: 1000}, beatTime(1), {ease: FlxEase.cubeInOut});
+            game.tween(game.vignette, {alpha: 0.5}, beatTime(1), {ease: FlxEase.cubeInOut});
+            tweenZoom(0.8, beatTime(1), FlxEase.cubeInOut);
+        case 1152:
+            game.tween(game.camBetween, {zoom: 1}, beatTime(0.5), {ease: FlxEase.cubeOut});
+        case 1188:
+            tweenZoom(0.75, beatTime(1), FlxEase.cubeOut);
+            game.tweenManager.num(0.0, 0.25, beatTime(3), {ease: FlxEase.cubeOut}, setGradMix);
+        case 1200:
+            tweenZoom(0.9, beatTime(4), FlxEase.quadOut);
+            game.tweenManager.num(0.25, 0.75, beatTime(4), null, setGradMix);
+        case 1212:
+            game.dad.canSing = true;
+        case 1216:
+            tweenZoom(0.8, beatTime(0.5), FlxEase.cubeOut);
+            game.tweenManager.num(0.75, 0.25, beatTime(0.5), {ease: FlxEase.cubeOut}, setGradMix);
+        case 1250:
+            tweenZoom(0.95, beatTime(2), FlxEase.quintInOut);
+        case 1254:
+            game.tweenManager.num(0.25, 0.5, beatTime(1), {ease: FlxEase.cubeOut}, setGradMix);
+        case 1276:
+            tweenToChar(BF, beatTime(2), FlxEase.cubeInOut);
+            tweenZoom(0.7, beatTime(2), FlxEase.cubeInOut);
+            game.tween(game.vignette, {alpha: VIGNETTE_ALPHA}, beatTime(2), {ease: FlxEase.cubeInOut});
+            game.tweenManager.num(0.5, 0.0, beatTime(2), {ease: FlxEase.cubeInOut}, setGradMix);
+        case 1308:
+            game.tween(game.camHUD, {alpha: 0.25}, beatTime(2), {ease: FlxEase.cubeInOut});
+
+            tweenZoom(0.6, beatTime(2), FlxEase.cubeInOut);
+            game.camLock = true;
+            game.camGame.camFollow.x = 625;
+            game.camGame.camFollow.y = -200;
+            game.tween(game.camGame.camFollow.pos, {x: 625, y: -200}, beatTime(2), {ease: FlxEase.cubeInOut});
+        case 1312:
+            boppersPaper.playAnimation("scared");
+            game.boyfriend.playAnim("gun");
+            game.boyfriend.specialAnim = true;
+            game.boyfriend.canSing = false;
+            game.tweenManager.num(0.0, 0.5, beatTime(2), {ease: FlxEase.cubeInOut}, setGradMix);
+        case 1340:
+            game.tween(game.camHUD, {alpha: 1}, beatTime(2), {ease: FlxEase.cubeInOut});
+            tweenToChar(BF, beatTime(2), FlxEase.cubeInOut);
+            tweenZoom(0.7, beatTime(2), FlxEase.cubeInOut);
+        case 1344:
+            boppersPaper.playAnimation("idle");
+            game.boyfriend.canSing = true;
+            game.tweenManager.num(0.5, 0.0, beatTime(2), {ease: FlxEase.cubeInOut}, setGradMix);
+        case 1388:
+            game.dad.skipDance = true;
+            game.camGame.camFollow.x = 625;
+            game.camGame.camFollow.y = -150;
+            game.tween(game.camGame.camFollow.pos, {x: 625, y: -150}, beatTime(2), {ease: FlxEase.cubeInOut});
+            tweenZoom(0.6, beatTime(2), FlxEase.cubeInOut);
+        case 1392:
+            game.tweenManager.num(0.0, 1.0, beatTime(4), {ease: FlxEase.quintIn}, setGradMix);
+        case 1406:
+            game.camZoomingMult = 0;
+
+            bars.gap = 720;
+            bars.angle = 0;
+            tweenBars({gap: 0}, beatTime(0.5), {ease: FlxEase.quintIn});
+            game.tween(game.camHUD, {alpha: 0}, beatTime(0.5));
+        case 1408:
+            game.tween(playerHint, {alpha: 1}, 1.5);
+        case 1412:
+            littles[0].visible = true;
+            littles[0].playAnimation("kernel", true);
+        case 1416:
+            littles[1].visible = true;
+            littles[1].playAnimation("kernel", true);
+        case 1420:
+            littles[2].visible = true;
+            littles[2].playAnimation("bullet", true);
+        case 1424:
+            littles[1].visible = false;
+            littles[2].visible = false;
+            littles[0].playAnimation("kernel", true);
+
+			if (ClientPrefs.shaders)
+			{
+				gradShader.setSampler2D("gradient", testGrad.bitmap);
+				gradShader.setFloat("mix_amount", 0.25);
+			}
+
+            playerSwap = false;
+            game.health = 2;
+            game.healthBar.flipX = true;
+            game.healthBar.setColors(game.dad.healthColor, game.boyfriend.healthColor);
+            game.iconP1.changeIcon("bambi");
+            game.iconP2.changeIcon("pico");
+            game.judgementCounter.baseX = 320;
+
+            unpaperMario();
+        case 1428:
+            littles[1].visible = true;
+            littles[1].playAnimation("kernel", true);
+        case 1431:
+            littles[2].visible = true;
+            littles[2].playAnimation("popcorn", true);
+        case 1436:
+            tweenBars({gap: 625}, beatTime(1), {ease: FlxEase.quintIn});
+            game.camZoomingMult = 1;
+        case 1439:
+            for (spr in littles) {
+                spr.visible = false;
+            }
+        case 1440:
+            game.camLock = false;
+            game.cameraSpeed = 2.5;
+            game.defaultCamZoom = 0.8;
+            game.fileMorphPartner();
+
+            tweenBars({gap: 600}, beatTime(0.5), {ease: FlxEase.cubeOut});
+            game.tween(game.camHUD, {alpha: 1}, beatTime(0.5));
+            game.tweenManager.num(0.25, 0.5, beatTime(1), {ease: FlxEase.qcubeOut}, setGradMix);
+        case 1456:
+            game.tween(playerHint, {alpha: 0}, 3);
+        case 1616:
+            game.camLock = true;
+            game.camGame.camFollow.x = 625;
+            game.tween(game.camGame.camFollow.pos, {x: 625}, beatTime(1), {ease: FlxEase.quintOut});
+            game.tweenManager.num(0.5, 0.75, beatTime(1), {ease: FlxEase.quartOut}, setGradMix);
+        case 1632:
+            game.camLock = false;
+            game.tweenManager.num(0.75, 0.5, beatTime(1), {ease: FlxEase.quartOut}, setGradMix);
+        case 1692:
+            tweenBars({angle: 2}, beatTime(0.5), {ease: FlxEase.quadOut});
+
+            game.camLock = true;
+            game.camGame.camFollow.x = 625;
+            game.tween(game.camGame.camFollow.pos, {x: 625}, beatTime(1), {ease: FlxEase.quintIn});
+        case 1694:
+            tweenBars({angle: 0}, beatTime(0.5), {ease: FlxEase.quadIn});
+        case 1696:
+            tweenBars({angle: -8}, beatTime(7), {ease: FlxEase.quadIn});
+            game.tween(game.vignette, {alpha: 0.5}, beatTime(0.5));
+            game.tweenManager.num(0.5, 0.6, beatTime(4), {ease: FlxEase.cubeOut}, setGradMix);
+
+            game.camZoomingMult = 0;
+            tweenZoom(0.55, beatTime(12));
+        case 1724:
+            tweenBars({gap: 650}, beatTime(1), {ease: FlxEase.quadInOut});
+        case 1728:
+            tweenBars({gap: 0}, beatTime(1), {ease: FlxEase.quadIn}); 
+    }
+}

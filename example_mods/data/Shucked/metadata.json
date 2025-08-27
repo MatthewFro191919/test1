@@ -1,0 +1,18 @@
+{
+  "pause": {
+    "left_side": [{ "id": "PICO" }],
+    "right_side": [{ "id": "BAMBI" }]
+  },
+  "credits": {
+    "music": "m1les0",
+    "art": {
+      "BACKGROUND": ["exorcistgold", "riko"],
+      "SPRITES": ["statictigers", "pointyyesm", "thetwigjig"],
+      "ANIMATIONS": ["statictigers", "riko"]
+    },
+    "code": {
+      "EVENTS": "izzee",
+      "CHART": "pointyyesm"
+    }
+  }
+}

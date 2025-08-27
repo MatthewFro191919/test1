@@ -1,0 +1,24 @@
+{
+  "pause": {
+    "left_side": [{ "id": "WORM_EATER" }],
+    "right_side": [{ "id": "BF" }]
+  },
+  "credits": {
+    "music": ["cinder", "mossysox", "m1les0"],
+    "art": {
+      "BACKGROUND": [
+        "devianator",
+        "statictigers",
+        "fristo",
+        "dynab0l",
+        "sporbb"
+      ],
+      "SPRITES": ["devianator", "lader"]
+    },
+    "code": {
+      "EVENTS": "boxyyyy_",
+      "CHART": "pointyyesm",
+      "MODCHART": "boxyyyy_"
+    }
+  }
+}
